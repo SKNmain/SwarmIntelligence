@@ -12,6 +12,11 @@ RenderArea::RenderArea(QWidget* parent)
 
    this->scene = new QGraphicsScene(this);
    this->setScene(this->scene);
+
+
+   this->wallColor = Qt::black;
+   this->visitedTileColor = Qt::blue;
+   this->notVisitedTileColor = Qt::white;
 }
 
 RenderArea::~RenderArea()
@@ -26,101 +31,87 @@ void RenderArea::addMazeToScene(const Maze& maze)
    auto mazeWidth = maze.getWidth();
    auto mazeHeight = maze.getHeight();
 
-   for (int x = 0; x < mazeWidth; ++x)
+   auto tileWidth = maze.getTileWidth();
+   auto tileHeight = maze.getTileHeight();
+
+   for (uint32_t x = 0; x < mazeWidth; ++x)
    {
-      //********* - draw upper line
-      for (int i = 0; i < mazeWidth * (pathWidth + 1) + 1; ++i)
+      //********* - draw upper line (upper border)
+      for (uint32_t i = 0; i < mazeWidth * (pathWidth + 1) + 1; ++i)
       {
-         auto item = new QGraphicsRectItem;
-         item->setRect(i * maze.getTileWidth(), 
-                       x*(pathWidth + 1)*maze.getTileHeight(), 
-                       maze.getTileWidth(), maze.getTileHeight());
-         item->setBrush(Qt::black);
-         item->setPen(QPen(Qt::black));
-         this->scene->addItem(item);
+         createTile(i * tileWidth,x * (pathWidth + 1) * tileHeight, tileWidth, tileHeight, this->wallColor);
       }
-      for (int y = 0; y < mazeHeight; ++y)
+
+      for (uint32_t y = 0; y < mazeHeight; ++y)
       {
          //*000
          //*000
          //*000
 
-         for (int px = 0; px < pathWidth; ++px)
+         for (uint32_t px = 0; px < pathWidth; ++px)
          {
-            for (int py = 0; py < pathWidth; ++py)
+            for (uint32_t py = 0; py < pathWidth; ++py)
             {
                //*
                if (py == 0)
                {
-                  auto item2 = new QGraphicsRectItem;
-                  item2->setRect(y * (pathWidth + 1) * maze.getTileWidth(), 
-                                (px + 1) * maze.getTileHeight() + x * (pathWidth + 1) * maze.getTileHeight(),
-                                maze.getTileWidth(), maze.getTileHeight());
-                  if (mazeArray[x][y] & Maze::CELL_PATH_N) {
-                     item2->setBrush(Qt::white);
-                     item2->setPen(QPen(Qt::white));
+                  QColor color;
+                  if (mazeArray[x][y] & Maze::CELL_PATH_N)
+                  {
+                     color = this->notVisitedTileColor;
                   }
-                  else {
-                     item2->setBrush(Qt::black);
-                     item2->setPen(QPen(Qt::black));
+                  else
+                  {
+                     color = this->wallColor;
                   }
-                  
-                  this->scene->addItem(item2);
+
+                  createTile(y * (pathWidth + 1) * tileWidth, (px + 1) * tileWidth + x * (pathWidth + 1) * tileHeight, tileWidth, tileHeight, color);
                }
                //000
-               auto item = new QGraphicsRectItem;
-               item->setRect((py + 1) * maze.getTileWidth() + y * (pathWidth + 1) * maze.getTileWidth(),
-                  (px + 1) * maze.getTileHeight() + x * (pathWidth + 1) * maze.getTileHeight(),
-                  maze.getTileWidth(), maze.getTileHeight());
+               QColor color;
                if (mazeArray[x][y] & Maze::CELL_VISITED)
                {
-                  
-                  item->setBrush(Qt::white);
-                  item->setPen(QPen(Qt::white));
+                  color = this->notVisitedTileColor;
                }
                else
                {
-                  item->setBrush(Qt::blue);
-                  item->setPen(QPen(Qt::blue));
+                  color = this->visitedTileColor;
                }
-               this->scene->addItem(item);
+               createTile((py + 1) * tileWidth + y * (pathWidth + 1) * tileWidth, (px + 1) * tileHeight + x * (pathWidth + 1) * tileHeight,
+                  tileWidth, tileHeight, color);
             }
          }
-          //it cover the upper line of single cell with white block
+         //it cover the upper line of single cell with white block
          if (mazeArray[x][y] & Maze::CELL_PATH_W)
          {
-            auto item2 = new QGraphicsRectItem;
-            item2->setRect((y * (pathWidth + 1) + 1) * maze.getTileWidth(),
-               x * (pathWidth + 1) * maze.getTileHeight(),
-               pathWidth * maze.getTileWidth() - 1,
-               maze.getTileHeight());
-            item2->setBrush(Qt::white);
-            item2->setPen(QPen(Qt::white));
-            this->scene->addItem(item2);
+            createTile((y * (pathWidth + 1) + 1) * tileWidth, x * (pathWidth + 1) * tileHeight,
+               pathWidth * tileWidth - 1, tileHeight, this->notVisitedTileColor);
          }
       }
       //draw last frame in every line, like:  *000*000*000 ---> this thing *
-      for (int px = 0; px < pathWidth; ++px)
+      uint32_t leftBorderLinePosX = mazeWidth * tileWidth * (pathWidth + 1);
+      for (uint32_t px = 0; px < pathWidth; ++px)
       {
-         auto item2 = new QGraphicsRectItem;
-         item2->setRect(mazeWidth * maze.getTileWidth() * (pathWidth + 1),
-            x * (pathWidth + 1) * maze.getTileHeight() + (px + 1) * maze.getTileHeight(),
-            maze.getTileWidth(), maze.getTileHeight());
-         item2->setBrush(Qt::black);
-         item2->setPen(QPen(Qt::black));
-         this->scene->addItem(item2);
+         //sprawdzic dwa tileHeight'y
+         createTile(leftBorderLinePosX, x * (pathWidth + 1) * tileHeight + (px + 1) * tileHeight, tileWidth, tileHeight, this->wallColor);
       }
    }
-   //draw last line
-   for (int i = 0; i < mazeWidth * (pathWidth + 1) + 1; ++i)
+
+   //draw last line (bottom border)
+   uint32_t bottomBorderPosY = mazeHeight * (pathWidth + 1) * tileHeight;
+   for (uint32_t i = 0; i < mazeWidth * (pathWidth + 1) + 1; ++i)
    {
-      auto item = new QGraphicsRectItem;
-      item->setRect(i * maze.getTileWidth(),
-         mazeHeight * (pathWidth + 1) * maze.getTileHeight(), 
-         maze.getTileWidth(), maze.getTileHeight());
-      item->setBrush(Qt::black);
-      item->setPen(QPen(Qt::black));
-      this->scene->addItem(item);
+      createTile(i * tileWidth, bottomBorderPosY, tileWidth, tileHeight, this->wallColor);
    }
    this->update();
+}
+
+void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor)
+{
+   auto tile = new QGraphicsRectItem;
+   tile->setRect(x, y, tileWidth, tileHeight);
+   tile->setBrush(tileColor);
+   tile->setPen(QPen(tileColor));
+   this->scene->addItem(tile);
+
 }

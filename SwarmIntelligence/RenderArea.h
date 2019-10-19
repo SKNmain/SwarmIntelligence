@@ -20,8 +20,15 @@ public:
    void addMazeToScene(const Maze& maze);
 
 private:
-   Ui::RenderArea* ui;
+   void createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
 
+
+   QColor wallColor;
+   QColor notVisitedTileColor;
+   QColor visitedTileColor;
+
+
+   Ui::RenderArea* ui;
    std::vector<QGraphicsItem*> sceneElements;
    QGraphicsScene* scene;
 };
