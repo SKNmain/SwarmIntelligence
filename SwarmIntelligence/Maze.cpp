@@ -1,11 +1,12 @@
 #include "Maze.h"
 #include <ctime>
 
-Maze::Maze(uint32_t width, uint32_t height, uint32_t tileWidth, uint32_t tileHeight, uint32_t pathWidth)
+Maze::Maze(uint32_t width, uint32_t height, uint32_t tileWidth, uint32_t tileHeight, uint32_t pathWidth, uint32_t markerSize)
 {
    this->width = width;
    this->height = height;
 
+   this->markerSize = markerSize;
    this->tileHeight = tileHeight;
    this->tileWidth = tileWidth;
    this->pathWidth = pathWidth;
@@ -28,6 +29,8 @@ Maze::Maze(uint32_t width, uint32_t height, uint32_t tileWidth, uint32_t tileHei
 
 void Maze::generateMaze()
 {
+   this->markers.clear();
+
    if(numberOfVisitedCells < this->getHeight() * this->getWidth())
    {
       //Establish unvisited neighbours
@@ -35,6 +38,8 @@ void Maze::generateMaze()
 
       uint32_t x = stack.top().first;
       uint32_t y = stack.top().second;
+
+      markers.push_back({ x, y });
       //North
       if (y > 0)
       {
@@ -117,9 +122,19 @@ uint32_t Maze::getWidth() const
    return this->width;
 }
 
+uint32_t Maze::getMarkerSize() const
+{
+   return this->markerSize;
+}
+
 std::vector<std::vector<int>> Maze::getMazeArray() const
 {
    return this->mazeArray;
+}
+
+std::vector<Marker> Maze::getMarkers() const
+{
+   return this->markers;
 }
 
 uint32_t Maze::getTileHeight() const

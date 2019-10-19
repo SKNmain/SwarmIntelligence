@@ -2,11 +2,12 @@
 #include <QColor>
 #include <vector>
 #include <stack>
+#include <Marker.h>
 
 class Maze
 {
 public:
-   Maze(uint32_t width, uint32_t height, uint32_t tileWidth = 20, uint32_t tileHeight = 20, uint32_t pathWidth = 3);
+   Maze(uint32_t width, uint32_t height, uint32_t tileWidth = 20, uint32_t tileHeight = 20, uint32_t pathWidth = 3, uint32_t markerSize = 20);
 
    enum CellIdentifier
    {
@@ -21,8 +22,10 @@ public:
 
    void generateMaze();
    std::vector<std::vector<int>> getMazeArray() const;
+   std::vector<Marker> getMarkers() const;
    uint32_t getHeight() const;
    uint32_t getWidth() const;
+   uint32_t getMarkerSize() const;
    uint32_t getTileHeight() const;
    uint32_t getTileWidth() const;
    uint32_t getPathWidth() const;
@@ -35,9 +38,13 @@ private:
    uint32_t tileHeight;
    uint32_t pathWidth;
 
+   uint32_t markerSize;
+
 
    uint32_t numberOfVisitedCells = 0;
    std::stack<std::pair<int, int>> stack;
    std::vector<std::vector<int>> mazeArray;
+
+   std::vector<Marker> markers;
 };
 

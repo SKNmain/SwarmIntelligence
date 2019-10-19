@@ -4,6 +4,7 @@
 #include <QBrush>
 
 class Maze;
+class Marker;
 
 namespace Ui {
    class RenderArea;
@@ -21,6 +22,7 @@ public:
 
 private:
    void createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
+   void createMarker(const Maze& maze, const Marker& marker);
 
 
    QColor wallColor;

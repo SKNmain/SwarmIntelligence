@@ -100,6 +100,11 @@ void RenderArea::addMazeToScene(const Maze& maze)
    createTile(0, 0, tileWidth * mazeWidth * (pathWidth + 1), tileHeight, this->wallColor);
    createTile(0, tileHeight * mazeHeight * (pathWidth + 1), tileWidth * mazeWidth * (pathWidth + 1) + tileWidth, tileHeight, this->wallColor);
 
+   for(const auto& m : maze.getMarkers())
+   {
+      createMarker(maze, m);
+   }
+
    this->update();
 }
 
@@ -110,5 +115,15 @@ void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t
    tile->setBrush(tileColor);
    tile->setPen(QPen(Qt::NoPen));
    this->scene->addItem(tile);
+}
 
+void RenderArea::createMarker(const Maze& maze, const Marker& marker)
+{
+   const double x = (maze.getPathWidth() ) / 2. * maze.getTileWidth() + marker.getX() * (maze.getPathWidth() + 1) * maze.getTileWidth();
+   const double y = (maze.getPathWidth() ) / 2. * maze.getTileHeight() + marker.getY() * (maze.getPathWidth() + 1) * maze.getTileHeight();
+
+   auto markerTile = new QGraphicsEllipseItem(x, y, maze.getMarkerSize(), maze.getMarkerSize());
+   markerTile->setBrush(marker.getColor());
+   markerTile->setPen(QPen(Qt::NoPen));
+   this->scene->addItem(markerTile);
 }
