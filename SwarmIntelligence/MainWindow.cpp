@@ -1,7 +1,8 @@
 #include "MainWindow.h"
 #include "ui_MainWindowUI.h"
 #include "Maze.h"
-#include <windows.h>
+#include <QShortcut>
+#include <QTimer>
 
 
 MainWindow::MainWindow(QWidget* parent)
@@ -9,18 +10,27 @@ MainWindow::MainWindow(QWidget* parent)
    , ui(new Ui::MainWindow)
 {
    ui->setupUi(this);
+   this->maze = new Maze(15, 30, 10, 10);
+
+   this->stepRenderingTimer = new QTimer();
+   this->stepRenderingTimer->setInterval(100);
+   connect(stepRenderingTimer, &QTimer::timeout, this, [this]()
+      {
+         showStep();
+      });
+
+   this->stepRenderingTimer->start();
 }
 
 bool MainWindow::showStep()
 {
-   Maze maze(15, 30, 10, 10);
-  // if (!maze.isMazeDone)
-   //{
-      maze.generateMaze();
-      this->ui->graphicsView->addMazeToScene(maze);
+   if (false == maze->isMazeDone)
+   {
+      this->maze->generateMaze();
+      this->ui->graphicsView->addMazeToScene(*maze);
       return true;
-   //}
-  // return false;
+   }
+   return false;
 }
 
 MainWindow::~MainWindow()

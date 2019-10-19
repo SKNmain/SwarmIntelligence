@@ -16,6 +16,7 @@ public:
       CELL_PATH_W = 0X08,
       CELL_VISITED = 0X10,
      // CELL_START = 0X12,
+
    };
 
    void generateMaze();
@@ -26,6 +27,7 @@ public:
    uint32_t getTileWidth() const;
    uint32_t getPathWidth() const;
    bool isMazeDone = false;
+
 private:
    uint32_t width;
    uint32_t height;

@@ -26,6 +26,8 @@ RenderArea::~RenderArea()
 
 void RenderArea::addMazeToScene(const Maze& maze)
 {
+   this->scene->clear();
+
    auto mazeArray = maze.getMazeArray();
    auto pathWidth = maze.getPathWidth();
    auto mazeWidth = maze.getWidth();
@@ -55,25 +57,36 @@ void RenderArea::addMazeToScene(const Maze& maze)
          }
 
          //draw path
-         for (uint32_t py = 0; py < pathWidth; ++py)
+         for (uint32_t py = 1; py <= pathWidth; ++py)
          {
-            for (uint32_t px = 0; px < pathWidth; ++px)
+            for (uint32_t px = 1; px <= pathWidth; ++px)
             {
-               createTile(px * tileWidth + x * (pathWidth + 1) * tileWidth, (py + 1) * tileWidth + y * (pathWidth + 1) * tileHeight, tileWidth, tileHeight, color);
+               createTile(px * tileWidth + x * (pathWidth + 1) * tileWidth, py * tileWidth + y * (pathWidth + 1) * tileHeight,
+                  tileWidth, tileHeight, color);
             }
          }
 
          // *000
-         if(x != 0 && 0 == (tile & Maze::CELL_PATH_W))
+         // *000
+         if (x != 0)
          {
-            createTile(x * tileWidth * (pathWidth + 1) - tileWidth, tileWidth + y * tileHeight * (pathWidth + 1),
-                      tileWidth, tileHeight * (pathWidth), this->wallColor);
+            if (0 == (tile & Maze::CELL_PATH_W))
+            {
+               createTile(x * tileWidth * (pathWidth + 1), tileWidth + y * tileHeight * (pathWidth + 1),
+                  tileWidth, tileHeight * (pathWidth), this->wallColor);
+            }
+            else
+            {
+               createTile(x * tileWidth * (pathWidth + 1), tileWidth + y * tileHeight * (pathWidth + 1),
+                  tileWidth, tileHeight * (pathWidth), color);
+            }
          }
+
          // ***
          // 000
-         if(y != 0 && 0 != (tile & Maze::CELL_PATH_N))
+         if (y != 0 && 0 != (tile & Maze::CELL_PATH_N))
          {
-            createTile(x * tileWidth * (pathWidth + 1), y * tileHeight * (pathWidth + 1),
+            createTile(x * tileWidth * (pathWidth + 1) + tileWidth, y * tileHeight * (pathWidth + 1),
                tileWidth * (pathWidth), tileHeight, color);
          }
 
@@ -82,9 +95,10 @@ void RenderArea::addMazeToScene(const Maze& maze)
 
    //draw border
    createTile(0, 0, tileWidth, tileHeight * mazeHeight * (pathWidth + 1), this->wallColor);
+   createTile(tileWidth * mazeWidth * (pathWidth + 1), 0, tileWidth, tileHeight * mazeHeight * (pathWidth + 1), this->wallColor);
+
    createTile(0, 0, tileWidth * mazeWidth * (pathWidth + 1), tileHeight, this->wallColor);
-   createTile(0, tileHeight * mazeHeight * (pathWidth + 1) - tileHeight, tileWidth * mazeWidth * (pathWidth + 1), tileHeight, this->wallColor);
-   createTile(tileWidth * mazeWidth * (pathWidth + 1) - tileWidth, 0, tileWidth, tileHeight * mazeHeight * (pathWidth + 1), this->wallColor);
+   createTile(0, tileHeight * mazeHeight * (pathWidth + 1), tileWidth * mazeWidth * (pathWidth + 1) + tileWidth, tileHeight, this->wallColor);
 
    this->update();
 }

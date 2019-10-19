@@ -28,7 +28,7 @@ Maze::Maze(uint32_t width, uint32_t height, uint32_t tileWidth, uint32_t tileHei
 
 void Maze::generateMaze()
 {
-   while (numberOfVisitedCells < this->getHeight() * this->getWidth())
+   if(numberOfVisitedCells < this->getHeight() * this->getWidth())
    {
       //Establish unvisited neighbours
       std::vector<int> neighbours;
@@ -102,10 +102,9 @@ void Maze::generateMaze()
          stack.pop();
       }
    }
-   //else {
-     // isMazeDone = true;
-   //}
-
+   else {
+      isMazeDone = true;
+   }
 }
 
 uint32_t Maze::getHeight() const
