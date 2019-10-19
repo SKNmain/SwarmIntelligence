@@ -34,75 +34,58 @@ void RenderArea::addMazeToScene(const Maze& maze)
    auto tileWidth = maze.getTileWidth();
    auto tileHeight = maze.getTileHeight();
 
-   for (uint32_t x = 0; x < mazeWidth; ++x)
+   for (uint32_t y = 0; y < mazeHeight; ++y)
    {
-      //********* - draw upper line (upper border)
-      for (uint32_t i = 0; i < mazeWidth * (pathWidth + 1) + 1; ++i)
-      {
-         createTile(i * tileWidth,x * (pathWidth + 1) * tileHeight, tileWidth, tileHeight, this->wallColor);
-      }
+      //draw horizontal line between layers of tiles
+      createTile(0, y * tileHeight * (pathWidth + 1), tileWidth * mazeWidth * (pathWidth + 1), tileHeight, this->wallColor);
 
-      for (uint32_t y = 0; y < mazeHeight; ++y)
+      for (uint32_t x = 0; x < mazeWidth; ++x)
       {
-         //*000
-         //*000
-         //*000
+         auto tile = mazeArray[y][x];
 
-         for (uint32_t px = 0; px < pathWidth; ++px)
+         //visited or not?
+         QColor color;
+         if (tile & Maze::CELL_VISITED)
          {
-            for (uint32_t py = 0; py < pathWidth; ++py)
-            {
-               //*
-               if (py == 0)
-               {
-                  QColor color;
-                  if (mazeArray[x][y] & Maze::CELL_PATH_N)
-                  {
-                     color = this->notVisitedTileColor;
-                  }
-                  else
-                  {
-                     color = this->wallColor;
-                  }
+            color = this->notVisitedTileColor;
+         }
+         else
+         {
+            color = this->visitedTileColor;
+         }
 
-                  createTile(y * (pathWidth + 1) * tileWidth, (px + 1) * tileWidth + x * (pathWidth + 1) * tileHeight, tileWidth, tileHeight, color);
-               }
-               //000
-               QColor color;
-               if (mazeArray[x][y] & Maze::CELL_VISITED)
-               {
-                  color = this->notVisitedTileColor;
-               }
-               else
-               {
-                  color = this->visitedTileColor;
-               }
-               createTile((py + 1) * tileWidth + y * (pathWidth + 1) * tileWidth, (px + 1) * tileHeight + x * (pathWidth + 1) * tileHeight,
-                  tileWidth, tileHeight, color);
+         //draw path
+         for (uint32_t py = 0; py < pathWidth; ++py)
+         {
+            for (uint32_t px = 0; px < pathWidth; ++px)
+            {
+               createTile(px * tileWidth + x * (pathWidth + 1) * tileWidth, (py + 1) * tileWidth + y * (pathWidth + 1) * tileHeight, tileWidth, tileHeight, color);
             }
          }
-         //it cover the upper line of single cell with white block
-         if (mazeArray[x][y] & Maze::CELL_PATH_W)
+
+         // *000
+         if(x != 0 && 0 == (tile & Maze::CELL_PATH_W))
          {
-            createTile((y * (pathWidth + 1) + 1) * tileWidth, x * (pathWidth + 1) * tileHeight,
-               pathWidth * tileWidth - 1, tileHeight, this->notVisitedTileColor);
+            createTile(x * tileWidth * (pathWidth + 1) - tileWidth, tileWidth + y * tileHeight * (pathWidth + 1),
+                      tileWidth, tileHeight * (pathWidth), this->wallColor);
          }
-      }
-      //draw last frame in every line, like:  *000*000*000 ---> this thing *
-      uint32_t leftBorderLinePosX = mazeWidth * tileWidth * (pathWidth + 1);
-      for (uint32_t px = 0; px < pathWidth; ++px)
-      {
-         //sprawdzic dwa tileHeight'y
-         createTile(leftBorderLinePosX, x * (pathWidth + 1) * tileHeight + (px + 1) * tileHeight, tileWidth, tileHeight, this->wallColor);
+         // ***
+         // 000
+         if(y != 0 && 0 != (tile & Maze::CELL_PATH_N))
+         {
+            createTile(x * tileWidth * (pathWidth + 1), y * tileHeight * (pathWidth + 1),
+               tileWidth * (pathWidth), tileHeight, color);
+         }
+
       }
    }
 
-   //draw last line (bottom border)
-   uint32_t bottomBorderPosY = mazeHeight * (pathWidth + 1) * tileHeight;
-   for (uint32_t i = 0; i < mazeWidth * (pathWidth + 1) + 1; ++i)
-   {
-      createTile(i * tileWidth, bottomBorderPosY, tileWidth, tileHeight, this->wallColor);
-   }
+   //draw border
+   createTile(0, 0, tileWidth, tileHeight * mazeHeight * (pathWidth + 1), this->wallColor);
+   createTile(0, 0, tileWidth * mazeWidth * (pathWidth + 1), tileHeight, this->wallColor);
+   createTile(0, tileHeight * mazeHeight * (pathWidth + 1) - tileHeight, tileWidth * mazeWidth * (pathWidth + 1), tileHeight, this->wallColor);
+   createTile(tileWidth * mazeWidth * (pathWidth + 1) - tileWidth, 0, tileWidth, tileHeight * mazeHeight * (pathWidth + 1), this->wallColor);
+
    this->update();
 }
 
@@ -111,7 +94,7 @@ void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t
    auto tile = new QGraphicsRectItem;
    tile->setRect(x, y, tileWidth, tileHeight);
    tile->setBrush(tileColor);
-   tile->setPen(QPen(tileColor));
+   tile->setPen(QPen(Qt::NoPen));
    this->scene->addItem(tile);
 
 }

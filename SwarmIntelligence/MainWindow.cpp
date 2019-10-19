@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget* parent)
 
 bool MainWindow::showStep()
 {
-   Maze maze(10, 10, 10, 10);
+   Maze maze(15, 30, 10, 10);
   // if (!maze.isMazeDone)
    //{
       maze.generateMaze();
