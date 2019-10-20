@@ -7,7 +7,8 @@
 class Maze
 {
 public:
-   Maze(uint32_t width, uint32_t height, uint32_t tileWidth = 20, uint32_t tileHeight = 20, uint32_t pathWidth = 3, uint32_t markerSize = 20);
+   Maze(uint32_t width, uint32_t height, uint32_t tileSize = 10, uint32_t pathWidth = 3, uint32_t markerSize = 20);
+   void generateStep();
 
    enum CellIdentifier
    {
@@ -21,21 +22,21 @@ public:
    };
 
    void generateMaze();
+   void removeMarkers();
+
    std::vector<std::vector<int>> getMazeArray() const;
    std::vector<Marker> getMarkers() const;
    uint32_t getHeight() const;
    uint32_t getWidth() const;
    uint32_t getMarkerSize() const;
-   uint32_t getTileHeight() const;
-   uint32_t getTileWidth() const;
+   uint32_t getTileSize() const;
    uint32_t getPathWidth() const;
    bool isMazeDone = false;
 
 private:
    uint32_t width;
    uint32_t height;
-   uint32_t tileWidth;
-   uint32_t tileHeight;
+   uint32_t tileSize;
    uint32_t pathWidth;
 
    uint32_t markerSize;

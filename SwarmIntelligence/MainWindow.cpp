@@ -6,35 +6,58 @@
 
 
 MainWindow::MainWindow(QWidget* parent)
-   : QMainWindow(parent)
-   , ui(new Ui::MainWindow)
+   : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-   ui->setupUi(this);
-   this->maze = new Maze(15, 30, 10, 10);
+   this->ui->setupUi(this);
 
-   this->stepRenderingTimer = new QTimer();
-   this->stepRenderingTimer->setInterval(100);
-   connect(stepRenderingTimer, &QTimer::timeout, this, [this]()
-      {
-         showStep();
-      });
-
-   this->stepRenderingTimer->start();
 }
 
-bool MainWindow::showStep()
+void MainWindow::generateMazeStep()
 {
    if (false == maze->isMazeDone)
    {
-      this->maze->generateMaze();
-      this->ui->graphicsView->addMazeToScene(*maze);
-      return true;
+      this->maze->removeMarkers();
+      this->maze->generateStep();
+      this->ui->graphicsView->addMazeToScene(*maze);  
    }
-   return false;
 }
 
+void MainWindow::generateWholeMaze()
+{
+   this->maze->removeMarkers();
+   this->maze->generateMaze();
+   this->ui->graphicsView->addMazeToScene(*maze);
+}
 MainWindow::~MainWindow()
 {
    delete ui;
+}
+
+void MainWindow::initializeMazeGen(uint32_t mazeWidth, uint32_t mazeHeight, uint32_t tileSize, uint32_t pathWidth, uint32_t markerSize)
+{
+   this->maze = new Maze(mazeWidth, mazeHeight, tileSize, pathWidth, markerSize);
+}
+
+void MainWindow::generateMaze(int animationFrameTime)
+{
+   if(0 == animationFrameTime)
+   {
+      generateWholeMaze();
+   }
+   else
+   {
+      this->stepRenderingTimer = new QTimer();
+      this->stepRenderingTimer->setInterval(100);
+      connect(stepRenderingTimer, &QTimer::timeout, this, [this]()
+         {
+            generateMazeStep();
+            if (this->maze->isMazeDone == true)
+            {
+               this->stepRenderingTimer->stop();
+            }
+         });
+      this->stepRenderingTimer->start();
+   }
+
 }
 

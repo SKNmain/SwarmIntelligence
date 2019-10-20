@@ -33,13 +33,12 @@ void RenderArea::addMazeToScene(const Maze& maze)
    auto mazeWidth = maze.getWidth();
    auto mazeHeight = maze.getHeight();
 
-   auto tileWidth = maze.getTileWidth();
-   auto tileHeight = maze.getTileHeight();
+   auto tileSize = maze.getTileSize();
 
    for (uint32_t y = 0; y < mazeHeight; ++y)
    {
       //draw horizontal line between layers of tiles
-      createTile(0, y * tileHeight * (pathWidth + 1), tileWidth * mazeWidth * (pathWidth + 1), tileHeight, this->wallColor);
+      createTile(0, y * tileSize * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor);
 
       for (uint32_t x = 0; x < mazeWidth; ++x)
       {
@@ -61,8 +60,8 @@ void RenderArea::addMazeToScene(const Maze& maze)
          {
             for (uint32_t px = 1; px <= pathWidth; ++px)
             {
-               createTile(px * tileWidth + x * (pathWidth + 1) * tileWidth, py * tileWidth + y * (pathWidth + 1) * tileHeight,
-                  tileWidth, tileHeight, color);
+               createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
+                  tileSize, tileSize, color);
             }
          }
 
@@ -72,13 +71,13 @@ void RenderArea::addMazeToScene(const Maze& maze)
          {
             if (0 == (tile & Maze::CELL_PATH_W))
             {
-               createTile(x * tileWidth * (pathWidth + 1), tileWidth + y * tileHeight * (pathWidth + 1),
-                  tileWidth, tileHeight * (pathWidth), this->wallColor);
+               createTile(x * tileSize * (pathWidth + 1), tileSize + y * tileSize * (pathWidth + 1),
+                  tileSize, tileSize * (pathWidth), this->wallColor);
             }
             else
             {
-               createTile(x * tileWidth * (pathWidth + 1), tileWidth + y * tileHeight * (pathWidth + 1),
-                  tileWidth, tileHeight * (pathWidth), color);
+               createTile(x * tileSize * (pathWidth + 1), tileSize + y * tileSize * (pathWidth + 1),
+                  tileSize, tileSize * (pathWidth), color);
             }
          }
 
@@ -86,19 +85,19 @@ void RenderArea::addMazeToScene(const Maze& maze)
          // 000
          if (y != 0 && 0 != (tile & Maze::CELL_PATH_N))
          {
-            createTile(x * tileWidth * (pathWidth + 1) + tileWidth, y * tileHeight * (pathWidth + 1),
-               tileWidth * (pathWidth), tileHeight, color);
+            createTile(x * tileSize * (pathWidth + 1) + tileSize, y * tileSize * (pathWidth + 1),
+               tileSize * (pathWidth), tileSize, color);
          }
 
       }
    }
 
    //draw border
-   createTile(0, 0, tileWidth, tileHeight * mazeHeight * (pathWidth + 1), this->wallColor);
-   createTile(tileWidth * mazeWidth * (pathWidth + 1), 0, tileWidth, tileHeight * mazeHeight * (pathWidth + 1), this->wallColor);
+   createTile(0, 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
+   createTile(tileSize * mazeWidth * (pathWidth + 1), 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
 
-   createTile(0, 0, tileWidth * mazeWidth * (pathWidth + 1), tileHeight, this->wallColor);
-   createTile(0, tileHeight * mazeHeight * (pathWidth + 1), tileWidth * mazeWidth * (pathWidth + 1) + tileWidth, tileHeight, this->wallColor);
+   createTile(0, 0, tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor);
+   createTile(0, tileSize * mazeHeight * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1) + tileSize, tileSize, this->wallColor);
 
    for(const auto& m : maze.getMarkers())
    {
@@ -119,8 +118,8 @@ void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t
 
 void RenderArea::createMarker(const Maze& maze, const Marker& marker)
 {
-   const double x = (maze.getPathWidth() ) / 2. * maze.getTileWidth() + marker.getX() * (maze.getPathWidth() + 1) * maze.getTileWidth();
-   const double y = (maze.getPathWidth() ) / 2. * maze.getTileHeight() + marker.getY() * (maze.getPathWidth() + 1) * maze.getTileHeight();
+   const double x = (maze.getPathWidth() ) / 2. * maze.getTileSize() + marker.getX() * (maze.getPathWidth() + 1) * maze.getTileSize();
+   const double y = (maze.getPathWidth() ) / 2. * maze.getTileSize() + marker.getY() * (maze.getPathWidth() + 1) * maze.getTileSize();
 
    auto markerTile = new QGraphicsEllipseItem(x, y, maze.getMarkerSize(), maze.getMarkerSize());
    markerTile->setBrush(marker.getColor());

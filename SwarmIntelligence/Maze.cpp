@@ -1,14 +1,13 @@
 #include "Maze.h"
 #include <ctime>
 
-Maze::Maze(uint32_t width, uint32_t height, uint32_t tileWidth, uint32_t tileHeight, uint32_t pathWidth, uint32_t markerSize)
+Maze::Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth, uint32_t markerSize)
 {
    this->width = width;
    this->height = height;
 
    this->markerSize = markerSize;
-   this->tileHeight = tileHeight;
-   this->tileWidth = tileWidth;
+   this->tileSize = tileSize;
    this->pathWidth = pathWidth;
    srand(time(0));
 
@@ -27,11 +26,9 @@ Maze::Maze(uint32_t width, uint32_t height, uint32_t tileWidth, uint32_t tileHei
    this->numberOfVisitedCells++;
 }
 
-void Maze::generateMaze()
+void Maze::generateStep()
 {
-   this->markers.clear();
-
-   if(numberOfVisitedCells < this->getHeight() * this->getWidth())
+   if (numberOfVisitedCells < this->getHeight() * this->getWidth())
    {
       //Establish unvisited neighbours
       std::vector<int> neighbours;
@@ -39,7 +36,6 @@ void Maze::generateMaze()
       uint32_t x = stack.top().first;
       uint32_t y = stack.top().second;
 
-      markers.push_back({ x, y });
       //North
       if (y > 0)
       {
@@ -101,14 +97,28 @@ void Maze::generateMaze()
             break;
          }
          numberOfVisitedCells++;
+
+         markers.push_back(Marker( stack.top().first, stack.top().second ));
       }
       else {
          //pop out of stack
+         markers.push_back(Marker(stack.top().first, stack.top().second));
          stack.pop();
       }
    }
-   else {
+   else
+   {
       isMazeDone = true;
+   }
+}
+
+void Maze::generateMaze()
+{
+   this->markers.clear();
+
+   while (false == isMazeDone)
+   {
+      generateStep();
    }
 }
 
@@ -137,14 +147,14 @@ std::vector<Marker> Maze::getMarkers() const
    return this->markers;
 }
 
-uint32_t Maze::getTileHeight() const
+void Maze::removeMarkers()
 {
-   return this->tileHeight;
+   this->markers.clear();
 }
 
-uint32_t Maze::getTileWidth() const
+uint32_t Maze::getTileSize() const
 {
-   return this->tileWidth;
+   return this->tileSize;
 }
 
 uint32_t Maze::getPathWidth() const
