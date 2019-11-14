@@ -19,6 +19,9 @@ public:
    ~RenderArea();
 
    void addMazeToScene(const Maze& maze);
+   void clear();
+
+   bool saveScreenshot(const QString& filePath);
 
 private:
    void createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);

@@ -16,17 +16,24 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    AboutDialog.cpp \
+    AppSettings.cpp \
     RenderArea.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
+    AboutDialog.h \
+    AppSettings.h \
     MainWindow.h \
     RenderArea.h
 
 FORMS += \
+    Forms/AboutDialog.ui \
+    Forms/AppSettingsUI.ui \
     Forms/MainWindowUI.ui \
     Forms/RenderAreaUI.ui \
+    Forms/SettingsUI.ui \
     MainWindow.ui \
     RenderArea.ui
 

@@ -3,22 +3,22 @@
 #include <vector>
 #include <stack>
 #include <Marker.h>
+#include "RandGen.h"
+#include <ctime>
 
 class Maze
 {
 public:
-   Maze(uint32_t width, uint32_t height, uint32_t tileSize = 10, uint32_t pathWidth = 3, uint32_t markerSize = 20);
+   Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth, uint32_t markerSize);
    void generateStep();
 
    enum CellIdentifier
    {
-      CELL_PATH_N = 0X01,
-      CELL_PATH_E = 0X02,
-      CELL_PATH_S = 0X04,
-      CELL_PATH_W = 0X08,
-      CELL_VISITED = 0X10,
-     // CELL_START = 0X12,
-
+      CELL_PATH_N = 1 << 0,
+      CELL_PATH_E = 1 << 1,
+      CELL_PATH_S = 1 << 2,
+      CELL_PATH_W = 1 << 3,
+      CELL_VISITED = 1 << 4,
    };
 
    void generateMaze();
@@ -31,9 +31,12 @@ public:
    uint32_t getMarkerSize() const;
    uint32_t getTileSize() const;
    uint32_t getPathWidth() const;
-   bool isMazeDone = false;
+
+
+   bool isMazeGenerationFinished() const;
 
 private:
+   bool isMazeDone = false;
    uint32_t width;
    uint32_t height;
    uint32_t tileSize;
@@ -47,5 +50,6 @@ private:
    std::vector<std::vector<int>> mazeArray;
 
    std::vector<Marker> markers;
+   RandGen<std::knuth_b> rand{ time(NULL) };
 };
 
