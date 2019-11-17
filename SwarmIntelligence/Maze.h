@@ -17,7 +17,7 @@ public:
       CELL_PATH_S = 0X04,
       CELL_PATH_W = 0X08,
       CELL_VISITED = 0X10,
-     // CELL_START = 0X12,
+      CELL_SHORTEST = 0X12,
 
    };
 
@@ -31,6 +31,8 @@ public:
    uint32_t getMarkerSize() const;
    uint32_t getTileSize() const;
    uint32_t getPathWidth() const;
+   std::pair<int, int> getStartingPoint() const;
+   std::pair<int, int> getEndPoint() const;
    bool isMazeDone = false;
 
 private:
@@ -41,7 +43,8 @@ private:
 
    uint32_t markerSize;
 
-
+   std::pair<int, int> startingPoint;
+   std::pair<int, int> endPoint;
    uint32_t numberOfVisitedCells = 0;
    std::stack<std::pair<int, int>> stack;
    std::vector<std::vector<int>> mazeArray;

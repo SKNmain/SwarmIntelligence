@@ -24,6 +24,12 @@ Maze::Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidt
    stack.push(std::make_pair(0, 0));
    this->mazeArray[0][0] = Maze::CELL_VISITED;
    this->numberOfVisitedCells++;
+
+   this->startingPoint.first = 0;
+   this->startingPoint.second = 0;
+
+   this->endPoint.first = width - 1;
+   this->endPoint.second = height - 1;
 }
 
 void Maze::generateStep()
@@ -120,6 +126,16 @@ void Maze::generateMaze()
    {
       generateStep();
    }
+}
+
+std::pair<int, int> Maze::getStartingPoint() const 
+{
+   return this->startingPoint;
+}
+
+std::pair<int, int> Maze::getEndPoint() const 
+{
+   return this->endPoint;
 }
 
 uint32_t Maze::getHeight() const
