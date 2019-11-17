@@ -1,5 +1,6 @@
 #include "Maze.h"
 #include <ctime>
+#include "RandGen.h"
 
 Maze::Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth, uint32_t markerSize)
 {
@@ -9,7 +10,6 @@ Maze::Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidt
    this->markerSize = markerSize;
    this->tileSize = tileSize;
    this->pathWidth = pathWidth;
-   srand(time(0));
 
    for (uint32_t y = 0; y < this->height; ++y)
    {
@@ -77,7 +77,7 @@ void Maze::generateStep()
 
       if (!neighbours.empty())
       {
-         int next_cell_dir = neighbours[rand() % neighbours.size()];
+         int next_cell_dir = neighbours[this->rand.rand(0, neighbours.size() - 1)];
          //create path
          switch (next_cell_dir)
          {
@@ -176,6 +176,11 @@ uint32_t Maze::getTileSize() const
 uint32_t Maze::getPathWidth() const
 {
    return this->pathWidth;
+}
+
+bool Maze::isMazeGenerationFinished() const
+{
+   return this->isMazeDone;
 }
 
 

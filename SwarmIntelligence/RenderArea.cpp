@@ -17,6 +17,7 @@ RenderArea::RenderArea(QWidget* parent)
    this->wallColor = Qt::black;
    this->visitedTileColor = Qt::blue;
    this->notVisitedTileColor = Qt::white;
+
 }
 
 RenderArea::~RenderArea()
@@ -34,6 +35,14 @@ void RenderArea::addMazeToScene(const Maze& maze)
    auto mazeHeight = maze.getHeight();
 
    auto tileSize = maze.getTileSize();
+
+   //draw border
+   createTile(0, 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
+   createTile(tileSize * mazeWidth * (pathWidth + 1), 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
+
+   createTile(0, 0, tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor);
+   createTile(0, tileSize * mazeHeight * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1) + tileSize, tileSize, this->wallColor);
+
 
    for (uint32_t y = 0; y < mazeHeight; ++y)
    {
@@ -54,6 +63,7 @@ void RenderArea::addMazeToScene(const Maze& maze)
          {
             color = this->visitedTileColor;
          }
+
 
          //draw path
          for (uint32_t py = 1; py <= pathWidth; ++py)
@@ -89,15 +99,12 @@ void RenderArea::addMazeToScene(const Maze& maze)
                tileSize * (pathWidth), tileSize, color);
          }
 
+
+
       }
    }
 
-   //draw border
-   createTile(0, 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
-   createTile(tileSize * mazeWidth * (pathWidth + 1), 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
-
-   createTile(0, 0, tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor);
-   createTile(0, tileSize * mazeHeight * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1) + tileSize, tileSize, this->wallColor);
+   
 
    for(const auto& m : maze.getMarkers())
    {
@@ -105,6 +112,20 @@ void RenderArea::addMazeToScene(const Maze& maze)
    }
 
    this->update();
+}
+
+void RenderArea::clear()
+{
+   this->scene->clear();
+}
+
+bool RenderArea::saveScreenshot(const QString& filePath)
+{
+   QImage img(this->scene->sceneRect().size().toSize(), QImage::Format_RGB32);
+   QPainter painter(&img);
+   this->scene->render(&painter);
+
+   return img.save(filePath);
 }
 
 void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor)

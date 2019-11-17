@@ -27,7 +27,7 @@ QColor Marker::getColor() const
 {
    if(this->type == MarkerType::NOT_FULLY_DISCOVER_PATH)
    {
-      return Qt::green;
+      return Qt::blue;
    }
    return QColor();
 }
