@@ -26,6 +26,7 @@ public:
    int getAnimationTime() const;
 
    bool isAnimationEnabled() const;
+   bool isVisualize() const;
 
    void setMazeWidth(int val);
    void setMazeHeight(int val);
@@ -35,6 +36,7 @@ public:
    void setAnimationTime(int val);
 
    void setAnimationEnabled(bool val);
+   void setVisualizeEnabled(bool val);
 
 private slots:
    void on_spinBox_markerSize_valueChanged(int val);
@@ -46,6 +48,8 @@ private slots:
    void on_spinBox_animationTime_valueChanged(int val);
 
    void on_checkBox_animationEnabled_stateChanged(int state);
+
+   void on_checkBox_visualize_stateChanged(int arg1);
 
 private:
    void setStartingValue(const QString& optName, int val, QSpinBox* widget);
@@ -64,5 +68,6 @@ private:
    const char* PATH_SIZE_TAG = "PathSize";
    const char* ANIMATION_ENABLED_TAG = "AnimEnabled";
    const char* ANIMATION_TIME_TAG = "AnimTime";
+   const char* VISUALIZE_TAG = "Visualize";
 };
 

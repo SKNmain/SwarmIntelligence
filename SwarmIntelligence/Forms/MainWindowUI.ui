@@ -31,6 +31,15 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="floating">
+        <bool>false</bool>
+       </property>
+       <property name="features">
+        <set>QDockWidget::AllDockWidgetFeatures</set>
+       </property>
+       <property name="windowTitle">
+        <string>Logger</string>
+       </property>
        <widget class="QWidget" name="dockWidgetContents">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">

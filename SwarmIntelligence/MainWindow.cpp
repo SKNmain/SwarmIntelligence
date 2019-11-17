@@ -24,7 +24,10 @@ void MainWindow::generateWholeMaze()
    this->maze->generateMaze();
    //remove last visited cell markers
    this->maze->removeMarkers();
-   this->ui->graphicsView->addMazeToScene(*maze);
+   if(true == this->settings.isVisualize())
+   {
+      this->ui->graphicsView->addMazeToScene(*maze);
+   }
 }
 MainWindow::~MainWindow()
 {
@@ -134,11 +137,11 @@ void MainWindow::on_actionSave_maze_img_to_file_triggered()
 
       if(true == this->ui->graphicsView->saveScreenshot(imagePath))
       {
-         this->ui->statusbar->showMessage("Maze screenshot was successful saved. [" + imagePath + "].");
+         emit Logger::getInstance().log("Maze screenshot was successful saved. [" + imagePath + "].", LogWidget::LogLevel::INFO);
       }
       else
       {
-         this->ui->statusbar->showMessage("Cannot save maze screenshot. [" + imagePath + "].");
+         emit Logger::getInstance().log("Cannot save maze screenshot. [" + imagePath + "].", LogWidget::LogLevel::ERR);
       }
       QApplication::restoreOverrideCursor();
    }
@@ -151,7 +154,7 @@ void MainWindow::on_actionStop_generating_triggered()
       if(false == this->maze->isMazeGenerationFinished())
       {
          this->stepRenderingTimer->stop();
-         this->ui->statusbar->showMessage("Maze generation interrupted.");
+         emit Logger::getInstance().log("Maze generation interrupted.", LogWidget::LogLevel::ERR);
 
          QApplication::restoreOverrideCursor();
          //enable actions in menu

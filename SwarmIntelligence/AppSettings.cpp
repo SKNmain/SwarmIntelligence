@@ -19,11 +19,17 @@ AppSettings::AppSettings(QWidget* parent) :
    setStartingValue(ANIMATION_TIME_TAG, 100, this->ui->spinBox_animationTime);
    //checkboxes
    setStartingValue(ANIMATION_ENABLED_TAG, true, this->ui->checkBox_animationEnabled);
+   setStartingValue(VISUALIZE_TAG, true, this->ui->checkBox_visualize);
 
 
    if(false == this->isAnimationEnabled())
    {
       this->ui->spinBox_animationTime->setEnabled(false);
+   }
+   if(false == this->isVisualize())
+   {
+      this->ui->spinBox_animationTime->setEnabled(false);
+      this->ui->checkBox_animationEnabled->setEnabled(false);
    }
 
    connect(this->ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
@@ -87,6 +93,18 @@ int AppSettings::getAnimationTime() const
 bool AppSettings::isAnimationEnabled() const
 {
    return this->settings.value(ANIMATION_ENABLED_TAG).toBool();
+}
+
+bool AppSettings::isVisualize() const
+{
+   return this->settings.value(VISUALIZE_TAG).toBool();
+}
+
+void AppSettings::setVisualizeEnabled(bool val)
+{
+   this->settings.setValue(VISUALIZE_TAG, val);
+   this->ui->spinBox_animationTime->setEnabled(val);
+   this->ui->checkBox_animationEnabled->setEnabled(val);
 }
 
 void AppSettings::setAnimationTime(int val)
@@ -160,4 +178,12 @@ void AppSettings::on_checkBox_animationEnabled_stateChanged(int state)
    bool boolState = state == Qt::Checked ? true : false;
    this->settings.setValue(ANIMATION_ENABLED_TAG, boolState);
    this->ui->spinBox_animationTime->setEnabled(boolState);
+}
+
+void AppSettings::on_checkBox_visualize_stateChanged(int state)
+{
+   bool boolState = state == Qt::Checked ? true : false;
+   this->settings.setValue(VISUALIZE_TAG, boolState);
+   this->ui->spinBox_animationTime->setEnabled(boolState);
+   this->ui->checkBox_animationEnabled->setEnabled(boolState);
 }
