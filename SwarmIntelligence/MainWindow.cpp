@@ -167,3 +167,8 @@ void MainWindow::on_actionAbout_triggered()
 {
    AboutDialog().exec();
 }
+
+void MainWindow::on_actionGenerate_shortest_path_triggered()
+{
+   this->ui->graphicsView->createShortestPath(*this->maze);
+}

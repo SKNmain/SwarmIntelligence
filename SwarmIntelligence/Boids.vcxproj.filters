@@ -94,10 +94,10 @@
     <ClCompile Include="GeneratedFiles\Release\moc_Logger.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="AboutDialog.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="LogWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -156,7 +156,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LeeAlgorithm.h">
-      <Filter>Generated Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #include "RenderArea.h"
 #include "ui_RenderAreaUI.h"
+#include "LeeAlgorithm.h"
 #include <iostream>
 #include <QGraphicsRectItem>
 #include <Maze.h>
@@ -16,6 +17,7 @@ RenderArea::RenderArea(QWidget* parent)
 
    this->wallColor = Qt::black;
    this->visitedTileColor = Qt::blue;
+   this->shortestPathColor = Qt::green;
    this->notVisitedTileColor = Qt::white;
 
 }
@@ -146,4 +148,42 @@ void RenderArea::createMarker(const Maze& maze, const Marker& marker)
    markerTile->setBrush(marker.getColor());
    markerTile->setPen(QPen(Qt::NoPen));
    this->scene->addItem(markerTile);
+}
+
+std::vector<std::vector<int>> RenderArea::createShortestPath(const Maze& maze)
+{
+   LeeAlgorithm lee(maze);
+   lee.solveMaze();
+
+   auto mazeArray = maze.getMazeArray();
+   auto pathWidth = maze.getPathWidth();
+   auto mazeWidth = maze.getWidth();
+   auto mazeHeight = maze.getHeight();
+
+   auto tileSize = maze.getTileSize();
+
+   std::vector<std::vector<int>> leeArray = lee.getArrayToDraw();
+
+   for (uint32_t y = 0; y < mazeHeight; ++y)
+   {
+      for (uint32_t x = 0; x < mazeWidth; ++x)
+      {
+         auto tile = leeArray[y][x];
+         QColor color = this->shortestPathColor;
+         
+         if (tile & Maze::CELL_SHORTEST)
+         {
+            for (uint32_t py = 1; py <= pathWidth; ++py)
+            {
+               for (uint32_t px = 1; px <= pathWidth; ++px)
+               {
+                  createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
+                     tileSize, tileSize, color);
+               }
+            }
+         }
+      }
+   }
+   this->update();
+   return lee.getArrayToDraw();
 }

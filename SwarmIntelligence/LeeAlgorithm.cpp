@@ -1,5 +1,7 @@
 #include "LeeAlgorithm.h"
 #include <queue>
+#include <QFile>
+#include <QTextStream>
 
 
 LeeAlgorithm::LeeAlgorithm(const Maze &givenMaze)
@@ -44,19 +46,45 @@ struct Node
 
 bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY)
 {
-   auto tile = this->givenArray[curX][curY];
+   if (nextX < 0 || nextY < 0 || nextX >= this->width  || nextY >= this->height)
+   {
+      return false;
+   }
+   auto tile = this->givenArray[curY][curX];
+
+   bool s = false;
+   bool n = false;
+   bool w = false;
+   bool e = false;
+   if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
+   {
+      n = true;
+   }
+   if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
+   {
+      s = true;
+   }
+   if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
+   {
+      e = true;
+   }
+   if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
+   {
+      w = true;
+   }
+
    if (curX == nextX)
    {
-      if (curY - nextY)
+      if (curY - nextY > 0)
       {
-         if (tile & Maze::CELL_PATH_N)
+         if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
          {
             return true;
          }
       }
       else
       {
-         if (tile & Maze::CELL_PATH_S)
+         if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
          {
             return true;
          }
@@ -64,16 +92,16 @@ bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY)
    }
    else
    {
-      if (curX - nextX)
+      if (curX - nextX > 0)
       {
-         if (tile & Maze::CELL_PATH_W)
+         if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
          {
             return true;
          }
       }
       else
       {
-         if (tile & Maze::CELL_PATH_E)
+         if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
          {
             return true;
          }
@@ -104,16 +132,16 @@ void LeeAlgorithm::solveMaze()
    direction[3].first = 1; //right
    direction[3].second = 0;
 
-   bool** visited = new bool*[this->height];
+   std::vector<std::vector<bool>> visited;
+   
    for (int i = 0; i < height; ++i)
    {
-      visited[i] = new bool[this->width];
+      visited.push_back(std::vector<bool>( this->width ));
    }
 
-   memset(visited, 0, sizeof(visited[0][0]) * this->width * this->height);
+  // memset(visited, 0, sizeof(visited[0][0]) * this->width * this->height);
    std::queue<Node> queueOfPoints;
-   queueOfPoints.push({startingPoint.first, 
-      startingPoint.second, 0});
+   queueOfPoints.push({startingPoint.first, startingPoint.second, 0});
    visited[startingPoint.first][startingPoint.second] = true;
    leeArray[startingPoint.first][startingPoint.second] = 0;
 
@@ -128,11 +156,12 @@ void LeeAlgorithm::solveMaze()
          xx = temp.x + direction[i].first;
          yy = temp.y + direction[i].second;
          dist = temp.dist;
-         if (isValid(temp.x, temp.y, xx, yy) && !visited[xx][yy])
+         if (isValid(temp.x, temp.y, xx, yy) && !visited[yy][xx])
          {
-            visited[xx][yy] = true;
+            visited[yy][xx] = true;
             queueOfPoints.push({ xx, yy, dist + 1});
-            leeArray[xx][yy] = dist + 1;
+            leeArray[yy][xx] = dist + 1;
+            //break;
          }
 
       }
@@ -140,35 +169,42 @@ void LeeAlgorithm::solveMaze()
 
    std::pair<int, int> currPoint = this->startingPoint;
 
-   this->showArray[this->startingPoint.first][this->startingPoint.second] = Maze::CELL_SHORTEST;
+   this->showArray[this->startingPoint.second][this->startingPoint.first] = Maze::CELL_SHORTEST;
    std::pair<int, int> lastPoint;
    std::pair<int, int> minPoint;
    std::pair<int, int> temp;
    bool first = true;
    bool notFinished = true;
+   
    while (notFinished)
    {
+      bool firstLoop = true;
       for (int i = 0; i < 4; ++i)
       {
          temp.first = currPoint.first + direction[i].first;
          temp.second = currPoint.second + direction[i].second;
-
-         if (i == 0) 
+         if (temp.first < 0 || temp.second < 0 || temp.first >= this->width || temp.second >= this->height)
          {
+            continue;
+         }
+
+         if (firstLoop || (temp.first != lastPoint.first || temp.second != lastPoint.second)) 
+         {
+            firstLoop = false;
             minPoint.first = temp.first;
             minPoint.second = temp.second;
          }
-         else if (first || (temp.first != lastPoint.first && temp.second != lastPoint.second))
+         else if (first || (temp.first != lastPoint.first || temp.second != lastPoint.second))
          {
             first = false;
-            if (leeArray[minPoint.first][minPoint.second] > leeArray[temp.first][temp.second])
+            if (leeArray[minPoint.second][minPoint.first] > leeArray[temp.second][temp.first]) 
             {
                minPoint.first = temp.first;
                minPoint.second = temp.second;
             }
-         }
-         
+         }  
       }
+
       lastPoint.first = currPoint.first;
       lastPoint.second = currPoint.second;
 
@@ -180,7 +216,7 @@ void LeeAlgorithm::solveMaze()
          notFinished = false;
       }
 
-      this->showArray[currPoint.first][currPoint.second] = Maze::CELL_SHORTEST;
+      this->showArray[lastPoint.second][lastPoint.first] = Maze::CELL_SHORTEST;
 
    }
 }

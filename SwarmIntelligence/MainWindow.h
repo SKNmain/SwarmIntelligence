@@ -30,6 +30,8 @@ private slots:
 
    void on_actionAbout_triggered();
 
+   void on_actionGenerate_shortest_path_triggered();
+
 private:
    void setActionEnabled(bool enabled);
    void generateMazeStep();
