@@ -117,7 +117,6 @@ LeeAlgorithm::~LeeAlgorithm()
 
 void LeeAlgorithm::solveMaze()
 {
-
    setVector(this->leeArray);
    setVector(this->showArray);
    std::pair<int, int> direction[4];
@@ -142,8 +141,7 @@ void LeeAlgorithm::solveMaze()
 
   // memset(visited, 0, sizeof(visited[0][0]) * this->width * this->height);
    std::queue<Node> queueOfPoints;
-   queueOfPoints.push({startingPoint.first, 
-      startingPoint.second, 0});
+   queueOfPoints.push({startingPoint.first, startingPoint.second, 0});
    visited[startingPoint.first][startingPoint.second] = true;
    leeArray[startingPoint.first][startingPoint.second] = 0;
 
@@ -158,7 +156,7 @@ void LeeAlgorithm::solveMaze()
          xx = temp.x + direction[i].first;
          yy = temp.y + direction[i].second;
          dist = temp.dist;
-         if (isValid(temp.x, temp.y, xx, yy) && !visited[xx][yy])
+         if (isValid(temp.x, temp.y, xx, yy) && !visited[yy][xx])
          {
             visited[yy][xx] = true;
             queueOfPoints.push({ xx, yy, dist + 1});
@@ -171,7 +169,7 @@ void LeeAlgorithm::solveMaze()
 
    std::pair<int, int> currPoint = this->startingPoint;
 
-   this->showArray[this->startingPoint.first][this->startingPoint.second] = Maze::CELL_SHORTEST;
+   this->showArray[this->startingPoint.second][this->startingPoint.first] = Maze::CELL_SHORTEST;
    std::pair<int, int> lastPoint;
    std::pair<int, int> minPoint;
    std::pair<int, int> temp;
@@ -179,17 +177,18 @@ void LeeAlgorithm::solveMaze()
    bool notFinished = true;
    
    while (notFinished)
-   {  bool firstLoop = true;
+   {
+      bool firstLoop = true;
       for (int i = 0; i < 4; ++i)
       {
          temp.first = currPoint.first + direction[i].first;
          temp.second = currPoint.second + direction[i].second;
-         if (temp.first < 0 || temp.second < 0)
+         if (temp.first < 0 || temp.second < 0 || temp.first >= this->width || temp.second >= this->height)
          {
             continue;
          }
 
-         if (firstLoop) 
+         if (firstLoop || (temp.first != lastPoint.first || temp.second != lastPoint.second)) 
          {
             firstLoop = false;
             minPoint.first = temp.first;
@@ -198,14 +197,14 @@ void LeeAlgorithm::solveMaze()
          else if (first || (temp.first != lastPoint.first || temp.second != lastPoint.second))
          {
             first = false;
-            if (leeArray[minPoint.second][minPoint.first] > leeArray[temp.second][temp.first])
+            if (leeArray[minPoint.second][minPoint.first] > leeArray[temp.second][temp.first]) 
             {
                minPoint.first = temp.first;
                minPoint.second = temp.second;
             }
-         }
-         
+         }  
       }
+
       lastPoint.first = currPoint.first;
       lastPoint.second = currPoint.second;
 
@@ -217,7 +216,7 @@ void LeeAlgorithm::solveMaze()
          notFinished = false;
       }
 
-      this->showArray[currPoint.first][currPoint.second] = Maze::CELL_SHORTEST;
+      this->showArray[lastPoint.second][lastPoint.first] = Maze::CELL_SHORTEST;
 
    }
 }
