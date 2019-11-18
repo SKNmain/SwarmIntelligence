@@ -23,6 +23,7 @@ public:
 
    bool saveScreenshot(const QString& filePath);
 
+   std::vector<std::vector<int>> createShortestPath(const Maze& maze);
 private:
    void createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
    void createMarker(const Maze& maze, const Marker& marker);
@@ -31,6 +32,7 @@ private:
    QColor wallColor;
    QColor notVisitedTileColor;
    QColor visitedTileColor;
+   QColor shortestPathColor;
 
 
    Ui::RenderArea* ui;
