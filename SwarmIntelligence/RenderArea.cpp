@@ -171,7 +171,7 @@ std::vector<std::vector<int>> RenderArea::createShortestPath(const Maze& maze)
          auto tile = leeArray[y][x];
          QColor color = this->shortestPathColor;
          
-         if (tile & Maze::CELL_SHORTEST)
+         if (Maze::CELL_SHORTEST == (tile & Maze::CELL_SHORTEST))
          {
             for (uint32_t py = 1; py <= pathWidth; ++py)
             {

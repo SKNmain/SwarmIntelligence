@@ -167,16 +167,51 @@ void LeeAlgorithm::solveMaze()
       }
    }
 
-   std::pair<int, int> currPoint = this->startingPoint;
+   std::pair<int, int> currPoint = this->endPoint;
 
-   this->showArray[this->startingPoint.second][this->startingPoint.first] = Maze::CELL_SHORTEST;
+   this->showArray[this->endPoint.second][this->endPoint.first] = Maze::CELL_SHORTEST;
    std::pair<int, int> lastPoint;
    std::pair<int, int> minPoint;
    std::pair<int, int> temp;
    bool first = true;
    bool notFinished = true;
-   
+   int curDist = leeArray[this->endPoint.second][this->endPoint.first];
+
    while (notFinished)
+   {
+      for (int i = 0; i < 4; ++i)
+      {
+         temp.first = currPoint.first + direction[i].first;
+         temp.second = currPoint.second + direction[i].second;
+         if (temp.first < 0 || temp.second < 0 || temp.first >= this->width || temp.second >= this->height)
+         {
+            continue;
+         }
+
+         if (leeArray[temp.second][temp.first] == (curDist - 1))
+         {
+            minPoint.first = temp.first;
+            minPoint.second = temp.second;
+            curDist -= 1;
+            break;
+         }
+      }
+
+      lastPoint.first = currPoint.first;
+      lastPoint.second = currPoint.second;
+
+      currPoint.first = minPoint.first;
+      currPoint.second = minPoint.second;
+      
+      this->showArray[currPoint.second][currPoint.first] = Maze::CELL_SHORTEST;
+
+      if (currPoint.first == startingPoint.first && currPoint.second == startingPoint.second)
+      {
+         notFinished = false;
+      }
+   }
+   
+   /*while (notFinished)
    {
       bool firstLoop = true;
       for (int i = 0; i < 4; ++i)
@@ -218,7 +253,7 @@ void LeeAlgorithm::solveMaze()
 
       this->showArray[lastPoint.second][lastPoint.first] = Maze::CELL_SHORTEST;
 
-   }
+   }*/
 }
 
 std::vector<std::vector<int>> LeeAlgorithm::getLeesArray() const
