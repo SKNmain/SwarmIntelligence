@@ -33,7 +33,9 @@ private:
    QColor notVisitedTileColor;
    QColor visitedTileColor;
    QColor shortestPathColor;
-
+   QColor startColor;
+   QColor endColor;
+   QPen noPen{ Qt::NoPen };
 
    Ui::RenderArea* ui;
    std::vector<QGraphicsItem*> sceneElements;

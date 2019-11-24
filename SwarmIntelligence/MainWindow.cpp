@@ -4,8 +4,11 @@
 #include <QShortcut>
 #include <QTimer>
 #include <QFileDialog>
+#include <QThread>
 #include "AboutDialog.h"
 #include "Logger.hpp"
+#include "StackMazeGenerator.h"
+#include "Helper.h"
 
 
 MainWindow::MainWindow(QWidget* parent)
@@ -17,48 +20,27 @@ MainWindow::MainWindow(QWidget* parent)
    this->ui->splitter->setSizes({ 1000, 50 });
 
    connect(&Logger::getInstance(), &Logger::log, this->ui->logWidget, &LogWidget::logQStr);
+
 }
 
-void MainWindow::generateWholeMaze()
-{
-   this->maze->generateMaze();
-   //remove last visited cell markers
-   this->maze->removeMarkers();
-   if(true == this->settings.isVisualize())
-   {
-      this->ui->graphicsView->addMazeToScene(*maze);
-   }
-}
 MainWindow::~MainWindow()
 {
-   if(nullptr != this->maze)
-   {
-      delete this->maze;
-   }
-
-   delete ui;
+   DELLPTR(this->mazeGenerator);
+   DELLPTR(this->maze);
+   DELLPTR(this->stepRenderingTimer);
+   DELLPTR(this->ui);
 }
 
-void MainWindow::initializeMazeGen(uint32_t mazeWidth, uint32_t mazeHeight, uint32_t tileSize, uint32_t pathWidth, uint32_t markerSize)
-{
-   this->ui->graphicsView->clear();
-   if(nullptr != this->maze)
-   {
-      delete this->maze;
-   }
-
-   this->maze = new Maze(mazeWidth, mazeHeight, tileSize, pathWidth, markerSize);
-}
-
-void MainWindow::generateMaze(int animationFrameTime)
+void MainWindow::generateMaze()
 {
    emit Logger::getInstance().log("Maze generation...", LogWidget::LogLevel::INFO);
    QApplication::setOverrideCursor(Qt::WaitCursor);
 
    //generate whole maze
-   if(0 == animationFrameTime)
+   if(false == this->settings.isAnimationEnabled())
    {
       generateWholeMaze();
+
       emit Logger::getInstance().log("Finished maze generation.", LogWidget::LogLevel::INFO);
       QApplication::restoreOverrideCursor();
    }
@@ -67,12 +49,30 @@ void MainWindow::generateMaze(int animationFrameTime)
       //disable actions in menu
       setActionEnabled(false);
 
+      //get pointer to new maze
+      this->maze = this->mazeGenerator->generateMazeStepByStep(this->settings.getMazeWidth(), this->settings.getMazeHeight(), this->settings.getTileSize(), this->settings.getPathSize());
+
+      //stop timer for sure
+      if(nullptr != this->stepRenderingTimer) 
+      {
+         this->stepRenderingTimer->stop();
+      }
+
+      //delete timer
+      DELLPTR(this->stepRenderingTimer);
+
+      //create timer
       this->stepRenderingTimer = new QTimer();
-      this->stepRenderingTimer->setInterval(animationFrameTime);
+      this->stepRenderingTimer->setInterval(this->settings.getAnimationTime());
       connect(stepRenderingTimer, &QTimer::timeout, this, [this]()
          {
-            generateMazeStep();
-            if(true == this->maze->isMazeGenerationFinished())
+            if(false == this->maze->isGeneratingFinished())
+            {
+               this->maze->removeMarkers();
+               this->mazeGenerator->nextMazeGenerationStep(this->maze);
+               this->ui->graphicsView->addMazeToScene(*maze);
+            }
+            else
             {
                this->stepRenderingTimer->stop();
                emit Logger::getInstance().log("Finished maze generation.", LogWidget::LogLevel::INFO);
@@ -80,25 +80,54 @@ void MainWindow::generateMaze(int animationFrameTime)
                QApplication::restoreOverrideCursor();
                //enable actions in menu
                setActionEnabled(true);
+               
             }
          });
       this->stepRenderingTimer->start();
    }
 }
 
-void MainWindow::generateMazeStep()
+void MainWindow::generateWholeMaze()
 {
-   if(false == maze->isMazeGenerationFinished())
+   this->maze = this->mazeGenerator->generateMaze(this->settings.getMazeWidth(), this->settings.getMazeHeight(), this->settings.getTileSize(), this->settings.getPathSize());
+   //remove last visited cell markers
+   //this->maze->removeMarkers();
+   if(true == this->settings.isVisualize())
    {
-      this->maze->removeMarkers();
-      this->maze->generateStep();
       this->ui->graphicsView->addMazeToScene(*maze);
    }
 }
 
-void MainWindow::on_actionExit_triggered()
+void MainWindow::on_actionGenerate_maze_triggered()
 {
-   QApplication::exit();
+   //create maze generator
+   this->mazeGenerator = new StackMazeGenerator;
+
+   //clear old maze view
+   this->ui->graphicsView->clear();
+
+   //initialize maze
+   DELLPTR(this->maze);
+
+
+   //decide, if user want to get whole maze immediately or want to get animation
+   this->generateMaze();
+}
+
+void MainWindow::on_actionStop_generating_triggered()
+{
+   if(nullptr != this->maze)
+   {
+      if(true == this->stepRenderingTimer->isActive())
+      {
+         this->stepRenderingTimer->stop();
+         emit Logger::getInstance().log("Maze generation interrupted.", LogWidget::LogLevel::ERR);
+
+         QApplication::restoreOverrideCursor();
+         //enable actions in menu
+         setActionEnabled(true);
+      }
+   }
 }
 
 void MainWindow::setActionEnabled(bool enabled)
@@ -107,20 +136,9 @@ void MainWindow::setActionEnabled(bool enabled)
    this->ui->actionStop_generating->setEnabled(!enabled);
 }
 
-void MainWindow::on_actionGenerate_maze_triggered()
+void MainWindow::on_actionGenerate_shortest_path_triggered()
 {
-   //initialize maze 
-   initializeMazeGen(this->settings.getMazeWidth(), this->settings.getMazeHeight(), this->settings.getTileSize(), this->settings.getPathSize(), this->settings.getMarkerSize());
-
-   //decide, if user want to get whole maze immediately or want to get animation
-   if(false == this->settings.isAnimationEnabled())
-   {
-      this->generateMaze();
-   }
-   else
-   {
-      this->generateMaze(this->settings.getAnimationTime());
-   }
+   this->ui->graphicsView->createShortestPath(*this->maze);
 }
 
 void MainWindow::on_actionSettings_triggered()
@@ -147,28 +165,12 @@ void MainWindow::on_actionSave_maze_img_to_file_triggered()
    }
 }
 
-void MainWindow::on_actionStop_generating_triggered()
-{
-   if(nullptr != this->maze)
-   {
-      if(false == this->maze->isMazeGenerationFinished())
-      {
-         this->stepRenderingTimer->stop();
-         emit Logger::getInstance().log("Maze generation interrupted.", LogWidget::LogLevel::ERR);
-
-         QApplication::restoreOverrideCursor();
-         //enable actions in menu
-         setActionEnabled(true);
-      }
-   }
-}
-
 void MainWindow::on_actionAbout_triggered()
 {
    AboutDialog().exec();
 }
 
-void MainWindow::on_actionGenerate_shortest_path_triggered()
+void MainWindow::on_actionExit_triggered()
 {
-   this->ui->graphicsView->createShortestPath(*this->maze);
+   QApplication::exit();
 }

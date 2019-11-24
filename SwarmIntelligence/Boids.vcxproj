@@ -54,6 +54,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Marker.cpp" />
     <ClCompile Include="Maze.cpp" />
+    <ClCompile Include="StackMazeGenerator.cpp" />
     <ClCompile Include="RenderArea.cpp" />
     <ClCompile Include="AppSettings.cpp" />
   </ItemGroup>
@@ -80,6 +81,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Helper.h" />
+    <ClInclude Include="StackMazeGenerator.h" />
+    <ClInclude Include="MazeGenerator_I.h" />
     <ClInclude Include="RandGen.h" />
     <CustomBuild Include="AboutDialog.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -190,7 +194,7 @@
     <ProjectGuid>{0D22DE30-2684-3DF2-B4A0-59ED74A8026D}</ProjectGuid>
     <RootNamespace>Boids</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.18362.0</WindowsTargetPlatformMinVersion>
     <ProjectName>SwarmIntelligence</ProjectName>
   </PropertyGroup>

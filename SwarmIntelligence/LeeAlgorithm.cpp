@@ -6,7 +6,7 @@
 
 LeeAlgorithm::LeeAlgorithm(const Maze &givenMaze)
 {
-   this->givenArray = givenMaze.getMazeArray();
+   this->givenArray = givenMaze.mazeArray;
    this->height = givenMaze.getHeight();
    this->width = givenMaze.getWidth();
 
@@ -51,27 +51,6 @@ bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY)
       return false;
    }
    auto tile = this->givenArray[curY][curX];
-
-   bool s = false;
-   bool n = false;
-   bool w = false;
-   bool e = false;
-   if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
-   {
-      n = true;
-   }
-   if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
-   {
-      s = true;
-   }
-   if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
-   {
-      e = true;
-   }
-   if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
-   {
-      w = true;
-   }
 
    if (curX == nextX)
    {

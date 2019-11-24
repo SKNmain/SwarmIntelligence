@@ -35,6 +35,12 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="MazeGenerators">
+      <UniqueIdentifier>{6a286cff-898d-404f-9575-51c1498f7625}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Widgets">
+      <UniqueIdentifier>{8f438781-4d45-4873-ab67-09be457e6e77}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -70,9 +76,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_AppSettings.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="AppSettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_AboutDialog.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -94,11 +97,17 @@
     <ClCompile Include="GeneratedFiles\Release\moc_Logger.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="LogWidget.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="StackMazeGenerator.cpp">
+      <Filter>MazeGenerators</Filter>
     </ClCompile>
     <ClCompile Include="AboutDialog.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="LogWidget.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="AppSettings.cpp">
+      <Filter>Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,9 +123,6 @@
     <CustomBuild Include="MainWindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="AppSettings.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="Forms\AppSettingsUI.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
@@ -126,14 +132,17 @@
     <CustomBuild Include="Forms\AboutDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="AboutDialog.h">
+    <CustomBuild Include="Logger.hpp">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="LogWidget.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Widgets</Filter>
     </CustomBuild>
-    <CustomBuild Include="Logger.hpp">
-      <Filter>Header Files</Filter>
+    <CustomBuild Include="AboutDialog.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AppSettings.h">
+      <Filter>Widgets</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +166,15 @@
     </ClInclude>
     <ClInclude Include="LeeAlgorithm.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StackMazeGenerator.h">
+      <Filter>MazeGenerators</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeGenerator_I.h">
+      <Filter>MazeGenerators</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
