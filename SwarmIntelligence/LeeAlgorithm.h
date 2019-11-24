@@ -1,30 +1,24 @@
 #pragma once
 #include <vector>
 #include "Maze.h"
+#include "MazeSolver_I.h"
 
-class LeeAlgorithm
+class LeeAlgorithm : public MazeSolver_I
 {
 public:
-   LeeAlgorithm(const Maze &givenMaze);
+   LeeAlgorithm();
    ~LeeAlgorithm();
 
-   void solveMaze();
-   std::vector<std::vector<int>> getLeesArray() const;
-   std::vector<std::vector<int>> getArrayToDraw() const;
+   void solveMaze(Maze* maze) override;
   
+   std::vector<std::vector<int>> getLeesArray() const;
 
 private:
-   int width;
-   int height;
-   bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY);
-   std::vector<std::vector<int>> givenArray;
+   bool isValid(int curX, int curY, int nextX, int nextY);
+   void setVector(std::vector<std::vector<int>>& vector);
+
+   const Maze* maze = nullptr;
+   std::vector<std::vector<int>> shortestWay;
    std::vector<std::vector<int>> leeArray;
-   std::vector<std::vector<int>> showArray;
-   void LeeAlgorithm::setVector(std::vector<std::vector<int>> vector);
-
-
-   std::pair<int, int> startingPoint;
-   std::pair<int, int> endPoint;
-
 };
 

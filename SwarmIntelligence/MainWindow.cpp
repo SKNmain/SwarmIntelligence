@@ -9,6 +9,7 @@
 #include "Logger.hpp"
 #include "StackMazeGenerator.h"
 #include "Helper.h"
+#include "LeeAlgorithm.h"
 
 
 MainWindow::MainWindow(QWidget* parent)
@@ -138,7 +139,14 @@ void MainWindow::setActionEnabled(bool enabled)
 
 void MainWindow::on_actionGenerate_shortest_path_triggered()
 {
-   this->ui->graphicsView->createShortestPath(*this->maze);
+   emit Logger::getInstance().log("Searching for shortest path in maze ...", LogWidget::LogLevel::INFO);
+
+   DELLPTR(this->mazeSolver);
+   this->mazeSolver = new LeeAlgorithm;
+   this->mazeSolver->solveMaze(this->maze);
+   this->ui->graphicsView->drawShortestPath(this->maze);
+
+   emit Logger::getInstance().log("Finished", LogWidget::LogLevel::INFO);
 }
 
 void MainWindow::on_actionSettings_triggered()

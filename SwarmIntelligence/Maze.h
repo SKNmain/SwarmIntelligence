@@ -39,6 +39,7 @@ public:
    bool isGeneratingFinished() const;
 
    std::vector<std::vector<int>> mazeArray;
+   std::vector<std::vector<int>> shortestWayArray;
    std::vector<Marker> markers;
 
 private:

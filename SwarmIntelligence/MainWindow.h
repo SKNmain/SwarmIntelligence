@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include "AppSettings.h"
 #include "MazeGenerator_I.h"
+#include "MazeSolver_I.h"
 
 namespace Ui { class MainWindow; }
 
@@ -39,6 +40,7 @@ private:
    QTimer* stepRenderingTimer = nullptr;
    Maze* maze = nullptr;
    MazeGenerator_I* mazeGenerator = nullptr;
+   MazeSolver_I* mazeSolver = nullptr;
    AppSettings settings;
 };
 

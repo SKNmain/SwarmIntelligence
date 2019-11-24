@@ -41,6 +41,9 @@
     <Filter Include="Widgets">
       <UniqueIdentifier>{8f438781-4d45-4873-ab67-09be457e6e77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MazeSolvers">
+      <UniqueIdentifier>{5cee3ad8-6808-4ea4-8e94-8e39cf019ed4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -82,9 +85,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_AboutDialog.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="LeeAlgorithm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_LogWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -108,6 +108,9 @@
     </ClCompile>
     <ClCompile Include="AppSettings.cpp">
       <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="LeeAlgorithm.cpp">
+      <Filter>MazeSolvers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -164,9 +167,6 @@
     <ClInclude Include="RandGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LeeAlgorithm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -175,6 +175,12 @@
     </ClInclude>
     <ClInclude Include="MazeGenerator_I.h">
       <Filter>MazeGenerators</Filter>
+    </ClInclude>
+    <ClInclude Include="LeeAlgorithm.h">
+      <Filter>MazeSolvers</Filter>
+    </ClInclude>
+    <ClInclude Include="MazeSolver_I.h">
+      <Filter>MazeSolvers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

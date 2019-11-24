@@ -82,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Helper.h" />
+    <ClInclude Include="MazeSolver_I.h" />
     <ClInclude Include="StackMazeGenerator.h" />
     <ClInclude Include="MazeGenerator_I.h" />
     <ClInclude Include="RandGen.h" />

@@ -139,6 +139,36 @@ bool RenderArea::saveScreenshot(const QString& filePath)
    return img.save(filePath);
 }
 
+void RenderArea::drawShortestPath(const Maze* maze)
+{
+   const auto& tileSize = maze->getTileSize();
+   const auto& pathWidth = maze->getPathWidth();
+   const auto& mazeWidth = maze->getWidth();
+   const auto& mazeHeight = maze->getHeight();
+
+   for(uint32_t y = 0; y < mazeHeight; ++y)
+   {
+      for(uint32_t x = 0; x < mazeWidth; ++x)
+      {
+         auto tile = maze->shortestWayArray[y][x];
+         QColor color = this->shortestPathColor;
+
+         if(Maze::CELL_SHORTEST == (tile & Maze::CELL_SHORTEST))
+         {
+            for(uint32_t py = 1; py <= pathWidth; ++py)
+            {
+               for(uint32_t px = 1; px <= pathWidth; ++px)
+               {
+                  createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
+                     tileSize, tileSize, color);
+               }
+            }
+         }
+      }
+   }
+   this->update();
+}
+
 void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor)
 {
    auto tile = new QGraphicsRectItem;
@@ -159,39 +189,3 @@ void RenderArea::createMarker(const Maze& maze, const Marker& marker)
    this->scene->addItem(markerTile);
 }
 
-std::vector<std::vector<int>> RenderArea::createShortestPath(const Maze& maze)
-{
-   LeeAlgorithm lee(maze);
-   lee.solveMaze();
-
-   const auto& pathWidth = maze.getPathWidth();
-   const auto& mazeWidth = maze.getWidth();
-   const auto& mazeHeight = maze.getHeight();
-
-   auto tileSize = maze.getTileSize();
-
-   std::vector<std::vector<int>> leeArray = lee.getArrayToDraw();
-
-   for(uint32_t y = 0; y < mazeHeight; ++y)
-   {
-      for(uint32_t x = 0; x < mazeWidth; ++x)
-      {
-         auto tile = leeArray[y][x];
-         QColor color = this->shortestPathColor;
-
-         if(Maze::CELL_SHORTEST == (tile & Maze::CELL_SHORTEST))
-         {
-            for(uint32_t py = 1; py <= pathWidth; ++py)
-            {
-               for(uint32_t px = 1; px <= pathWidth; ++px)
-               {
-                  createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
-                     tileSize, tileSize, color);
-               }
-            }
-         }
-      }
-   }
-   this->update();
-   return lee.getArrayToDraw();
-}
