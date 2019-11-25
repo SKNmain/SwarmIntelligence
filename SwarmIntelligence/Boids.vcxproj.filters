@@ -44,6 +44,9 @@
     <Filter Include="MazeSolvers">
       <UniqueIdentifier>{5cee3ad8-6808-4ea4-8e94-8e39cf019ed4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Ants">
+      <UniqueIdentifier>{58d42ef5-c804-413f-9aab-f7ca95848f3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -111,6 +114,12 @@
     </ClCompile>
     <ClCompile Include="LeeAlgorithm.cpp">
       <Filter>MazeSolvers</Filter>
+    </ClCompile>
+    <ClCompile Include="Ant.cpp">
+      <Filter>Ants</Filter>
+    </ClCompile>
+    <ClCompile Include="AntsManager.cpp">
+      <Filter>Ants</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +190,12 @@
     </ClInclude>
     <ClInclude Include="MazeSolver_I.h">
       <Filter>MazeSolvers</Filter>
+    </ClInclude>
+    <ClInclude Include="AntsManager.h">
+      <Filter>Ants</Filter>
+    </ClInclude>
+    <ClInclude Include="Ant.h">
+      <Filter>Ants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
 #include "Maze.h"
-#include <ctime>
 #include "RandGen.h"
 
 Maze::Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth, uint32_t markerSize)

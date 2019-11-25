@@ -4,6 +4,7 @@
 #include "AppSettings.h"
 #include "MazeGenerator_I.h"
 #include "MazeSolver_I.h"
+#include "AntsManager.h"
 
 namespace Ui { class MainWindow; }
 
@@ -32,15 +33,24 @@ private slots:
    void on_actionStop_generating_triggered();
    void on_actionGenerate_shortest_path_triggered();
 
+   void on_actionAnts_step_triggered();
+
+   void on_actionSwarm_intelligence_triggered();
+
+
 private:
    void setActionEnabled(bool enabled);
    void generateWholeMaze();
 
-   Ui::MainWindow* ui;
-   QTimer* stepRenderingTimer = nullptr;
+
    Maze* maze = nullptr;
    MazeGenerator_I* mazeGenerator = nullptr;
    MazeSolver_I* mazeSolver = nullptr;
+
+   AntsManager antsManager;
+
+   QTimer* stepRenderingTimer = nullptr;
    AppSettings settings;
+   Ui::MainWindow* ui;
 };
 

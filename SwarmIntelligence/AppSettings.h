@@ -24,9 +24,14 @@ public:
    int getPathSize() const;
    int getTileSize() const;
    int getAnimationTime() const;
+   int getAntSize() const;
 
    bool isAnimationEnabled() const;
    bool isVisualize() const;
+   bool isGenerateMazeOnStart() const;
+
+   QColor getAntsColor() const;
+   void setAntColor(const QColor& color);
 
    void setMazeWidth(int val);
    void setMazeHeight(int val);
@@ -34,8 +39,10 @@ public:
    void setPathSize(int val);
    void setTileSize(int val);
    void setAnimationTime(int val);
+   void setAntSize(int val);
 
    void setAnimationEnabled(bool val);
+   void setGenerateMazeOnStart(bool val);
    void setVisualizeEnabled(bool val);
 
 private slots:
@@ -44,16 +51,19 @@ private slots:
    void on_spinBox_tileSize_valueChanged(int val);
    void on_spinBox_mazeHeight_valueChanged(int val);
    void on_spinBox_mazeWidth_valueChanged(int val);
-
    void on_spinBox_animationTime_valueChanged(int val);
+   void on_spinBox_antSize_valueChanged(int val);
 
    void on_checkBox_animationEnabled_stateChanged(int state);
+   void on_checkBox_visualize_stateChanged(int state);
+   void on_checkBox_generateMazeOnStart_stateChanged(int state);
 
-   void on_checkBox_visualize_stateChanged(int arg1);
+   void on_pushButton_selectAntColor_clicked();
 
 private:
    void setStartingValue(const QString& optName, int val, QSpinBox* widget);
    void setStartingValue(const QString& optName, bool val, QCheckBox* widget);
+   void setStartingValue(const QString& optName, const QColor& color);
    
 
    Ui::AppSettings* ui;
@@ -69,5 +79,8 @@ private:
    const char* ANIMATION_ENABLED_TAG = "AnimEnabled";
    const char* ANIMATION_TIME_TAG = "AnimTime";
    const char* VISUALIZE_TAG = "Visualize";
+   const char* GENERATE_MAZE_ON_START_TAG = "GenMazeOnStart";
+   const char* ANT_SIZE_TAG = "AntSize";
+   const char* ANT_COLOR_TAG = "AntsColor";
 };
 

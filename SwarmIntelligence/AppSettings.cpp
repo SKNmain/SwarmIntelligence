@@ -1,12 +1,14 @@
 #include "AppSettings.h"
 #include "ui_AppSettingsUI.h"
-
+#include <QColorDialog>
+#include <QDebug>
 
 
 AppSettings::AppSettings(QWidget* parent) :
    QDialog(parent), ui(new Ui::AppSettings)
 {
    ui->setupUi(this);
+   setWindowFlag(Qt::WindowContextHelpButtonHint, false);
 
    this->settings.sync();
 
@@ -17,9 +19,14 @@ AppSettings::AppSettings(QWidget* parent) :
    setStartingValue(PATH_SIZE_TAG, 3, this->ui->spinBox_pathSize);
    setStartingValue(TILE_SIZE_TAG, 5, this->ui->spinBox_tileSize);
    setStartingValue(ANIMATION_TIME_TAG, 100, this->ui->spinBox_animationTime);
+   setStartingValue(ANT_SIZE_TAG, 5, this->ui->spinBox_antSize);
    //checkboxes
    setStartingValue(ANIMATION_ENABLED_TAG, true, this->ui->checkBox_animationEnabled);
    setStartingValue(VISUALIZE_TAG, true, this->ui->checkBox_visualize);
+   setStartingValue(GENERATE_MAZE_ON_START_TAG, true, this->ui->checkBox_generateMazeOnStart);
+
+   //colors
+   setStartingValue(ANT_COLOR_TAG, Qt::green);
 
 
    if(false == this->isAnimationEnabled())
@@ -60,6 +67,11 @@ void AppSettings::setStartingValue(const QString& optName, bool val, QCheckBox* 
    widget->setCheckState(this->settings.value(optName).toBool() == true ? Qt::CheckState::Checked : Qt::CheckState::Unchecked);
 }
 
+void AppSettings::setStartingValue(const QString& optName, const QColor& color)
+{
+   this->settings.setValue(optName, color);
+}
+
 int AppSettings::getMazeWidth() const
 {
    return this->settings.value(MAZE_WIDTH_TAG).toInt();
@@ -90,6 +102,16 @@ int AppSettings::getAnimationTime() const
    return this->settings.value(ANIMATION_TIME_TAG).toInt();
 }
 
+int AppSettings::getAntSize() const
+{
+   return this->settings.value(ANT_SIZE_TAG).toInt();
+}
+
+void AppSettings::setAntSize(int val)
+{
+   this->settings.setValue(ANT_SIZE_TAG, val);
+}
+
 bool AppSettings::isAnimationEnabled() const
 {
    return this->settings.value(ANIMATION_ENABLED_TAG).toBool();
@@ -98,6 +120,26 @@ bool AppSettings::isAnimationEnabled() const
 bool AppSettings::isVisualize() const
 {
    return this->settings.value(VISUALIZE_TAG).toBool();
+}
+
+bool AppSettings::isGenerateMazeOnStart() const
+{
+   return this->settings.value(GENERATE_MAZE_ON_START_TAG).toBool();
+}
+
+QColor AppSettings::getAntsColor() const
+{
+   return this->settings.value(ANT_COLOR_TAG).value<QColor>();
+}
+
+void AppSettings::setAntColor(const QColor& color)
+{
+   this->settings.setValue(ANT_COLOR_TAG, color.name());
+}
+
+void AppSettings::setGenerateMazeOnStart(bool val)
+{
+   this->settings.setValue(GENERATE_MAZE_ON_START_TAG, val);
 }
 
 void AppSettings::setVisualizeEnabled(bool val)
@@ -186,4 +228,24 @@ void AppSettings::on_checkBox_visualize_stateChanged(int state)
    this->settings.setValue(VISUALIZE_TAG, boolState);
    this->ui->spinBox_animationTime->setEnabled(boolState);
    this->ui->checkBox_animationEnabled->setEnabled(boolState);
+}
+
+void AppSettings::on_checkBox_generateMazeOnStart_stateChanged(int state)
+{
+   bool boolState = state == Qt::Checked ? true : false;
+   this->settings.setValue(GENERATE_MAZE_ON_START_TAG, boolState);
+}
+
+void AppSettings::on_spinBox_antSize_valueChanged(int val)
+{
+   this->settings.setValue(ANT_SIZE_TAG, val);
+}
+
+void AppSettings::on_pushButton_selectAntColor_clicked()
+{
+   QColor color = QColorDialog::getColor(getAntsColor(), this);
+   if(color.isValid())
+   {
+      this->settings.setValue(ANT_COLOR_TAG, color);
+   }
 }

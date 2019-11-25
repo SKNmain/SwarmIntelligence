@@ -16,18 +16,28 @@ MainWindow::MainWindow(QWidget* parent)
    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
    this->ui->setupUi(this);
+
+   this->ui->graphicsView->initSettings(&this->settings);
+
    this->ui->actionStop_generating->setEnabled(false);
+   this->ui->actionGenerate_shortest_path->setEnabled(false);
 
    this->ui->splitter->setSizes({ 1000, 50 });
 
    connect(&Logger::getInstance(), &Logger::log, this->ui->logWidget, &LogWidget::logQStr);
 
+   if(true == this->settings.isGenerateMazeOnStart())
+   {
+      this->on_actionGenerate_maze_triggered();
+   }
 }
 
 MainWindow::~MainWindow()
 {
    DELLPTR(this->mazeGenerator);
+   DELLPTR(this->mazeSolver);
    DELLPTR(this->maze);
+
    DELLPTR(this->stepRenderingTimer);
    DELLPTR(this->ui);
 }
@@ -44,6 +54,7 @@ void MainWindow::generateMaze()
 
       emit Logger::getInstance().log("Finished maze generation.", LogWidget::LogLevel::INFO);
       QApplication::restoreOverrideCursor();
+      setActionEnabled(true);
    }
    else//generate maze step by step with animationFrameTime as interval between steps
    {
@@ -54,7 +65,7 @@ void MainWindow::generateMaze()
       this->maze = this->mazeGenerator->generateMazeStepByStep(this->settings.getMazeWidth(), this->settings.getMazeHeight(), this->settings.getTileSize(), this->settings.getPathSize());
 
       //stop timer for sure
-      if(nullptr != this->stepRenderingTimer) 
+      if(nullptr != this->stepRenderingTimer)
       {
          this->stepRenderingTimer->stop();
       }
@@ -81,7 +92,7 @@ void MainWindow::generateMaze()
                QApplication::restoreOverrideCursor();
                //enable actions in menu
                setActionEnabled(true);
-               
+
             }
          });
       this->stepRenderingTimer->start();
@@ -134,19 +145,24 @@ void MainWindow::on_actionStop_generating_triggered()
 void MainWindow::setActionEnabled(bool enabled)
 {
    this->ui->actionGenerate_maze->setEnabled(enabled);
+   this->ui->actionGenerate_shortest_path->setEnabled(enabled);
+
    this->ui->actionStop_generating->setEnabled(!enabled);
 }
 
 void MainWindow::on_actionGenerate_shortest_path_triggered()
 {
-   emit Logger::getInstance().log("Searching for shortest path in maze ...", LogWidget::LogLevel::INFO);
+   if(nullptr != this->maze)
+   {
+      emit Logger::getInstance().log("Searching for shortest path in maze ...", LogWidget::LogLevel::INFO);
 
-   DELLPTR(this->mazeSolver);
-   this->mazeSolver = new LeeAlgorithm;
-   this->mazeSolver->solveMaze(this->maze);
-   this->ui->graphicsView->drawShortestPath(this->maze);
+      DELLPTR(this->mazeSolver);
+      this->mazeSolver = new LeeAlgorithm;
+      this->mazeSolver->solveMaze(this->maze);
+      this->ui->graphicsView->drawShortestPath(this->maze);
 
-   emit Logger::getInstance().log("Finished", LogWidget::LogLevel::INFO);
+      emit Logger::getInstance().log("Finished", LogWidget::LogLevel::INFO);
+   }
 }
 
 void MainWindow::on_actionSettings_triggered()
@@ -181,4 +197,32 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionExit_triggered()
 {
    QApplication::exit();
+}
+
+void MainWindow::on_actionAnts_step_triggered()
+{
+   if(nullptr != this->maze && true == this->maze->isGeneratingFinished())
+   {
+      this->antsManager.step();
+      if(true == this->settings.isVisualize())
+      {
+         this->ui->graphicsView->renderAnts(this->antsManager);
+      }
+   }
+   else
+   {
+      emit Logger::getInstance().log("You cannot do that, bro!", LogWidget::LogLevel::ERR);
+   }
+}
+
+void MainWindow::on_actionSwarm_intelligence_triggered()
+{
+   if(nullptr != this->maze && true == this->maze->isGeneratingFinished())
+   {
+      this->antsManager.initialize(this->maze);
+   }
+   else
+   {
+      emit Logger::getInstance().log("You cannot do that, bro!", LogWidget::LogLevel::ERR);
+   }
 }

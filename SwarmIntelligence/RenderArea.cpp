@@ -4,12 +4,17 @@
 #include <iostream>
 #include <QGraphicsRectItem>
 #include <Maze.h>
+#include <QDebug>
+#include "AntsManager.h"
+#include "AppSettings.h"
 
 
 RenderArea::RenderArea(QWidget* parent)
    : QGraphicsView(parent), ui(new Ui::RenderArea)
 {
    ui->setupUi(this);
+
+   setDragMode(QGraphicsView::ScrollHandDrag);
 
    this->scene = new QGraphicsScene(this);
    this->setScene(this->scene);
@@ -21,7 +26,7 @@ RenderArea::RenderArea(QWidget* parent)
    this->notVisitedTileColor = Qt::white;
    this->startColor = Qt::blue;
    this->endColor = Qt::red;
-
+   this->antColor = Qt::green;
 }
 
 RenderArea::~RenderArea()
@@ -29,17 +34,22 @@ RenderArea::~RenderArea()
    delete ui;
 }
 
+void RenderArea::initSettings(const AppSettings* settings)
+{
+   this->sett = settings;
+}
+
 void RenderArea::addMazeToScene(const Maze& maze)
 {
-   this->scene->clear();
+   clear();
 
    //this->fitInView(this->scene->sceneRect(), Qt::AspectRatioMode::KeepAspectRatio);
    const auto& mazeArray = maze.mazeArray;
-   const auto& pathWidth = maze.getPathWidth();
-   const auto& mazeWidth = maze.getWidth();
-   const auto& mazeHeight = maze.getHeight();
+   const auto& pathWidth = this->sett->getPathSize();
+   const auto& mazeWidth = this->sett->getMazeWidth();
+   const auto& mazeHeight = this->sett->getMazeHeight();
 
-   const auto& tileSize = maze.getTileSize();
+   const auto& tileSize = this->sett->getTileSize();
 
    //draw border
    createTile(0, 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
@@ -119,7 +129,7 @@ void RenderArea::addMazeToScene(const Maze& maze)
 
    for(const auto& m : maze.getMarkers())
    {
-      createMarker(maze, m);
+      createMarker(m);
    }
 
    this->update();
@@ -128,6 +138,7 @@ void RenderArea::addMazeToScene(const Maze& maze)
 void RenderArea::clear()
 {
    this->scene->clear();
+   this->antsGraphics.clear();
 }
 
 bool RenderArea::saveScreenshot(const QString& filePath)
@@ -169,6 +180,29 @@ void RenderArea::drawShortestPath(const Maze* maze)
    this->update();
 }
 
+void RenderArea::renderAnts(const AntsManager& antsManager)
+{
+   //clear
+   for(auto& i : this->antsGraphics)
+   {
+      this->scene->removeItem(i);
+   }
+   this->antsGraphics.clear();
+
+   for(const auto& ant : antsManager.getAnts())
+   {
+      const double x = ant.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getPathSize() * (1 + ant.getX()) + this->sett->getTileSize() * this->sett->getPathSize() / 2. - this->sett->getAntSize() / 2.;
+      const double y = ant.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getPathSize() * (1 + ant.getY()) + this->sett->getTileSize() * this->sett->getPathSize() / 2. - this->sett->getAntSize() / 2.;
+
+      auto item = new QGraphicsEllipseItem(x, y, this->sett->getAntSize(), this->sett->getAntSize());
+      item->setBrush(this->sett->getAntsColor());
+      auto text = new QGraphicsTextItem("ID:" + QString::number(ant.getID()), item);
+      text->setPos({ x, y });
+      this->scene->addItem(item);
+      this->antsGraphics.push_back(item);
+   }
+}
+
 void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor)
 {
    auto tile = new QGraphicsRectItem;
@@ -178,12 +212,13 @@ void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t
    this->scene->addItem(tile);
 }
 
-void RenderArea::createMarker(const Maze& maze, const Marker& marker)
+void RenderArea::createMarker(const Marker& marker)
 {
-   const double x = (maze.getPathWidth()) / 2. * maze.getTileSize() + marker.getX() * (maze.getPathWidth() + 1) * maze.getTileSize();
-   const double y = (maze.getPathWidth()) / 2. * maze.getTileSize() + marker.getY() * (maze.getPathWidth() + 1) * maze.getTileSize();
 
-   auto markerTile = new QGraphicsEllipseItem(x, y, maze.getMarkerSize(), maze.getMarkerSize());
+   const double x = marker.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getPathSize() * (1 + marker.getX()) + this->sett->getTileSize() * this->sett->getPathSize() / 2. - this->sett->getMarkerSize() / 2.;
+   const double y = marker.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getPathSize() * (1 + marker.getY()) + this->sett->getTileSize() * this->sett->getPathSize() / 2. - this->sett->getMarkerSize() / 2.;
+
+   auto markerTile = new QGraphicsEllipseItem(x, y, this->sett->getMarkerSize(), this->sett->getMarkerSize());
    markerTile->setBrush(marker.getColor());
    markerTile->setPen(noPen);
    this->scene->addItem(markerTile);
