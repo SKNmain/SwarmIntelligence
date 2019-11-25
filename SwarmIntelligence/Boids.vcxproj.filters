@@ -121,6 +121,12 @@
     <ClCompile Include="AntsManager.cpp">
       <Filter>Ants</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AntsManager.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AntsManager.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Forms\RenderAreaUI.ui">
@@ -156,6 +162,9 @@
     <CustomBuild Include="AppSettings.h">
       <Filter>Widgets</Filter>
     </CustomBuild>
+    <CustomBuild Include="AntsManager.h">
+      <Filter>Ants</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_RenderAreaUI.h">
@@ -190,9 +199,6 @@
     </ClInclude>
     <ClInclude Include="MazeSolver_I.h">
       <Filter>MazeSolvers</Filter>
-    </ClInclude>
-    <ClInclude Include="AntsManager.h">
-      <Filter>Ants</Filter>
     </ClInclude>
     <ClInclude Include="Ant.h">
       <Filter>Ants</Filter>

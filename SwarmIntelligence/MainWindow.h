@@ -38,6 +38,8 @@ private slots:
    void on_actionSwarm_intelligence_triggered();
 
 
+   void on_actionRun_ants_triggered();
+
 private:
    void setActionEnabled(bool enabled);
    void generateWholeMaze();
@@ -47,10 +49,12 @@ private:
    MazeGenerator_I* mazeGenerator = nullptr;
    MazeSolver_I* mazeSolver = nullptr;
 
-   AntsManager antsManager;
+   //temporary var
+   int antSolverStepsCounter = 0;
 
    QTimer* stepRenderingTimer = nullptr;
    AppSettings settings;
+   AntsManager antsManager{ &settings };
    Ui::MainWindow* ui;
 };
 

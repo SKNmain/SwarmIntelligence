@@ -189,6 +189,7 @@ void RenderArea::renderAnts(const AntsManager& antsManager)
    }
    this->antsGraphics.clear();
 
+   //map ants to their position, (to simplify display on the same position)
    std::map<std::pair<int, int>, std::vector<const Ant*>> visitedPosition;
    for(const auto& ant : antsManager.getAnts())
    {
@@ -205,11 +206,12 @@ void RenderArea::renderAnts(const AntsManager& antsManager)
       auto item = new QGraphicsEllipseItem(x, y, this->sett->getAntSize(), this->sett->getAntSize());
       item->setBrush(this->sett->getAntsColor());
       auto text = new QGraphicsTextItem(item);
+      //one ant on tile
       if(ants.size() == 1)
       {
          text->setPlainText("ID:" + QString::number(ants[0]->getID()));
       }
-      else
+      else // many 
       {
          text->setPlainText("C:" + QString::number(ants.size()));
          
@@ -231,7 +233,6 @@ void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t
 
 void RenderArea::createMarker(const Marker& marker)
 {
-
    double offset = (this->sett->getTileSize() * this->sett->getPathSize() - this->sett->getAntSize());
    offset = offset != 0 ? offset / 2.f : offset;
    const double x = marker.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + marker.getX()) + offset;

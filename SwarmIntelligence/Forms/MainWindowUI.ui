@@ -157,6 +157,7 @@
    </attribute>
    <addaction name="actionSwarm_intelligence"/>
    <addaction name="actionAnts_step"/>
+   <addaction name="actionRun_ants"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -201,6 +202,11 @@
   <action name="actionSwarm_intelligence">
    <property name="text">
     <string>Swarm intelligence</string>
+   </property>
+  </action>
+  <action name="actionRun_ants">
+   <property name="text">
+    <string>Run ants</string>
    </property>
   </action>
  </widget>

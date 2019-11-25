@@ -1,22 +1,30 @@
 #pragma once
 #include "Ant.h"
 #include <vector>
+#include <qobject.h>
 
 class Maze;
+class AppSettings;
 
-class AntsManager
+class AntsManager : public QObject
 {
+   Q_OBJECT;
+
 public:
-   AntsManager() = default;
+   AntsManager(const AppSettings* appSettings);
 
    void createAnt(int id, int x = 0, int y = 0);
 
-   void initialize(const Maze* maze);
+   void initialize(Maze* maze);
    void step();
 
    const std::vector<Ant>& getAnts() const;
+
+signals:
+   void antsFinishedMaze();
 private:
    std::vector<Ant> ants;
-   const Maze* maze = nullptr;
+   Maze* maze = nullptr;
+   const AppSettings* appSettings = nullptr;
 };
 

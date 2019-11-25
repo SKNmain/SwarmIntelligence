@@ -16,8 +16,13 @@ public:
    int getY() const;
    std::pair<int, int> getPosition() const;
 
+   bool isFinishedMaze() const;
+
 private:
    static RandGen<std::knuth_b> randGen;
+
+   bool finishedMaze = false;
+   std::pair<int, int> lastPos;
    int id;
    int x = 0;
    int y = 0;

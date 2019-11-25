@@ -25,10 +25,13 @@ public:
    int getTileSize() const;
    int getAnimationTime() const;
    int getAntSize() const;
+   int getConstNumberOfAntsSize() const;
+   int getAntsAnimationTime() const;
 
    bool isAnimationEnabled() const;
    bool isVisualize() const;
    bool isGenerateMazeOnStart() const;
+   bool isConstNumberOfAntsEnabled() const;
 
    QColor getAntsColor() const;
    void setAntColor(const QColor& color);
@@ -39,9 +42,12 @@ public:
    void setPathSize(int val);
    void setTileSize(int val);
    void setAnimationTime(int val);
+   void setAntsAnimationTime(int val);
+   void setConstNumberOfAnts(int val);
    void setAntSize(int val);
 
    void setAnimationEnabled(bool val);
+   void setConstNumberOfAnts(bool val);
    void setGenerateMazeOnStart(bool val);
    void setVisualizeEnabled(bool val);
 
@@ -53,12 +59,18 @@ private slots:
    void on_spinBox_mazeWidth_valueChanged(int val);
    void on_spinBox_animationTime_valueChanged(int val);
    void on_spinBox_antSize_valueChanged(int val);
+   void on_spinBox_constNumberOfAnts_valueChanged(int val);
+   void on_spinBox_antsAnimationTime_valueChanged(int val);
 
    void on_checkBox_animationEnabled_stateChanged(int state);
    void on_checkBox_visualize_stateChanged(int state);
    void on_checkBox_generateMazeOnStart_stateChanged(int state);
+   void on_checkBox_isConstNumberOfAnts_stateChanged(int state);
 
    void on_pushButton_selectAntColor_clicked();
+
+
+
 
 private:
    void setStartingValue(const QString& optName, int val, QSpinBox* widget);
@@ -82,5 +94,8 @@ private:
    const char* GENERATE_MAZE_ON_START_TAG = "GenMazeOnStart";
    const char* ANT_SIZE_TAG = "AntSize";
    const char* ANT_COLOR_TAG = "AntsColor";
+   const char* ANT_ANIMATION_TIME_TAG = "AntsAnimationTime";
+   const char* ANT_CONST_NUMBER_ENABLED_TAG = "ConstNumberAntsEnabled";
+   const char* ANT_CONST_NUMBER_TAG = "ConstNumberAnts";
 };
 

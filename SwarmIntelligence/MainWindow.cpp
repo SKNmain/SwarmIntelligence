@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget* parent)
    this->ui->actionStop_generating->setEnabled(false);
    this->ui->actionGenerate_shortest_path->setEnabled(false);
    this->ui->actionAnts_step->setEnabled(false);
+   this->ui->actionRun_ants->setEnabled(false);
 
    this->ui->splitter->setSizes({ 1000, 50 });
 
@@ -123,6 +124,7 @@ void MainWindow::on_actionGenerate_maze_triggered()
    DELLPTR(this->maze);
 
    this->ui->actionAnts_step->setEnabled(false);
+   this->ui->actionRun_ants->setEnabled(false);
 
    //decide, if user want to get whole maze immediately or want to get animation
    this->generateMaze();
@@ -206,6 +208,7 @@ void MainWindow::on_actionAnts_step_triggered()
    if(nullptr != this->maze && true == this->maze->isGeneratingFinished())
    {
       this->antsManager.step();
+      this->antSolverStepsCounter++;
       if(true == this->settings.isVisualize())
       {
          this->ui->graphicsView->renderAnts(this->antsManager);
@@ -222,11 +225,31 @@ void MainWindow::on_actionSwarm_intelligence_triggered()
    if(nullptr != this->maze && true == this->maze->isGeneratingFinished())
    {
       this->antsManager.initialize(this->maze);
+      this->antSolverStepsCounter = 0;
+
+      connect(&this->antsManager, &AntsManager::antsFinishedMaze, this, [this]()
+      {
+            emit Logger::getInstance().log(tr("Ant finished maze\nSteps: %1").arg(QString::number(this->antSolverStepsCounter)), 
+               LogWidget::LogLevel::INFO);
+      });
 
       this->ui->actionAnts_step->setEnabled(true);
+      this->ui->actionRun_ants->setEnabled(true);
    }
    else
    {
       emit Logger::getInstance().log("You cannot do that, bro!", LogWidget::LogLevel::ERR);
    }
+}
+
+void MainWindow::on_actionRun_ants_triggered()
+{
+   QTimer* timer = new QTimer;
+   timer->setInterval(this->settings.getAnimationTime());
+   connect(&this->antsManager, &AntsManager::antsFinishedMaze, timer, &QTimer::deleteLater);
+   connect(timer, &QTimer::timeout, this, [this]()
+      {
+         this->on_actionAnts_step_triggered();
+      });
+   timer->start();
 }

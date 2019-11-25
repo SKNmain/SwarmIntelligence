@@ -20,10 +20,13 @@ AppSettings::AppSettings(QWidget* parent) :
    setStartingValue(TILE_SIZE_TAG, 5, this->ui->spinBox_tileSize);
    setStartingValue(ANIMATION_TIME_TAG, 100, this->ui->spinBox_animationTime);
    setStartingValue(ANT_SIZE_TAG, 5, this->ui->spinBox_antSize);
+   setStartingValue(ANT_ANIMATION_TIME_TAG, 50, this->ui->spinBox_antsAnimationTime);
+   setStartingValue(ANT_CONST_NUMBER_TAG, 5, this->ui->spinBox_constNumberOfAnts);
    //checkboxes
    setStartingValue(ANIMATION_ENABLED_TAG, true, this->ui->checkBox_animationEnabled);
    setStartingValue(VISUALIZE_TAG, true, this->ui->checkBox_visualize);
    setStartingValue(GENERATE_MAZE_ON_START_TAG, true, this->ui->checkBox_generateMazeOnStart);
+   setStartingValue(ANT_CONST_NUMBER_ENABLED_TAG, true, this->ui->checkBox_isConstNumberOfAnts);
 
    //colors
    setStartingValue(ANT_COLOR_TAG, Qt::green);
@@ -105,6 +108,36 @@ int AppSettings::getAnimationTime() const
 int AppSettings::getAntSize() const
 {
    return this->settings.value(ANT_SIZE_TAG).toInt();
+}
+
+int AppSettings::getConstNumberOfAntsSize() const
+{
+   return this->settings.value(ANT_CONST_NUMBER_TAG).toInt();
+}
+
+int AppSettings::getAntsAnimationTime() const
+{
+   return this->settings.value(ANT_ANIMATION_TIME_TAG).toInt();
+}
+
+bool AppSettings::isConstNumberOfAntsEnabled() const
+{
+   return this->settings.value(ANT_CONST_NUMBER_ENABLED_TAG).toBool();
+}
+
+void AppSettings::setAntsAnimationTime(int val)
+{
+   this->settings.setValue(ANT_ANIMATION_TIME_TAG, val);
+}
+
+void AppSettings::setConstNumberOfAnts(int val)
+{
+   this->settings.setValue(ANT_CONST_NUMBER_TAG, val);
+}
+
+void AppSettings::setConstNumberOfAnts(bool val)
+{
+   this->settings.setValue(ANT_CONST_NUMBER_ENABLED_TAG, val);
 }
 
 void AppSettings::setAntSize(int val)
@@ -248,4 +281,20 @@ void AppSettings::on_pushButton_selectAntColor_clicked()
    {
       this->settings.setValue(ANT_COLOR_TAG, color);
    }
+}
+
+void AppSettings::on_spinBox_constNumberOfAnts_valueChanged(int val)
+{
+   this->settings.setValue(ANT_CONST_NUMBER_TAG, val);
+}
+
+void AppSettings::on_checkBox_isConstNumberOfAnts_stateChanged(int state)
+{
+   bool boolState = state == Qt::Checked ? true : false;
+   this->settings.setValue(ANT_CONST_NUMBER_ENABLED_TAG, boolState);
+}
+
+void AppSettings::on_spinBox_antsAnimationTime_valueChanged(int val)
+{
+   this->settings.setValue(ANT_ANIMATION_TIME_TAG, val);
 }
