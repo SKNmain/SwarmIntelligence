@@ -189,16 +189,31 @@ void RenderArea::renderAnts(const AntsManager& antsManager)
    }
    this->antsGraphics.clear();
 
+   std::map<std::pair<int, int>, std::vector<const Ant*>> visitedPosition;
    for(const auto& ant : antsManager.getAnts())
+   {
+      visitedPosition[ant.getPosition()].push_back(&ant);
+   }
+
+   for(const auto& [pos, ants] : visitedPosition)
    {
       double offset = (this->sett->getTileSize() * this->sett->getPathSize() - this->sett->getAntSize());
       offset = offset != 0 ? offset / 2.f : offset;
-      const double x = ant.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + ant.getX()) + offset;
-      const double y = ant.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + ant.getY()) + offset;
+      const double x = pos.first * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + pos.first) + offset;
+      const double y = pos.second * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + pos.second) + offset;
 
       auto item = new QGraphicsEllipseItem(x, y, this->sett->getAntSize(), this->sett->getAntSize());
       item->setBrush(this->sett->getAntsColor());
-      auto text = new QGraphicsTextItem("ID:" + QString::number(ant.getID()), item);
+      auto text = new QGraphicsTextItem(item);
+      if(ants.size() == 1)
+      {
+         text->setPlainText("ID:" + QString::number(ants[0]->getID()));
+      }
+      else
+      {
+         text->setPlainText("C:" + QString::number(ants.size()));
+         
+      }
       text->setPos({ x, y });
       this->scene->addItem(item);
       this->antsGraphics.push_back(item);
