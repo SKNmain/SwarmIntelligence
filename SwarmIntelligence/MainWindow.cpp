@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget* parent)
 
    this->ui->actionStop_generating->setEnabled(false);
    this->ui->actionGenerate_shortest_path->setEnabled(false);
+   this->ui->actionAnts_step->setEnabled(false);
 
    this->ui->splitter->setSizes({ 1000, 50 });
 
@@ -121,6 +122,7 @@ void MainWindow::on_actionGenerate_maze_triggered()
    //initialize maze
    DELLPTR(this->maze);
 
+   this->ui->actionAnts_step->setEnabled(false);
 
    //decide, if user want to get whole maze immediately or want to get animation
    this->generateMaze();
@@ -220,6 +222,8 @@ void MainWindow::on_actionSwarm_intelligence_triggered()
    if(nullptr != this->maze && true == this->maze->isGeneratingFinished())
    {
       this->antsManager.initialize(this->maze);
+
+      this->ui->actionAnts_step->setEnabled(true);
    }
    else
    {

@@ -191,8 +191,10 @@ void RenderArea::renderAnts(const AntsManager& antsManager)
 
    for(const auto& ant : antsManager.getAnts())
    {
-      const double x = ant.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getPathSize() * (1 + ant.getX()) + this->sett->getTileSize() * this->sett->getPathSize() / 2. - this->sett->getAntSize() / 2.;
-      const double y = ant.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getPathSize() * (1 + ant.getY()) + this->sett->getTileSize() * this->sett->getPathSize() / 2. - this->sett->getAntSize() / 2.;
+      double offset = (this->sett->getTileSize() * this->sett->getPathSize() - this->sett->getAntSize());
+      offset = offset != 0 ? offset / 2.f : offset;
+      const double x = ant.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + ant.getX()) + offset;
+      const double y = ant.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + ant.getY()) + offset;
 
       auto item = new QGraphicsEllipseItem(x, y, this->sett->getAntSize(), this->sett->getAntSize());
       item->setBrush(this->sett->getAntsColor());
@@ -215,8 +217,10 @@ void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t
 void RenderArea::createMarker(const Marker& marker)
 {
 
-   const double x = marker.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getPathSize() * (1 + marker.getX()) + this->sett->getTileSize() * this->sett->getPathSize() / 2. - this->sett->getMarkerSize() / 2.;
-   const double y = marker.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getPathSize() * (1 + marker.getY()) + this->sett->getTileSize() * this->sett->getPathSize() / 2. - this->sett->getMarkerSize() / 2.;
+   double offset = (this->sett->getTileSize() * this->sett->getPathSize() - this->sett->getAntSize());
+   offset = offset != 0 ? offset / 2.f : offset;
+   const double x = marker.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + marker.getX()) + offset;
+   const double y = marker.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + marker.getY()) + offset;
 
    auto markerTile = new QGraphicsEllipseItem(x, y, this->sett->getMarkerSize(), this->sett->getMarkerSize());
    markerTile->setBrush(marker.getColor());
