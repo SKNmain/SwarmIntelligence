@@ -28,16 +28,23 @@ struct Node
 
 bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY)
 {
+   //if point is out of range it doesn't have to be considered at all
    if (nextX < 0 || nextY < 0 || nextX >= this->maze->getWidth() || nextY >= this->maze->getHeight())
    {
       return false;
    }
+   //just to look pretier 
    const auto& tile = this->maze->mazeArray[curY][curX];
 
+   //if the first coordinates are the same
    if (curX == nextX)
    {
+      //0  
+      //1
+      //up value is lower so if we will substract current value an next and get positive value we want to go up
       if (curY - nextY > 0)
       {
+         //now we check if there is a path
          if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
          {
             return true;
@@ -45,6 +52,7 @@ bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY)
       }
       else
       {
+         //check if we can go down
          if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
          {
             return true;
@@ -52,9 +60,11 @@ bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY)
       }
    }
    else
-   {
+   {  //now second coordinates are the same
+      //same rule 0 1 2 - value more to the right is higher
       if (curX - nextX > 0)
       {
+         //check
          if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
          {
             return true;
@@ -62,6 +72,7 @@ bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY)
       }
       else
       {
+         //check
          if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
          {
             return true;
@@ -74,22 +85,24 @@ bool LeeAlgorithm::isValid(int curX, int curY, int nextX, int nextY)
 
 LeeAlgorithm::~LeeAlgorithm()
 {
+   //TODO - do wy have to destru something?
 }
 
 void LeeAlgorithm::solveMaze(Maze* maze)
 {
-   this->shortestWay.clear();
-   this->leeArray.clear();
+   this->shortestWay.clear(); //vector with shortest path
+   this->leeArray.clear(); //vector with all the distances from start - to analyze
 
-   this->maze = maze;
+   this->maze = maze; //given maze
 
 
-   const auto& startingPoint = this->maze->getStartingPoint();
+   const auto& startingPoint = this->maze->getStartingPoint(); 
    const auto& endPoint = this->maze->getEndPoint();
 
    setVector(this->leeArray);
    setVector(this->shortestWay);
 
+   //points that repesent all directions
    std::pair<int, int> direction[4];
    direction[0].first = 0; //up
    direction[0].second = -1;
@@ -103,25 +116,29 @@ void LeeAlgorithm::solveMaze(Maze* maze)
    direction[3].first = 1; //right
    direction[3].second = 0;
 
-   std::vector<std::vector<bool>> visited;
-   
+   //vector of visited points
+   std::vector<std::vector<bool>> visited; 
+
+   //just setting vector
    for (int i = 0; i < maze->getHeight(); ++i)
    {
       visited.push_back(std::vector<bool>( this->maze->getWidth() ));
    }
-
-  // memset(visited, 0, sizeof(visited[0][0]) * this->width * this->height);
+   
+   //we start the algorithm by adding starting point to the queue and setting vectors
    std::queue<Node> queueOfPoints;
    queueOfPoints.push({startingPoint.first, startingPoint.second, 0});
    visited[startingPoint.first][startingPoint.second] = true;
    leeArray[startingPoint.first][startingPoint.second] = 0;
 
    int xx, yy, dist;
+   //algorithm: we add the point that is valid to the queue
    while (!queueOfPoints.empty())
    {
       Node temp = queueOfPoints.front();
       queueOfPoints.pop();
 
+      //check for all 4 directions
       for (int i = 0; i < 4; ++i)
       {
          xx = temp.x + direction[i].first;
@@ -132,12 +149,12 @@ void LeeAlgorithm::solveMaze(Maze* maze)
             visited[yy][xx] = true;
             queueOfPoints.push({ xx, yy, dist + 1});
             leeArray[yy][xx] = dist + 1;
-            //break;
          }
-
       }
    }
-
+   //shortest path - we go from the end and look for the value lower by 1 from
+   //value that I am standing right now
+   //when we get to the start, we are finished
    std::pair<int, int> currPoint = endPoint;
 
    this->shortestWay[endPoint.second][endPoint.first] = Maze::CELL_SHORTEST;
@@ -182,51 +199,6 @@ void LeeAlgorithm::solveMaze(Maze* maze)
       }
    }
    
-   /*while (notFinished)
-   {
-      bool firstLoop = true;
-      for (int i = 0; i < 4; ++i)
-      {
-         temp.first = currPoint.first + direction[i].first;
-         temp.second = currPoint.second + direction[i].second;
-         if (temp.first < 0 || temp.second < 0 || temp.first >= this->width || temp.second >= this->height)
-         {
-            continue;
-         }
-
-         if (firstLoop || (temp.first != lastPoint.first || temp.second != lastPoint.second)) 
-         {
-            firstLoop = false;
-            minPoint.first = temp.first;
-            minPoint.second = temp.second;
-         }
-         else if (first || (temp.first != lastPoint.first || temp.second != lastPoint.second))
-         {
-            first = false;
-            if (leeArray[minPoint.second][minPoint.first] > leeArray[temp.second][temp.first]) 
-            {
-               minPoint.first = temp.first;
-               minPoint.second = temp.second;
-            }
-         }  
-      }
-
-      lastPoint.first = currPoint.first;
-      lastPoint.second = currPoint.second;
-
-      currPoint.first = minPoint.first;
-      currPoint.second = minPoint.second;
-
-      if (currPoint.first == endPoint.first && currPoint.second == endPoint.second)
-      {
-         notFinished = false;
-      }
-
-      this->shortestWay[lastPoint.second][lastPoint.first] = Maze::CELL_SHORTEST;
-
-   }*/
-
-
    maze->shortestWayArray = this->shortestWay;
 }
 

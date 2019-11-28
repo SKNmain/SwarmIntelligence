@@ -58,6 +58,12 @@ void RenderArea::addMazeToScene(const Maze& maze)
    createTile(0, 0, tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor);
    createTile(0, tileSize * mazeHeight * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1) + tileSize, tileSize, this->wallColor);
 
+   createTile(0, 1, tileSize, tileSize * pathWidth + 1, this->startColor);
+   createTile((mazeWidth - 1) * (pathWidth + 1) * tileSize + tileSize,
+      mazeHeight * (pathWidth + 1) * tileSize,
+      tileSize * pathWidth + 1,
+      tileSize, this->endColor);
+
 
    for(uint32_t y = 0; y < mazeHeight; ++y)
    {
@@ -79,14 +85,14 @@ void RenderArea::addMazeToScene(const Maze& maze)
             color = this->visitedTileColor;
          }
 
-         if((tile & Maze::CELL_END) == Maze::CELL_END)
+         /*if((tile & Maze::CELL_END) == Maze::CELL_END)
          {
             color = this->endColor;
          }
          else if((tile & Maze::CELL_START) == Maze::CELL_START)
          {
             color = this->startColor;
-         }
+         }*/
 
          //draw path
          for(uint32_t py = 1; py <= pathWidth; ++py)
