@@ -24,7 +24,6 @@ public:
       CELL_END = 1 << 7,
    };
 
-   void removeMarkers();
    std::vector<Marker> getMarkers() const;
 
    uint32_t getHeight() const;
@@ -40,7 +39,7 @@ public:
 
    std::vector<std::vector<int>> mazeArray;
    std::vector<std::vector<int>> shortestWayArray;
-   std::vector<Marker> markers;
+   Marker lastPostWhileMazeGen{Marker::GEN_MAP_TAG};
 
 private:
    uint32_t width;
@@ -49,6 +48,7 @@ private:
    uint32_t pathWidth;
 
    uint32_t markerSize;
+
 
    std::pair<int, int> startingPoint;
    std::pair<int, int> endPoint;
