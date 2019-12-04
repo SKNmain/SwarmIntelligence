@@ -44,9 +44,34 @@ void AntsManager::step()
 {
    for(auto& ant : this->ants)
    {
-      //update them
-      ant.update(this->maze->mazeArray[ant.getY()][ant.getX()]);
+      std::vector<Marker> surrMarkers;
+      for(const auto& marker : this->antsMarkers)
+      {
+         if((marker.getX() == ant.getX() && marker.getY() == ant.getY()) ||
+            (marker.getX() == ant.getX() + 1 && marker.getY() == ant.getY()) || 
+            (marker.getX() == ant.getX() - 1 && marker.getY() == ant.getY()) || 
+            (marker.getX() == ant.getX() && marker.getY() == ant.getY() + 1) || 
+            (marker.getX() == ant.getX() && marker.getY() == ant.getY() - 1))
+         {
+            surrMarkers.push_back(marker);
+         }
+      }
 
+      //update them
+      auto optionalMarker = ant.update(this->maze->mazeArray[ant.getY()][ant.getX()], surrMarkers);
+
+      if(optionalMarker)
+      {
+         const auto it = std::find_if(this->antsMarkers.begin(), this->antsMarkers.end(), [optionalMarker](const Marker& marker)
+            {
+               return optionalMarker->getPos() == marker.getPos();
+            });
+
+         if(it == this->antsMarkers.end())
+         {
+            this->antsMarkers.push_back(*optionalMarker);
+         }
+      }
 
       //temporary
       if(true == ant.isFinishedMaze())
@@ -59,4 +84,9 @@ void AntsManager::step()
 const std::vector<Ant>& AntsManager::getAnts() const
 {
    return this->ants;
+}
+
+const std::vector<Marker>& AntsManager::getAntsMarkers() const
+{
+   return this->antsMarkers;
 }

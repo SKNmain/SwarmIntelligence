@@ -31,6 +31,8 @@ public:
    void drawShortestPath(const Maze* maze);
 
    void renderAnts(const AntsManager& antsManager);
+
+   void clearAntsMarkersFromScene();
 public slots:
    void wheelEvent(QWheelEvent* event)
    {
@@ -40,6 +42,8 @@ public slots:
          scale(0.8, 0.8);
    }
 private:
+   void drawAnts(const AntsManager& antsManager);
+   void drawAntsMarkers(const std::vector<Marker>& antsMarkers);
    void createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
    void createMarker(const Marker& marker);
 
@@ -56,8 +60,10 @@ private:
    Ui::RenderArea* ui;
    std::vector<QGraphicsItem*> sceneElements;
    std::vector<QGraphicsItem*> antsGraphics;
+   std::vector<QGraphicsItem*> markersGraphics;
    QGraphicsScene* scene;
 
    const AppSettings* sett = nullptr;
 };
+
 

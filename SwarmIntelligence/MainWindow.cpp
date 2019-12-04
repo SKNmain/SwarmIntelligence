@@ -82,7 +82,6 @@ void MainWindow::generateMaze()
          {
             if(false == this->maze->isGeneratingFinished())
             {
-               this->maze->removeMarkers();
                this->mazeGenerator->nextMazeGenerationStep(this->maze);
                this->ui->graphicsView->addMazeToScene(*maze);
             }
@@ -90,6 +89,7 @@ void MainWindow::generateMaze()
             {
                this->stepRenderingTimer->stop();
                emit Logger::getInstance().log("Finished maze generation.", LogWidget::LogLevel::INFO);
+               this->ui->graphicsView->clearAntsMarkersFromScene();
 
                QApplication::restoreOverrideCursor();
                //enable actions in menu
@@ -110,6 +110,7 @@ void MainWindow::generateWholeMaze()
    {
       this->ui->graphicsView->addMazeToScene(*maze);
    }
+   this->ui->graphicsView->clearAntsMarkersFromScene();
 }
 
 void MainWindow::on_actionGenerate_maze_triggered()
@@ -224,6 +225,7 @@ void MainWindow::on_actionSwarm_intelligence_triggered()
 {
    if(nullptr != this->maze && true == this->maze->isGeneratingFinished())
    {
+      this->ui->graphicsView->clearAntsMarkersFromScene();
       this->antsManager.initialize(this->maze);
       this->antSolverStepsCounter = 0;
 

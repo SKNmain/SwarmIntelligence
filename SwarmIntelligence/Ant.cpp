@@ -4,12 +4,16 @@
 RandGen<std::knuth_b>Ant::randGen = RandGen<std::knuth_b>(time(NULL));
 
 Ant::Ant(int _id, int _x, int _y)
-   : id(_id), x(_x), y(_y), lastPos(_x, _y)
+   : id(_id), pos(_x, _y), lastPos(_x, _y)
 {
 }
 
-void Ant::update(int tile)
+std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarkers)
 {
+   std::optional<Marker> rVMarker = std::nullopt;
+   if(surrMarkers.size())
+   {
+   }
    if(false == this->finishedMaze)
    {
 
@@ -33,16 +37,17 @@ void Ant::update(int tile)
       if(Maze::CELL_END == (tile & Maze::CELL_END))
       {
          this->finishedMaze = true;
-         return;
+         return rVMarker;
       }
 
-      int tempX = this->x;
-      int tempY = this->y;
+      int tempX = this->pos.first;
+      int tempY = this->pos.second;
       bool safety = road.size() == 1;
+      
       do
       {
-         tempX = this->x;
-         tempY = this->y;
+         tempX = this->pos.first;
+         tempY = this->pos.second;
 
          int i = randGen.rand(0, road.size() - 1);
          tile = road[i];
@@ -63,17 +68,25 @@ void Ant::update(int tile)
          {
             tempX += -1;
          }
-
-
       } while(false == finishedMaze && false == safety && tempX == this->lastPos.first && tempY == this->lastPos.second);
 
-      this->lastPos.first = this->x;
-      this->lastPos.second = this->y;
 
-      this->x = tempX;
-      this->y = tempY;
+      this->lastPos.first = this->pos.first;
+      this->lastPos.second = this->pos.second;
+
+      this->pos.first = tempX;
+      this->pos.second = tempY;
+
+      if(road.size() >= 3)
+      {
+         rVMarker = {Marker::MarkerType::NOT_FULLY_DISCOVER_PATH, {tempX, tempY}, this->lastPos };
+      }
    }
+
+
+   return rVMarker;
 }
+
 
 int Ant::getID() const
 {
@@ -82,17 +95,17 @@ int Ant::getID() const
 
 int Ant::getX() const
 {
-   return this->x;
+   return this->pos.first;
 }
 
 int Ant::getY() const
 {
-   return this->y;
+   return this->pos.second;
 }
 
 std::pair<int, int> Ant::getPosition() const
 {
-   return { this->x, this->y };
+   return this->pos;
 }
 
 bool Ant::isFinishedMaze() const

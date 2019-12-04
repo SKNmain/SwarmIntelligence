@@ -1,33 +1,42 @@
 #include "Marker.h"
 
-Marker::Marker(uint32_t x, uint32_t y)
+Marker::Marker(MarkerType type, const std::pair<int, int>& pos, const std::pair<int, int>& enterPos)
 {
-   this->x = x;
-   this->y = y;
-
-   this->type = NOT_FULLY_DISCOVER_PATH;
+   this->pos = pos;
+   this->enterPos = enterPos;
+   this->type = type;
 }
 
-std::pair<uint32_t, uint32_t> Marker::getCoordinates() const
+std::pair<int, int> Marker::getPos() const
 {
-   return {this->x, this->y};
+   return this->pos;
 }
 
-uint32_t Marker::getX() const
+std::pair<int, int> Marker::getEnterPos() const
 {
-   return this->x;
+   return this->enterPos;
 }
 
-uint32_t Marker::getY() const
+int Marker::getX() const
 {
-   return this->y;
+   return this->pos.first;
+}
+
+int Marker::getY() const
+{
+   return this->pos.second;
 }
 
 QColor Marker::getColor() const
 {
-   if(this->type == MarkerType::NOT_FULLY_DISCOVER_PATH)
+   QColor rV;
+   switch(this->type)
    {
-      return Qt::blue;
+   case CLOSED_PATH: rV = Qt::red; break;
+   case PATH_TO_EXIT: rV = Qt::blue;  break;
+   case NOT_FULLY_DISCOVER_PATH: rV = Qt::yellow; break;
+   default: ;
    }
-   return QColor();
+
+   return rV;
 }

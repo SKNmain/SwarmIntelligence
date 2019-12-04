@@ -65,16 +65,6 @@ uint32_t Maze::getMarkerSize() const
    return this->markerSize;
 }
 
-std::vector<Marker> Maze::getMarkers() const
-{
-   return this->markers;
-}
-
-void Maze::removeMarkers()
-{
-   this->markers.clear();
-}
-
 uint32_t Maze::getTileSize() const
 {
    return this->tileSize;

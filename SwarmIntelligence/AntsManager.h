@@ -2,6 +2,7 @@
 #include "Ant.h"
 #include <vector>
 #include <qobject.h>
+#include "Marker.h"
 
 class Maze;
 class AppSettings;
@@ -19,10 +20,13 @@ public:
    void step();
 
    const std::vector<Ant>& getAnts() const;
+   const std::vector<Marker>& getAntsMarkers() const;
 
 signals:
    void antsFinishedMaze();
 private:
+   std::vector<Marker> antsMarkers;
+
    std::vector<Ant> ants;
    Maze* maze = nullptr;
    const AppSettings* appSettings = nullptr;

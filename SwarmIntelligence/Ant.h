@@ -1,6 +1,7 @@
 #pragma once
 #include <utility>
 #include "RandGen.h"
+#include "Marker.h"
 
 class Ant
 {
@@ -9,7 +10,7 @@ class Ant
 public:
    Ant(int id, int x, int y);
 
-   void update(int tile);
+   std::optional<Marker> update(int tile, const std::vector<Marker>& surrMarkers);
 
    int getID() const;
    int getX() const;
@@ -23,8 +24,7 @@ private:
 
    bool finishedMaze = false;
    std::pair<int, int> lastPos;
+   std::pair<int, int> pos;
    int id;
-   int x = 0;
-   int y = 0;
 };
 

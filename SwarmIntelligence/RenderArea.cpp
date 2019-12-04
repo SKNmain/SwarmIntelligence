@@ -132,11 +132,7 @@ void RenderArea::addMazeToScene(const Maze& maze)
 
       }
    }
-
-   for(const auto& m : maze.getMarkers())
-   {
-      createMarker(m);
-   }
+   createMarker(maze.lastPostWhileMazeGen);
 
    this->update();
 }
@@ -188,6 +184,31 @@ void RenderArea::drawShortestPath(const Maze* maze)
 
 void RenderArea::renderAnts(const AntsManager& antsManager)
 {
+   drawAntsMarkers(antsManager.getAntsMarkers());
+   drawAnts(antsManager);
+}
+
+void RenderArea::clearAntsMarkersFromScene()
+{
+   for(auto& i : this->markersGraphics)
+   {
+      this->scene->removeItem(i);
+   }
+   this->markersGraphics.clear();
+}
+
+void RenderArea::drawAntsMarkers(const std::vector<Marker>& antsMarkers)
+{
+   clearAntsMarkersFromScene();
+
+   for(const auto& m: antsMarkers)
+   {
+      createMarker(m);
+   }
+}
+
+void RenderArea::drawAnts(const AntsManager& antsManager)
+{
    //clear
    for(auto& i : this->antsGraphics)
    {
@@ -220,7 +241,7 @@ void RenderArea::renderAnts(const AntsManager& antsManager)
       else // many 
       {
          text->setPlainText("C:" + QString::number(ants.size()));
-         
+
       }
       text->setPos({ x, y });
       this->scene->addItem(item);
@@ -239,7 +260,7 @@ void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t
 
 void RenderArea::createMarker(const Marker& marker)
 {
-   double offset = (this->sett->getTileSize() * this->sett->getPathSize() - this->sett->getAntSize());
+   double offset = (this->sett->getTileSize() * this->sett->getPathSize() - this->sett->getMarkerSize());
    offset = offset != 0 ? offset / 2.f : offset;
    const double x = marker.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + marker.getX()) + offset;
    const double y = marker.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + marker.getY()) + offset;
@@ -248,5 +269,6 @@ void RenderArea::createMarker(const Marker& marker)
    markerTile->setBrush(marker.getColor());
    markerTile->setPen(noPen);
    this->scene->addItem(markerTile);
+   this->markersGraphics.push_back(markerTile);
 }
 

@@ -43,7 +43,6 @@ void StackMazeGenerator::nextMazeGenerationStep(Maze* maze)
 
 void StackMazeGenerator::generateStep(Maze* maze)
 {
-   maze->removeMarkers();
    if(numberOfVisitedCells < maze->getHeight() * maze->getWidth())
    {
       //Establish unvisited neighbours
@@ -114,11 +113,11 @@ void StackMazeGenerator::generateStep(Maze* maze)
          }
          numberOfVisitedCells++;
 
-         maze->markers.push_back(Marker(stack.top().first, stack.top().second));
+         maze->lastPostWhileMazeGen = Marker(Marker::GEN_MAP_TAG, stack.top());
       }
       else {
          //pop out of stack
-         maze->markers.push_back(Marker(stack.top().first, stack.top().second));
+         maze->lastPostWhileMazeGen = Marker(Marker::GEN_MAP_TAG, stack.top());
          stack.pop();
       }
    }
