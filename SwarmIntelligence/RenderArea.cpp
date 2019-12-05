@@ -95,29 +95,30 @@ void RenderArea::addMazeToScene(const Maze& maze)
          }*/
 
          //draw path
-         for(uint32_t py = 1; py <= pathWidth; ++py)
-         {
-            for(uint32_t px = 1; px <= pathWidth; ++px)
-            {
-               createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
-                  tileSize, tileSize, color);
-            }
-         }
+
+         createTile(tileSize + x * (pathWidth + 1) * tileSize, tileSize + y * (pathWidth + 1) * tileSize,
+            tileSize * (pathWidth), tileSize * (pathWidth), color);
+         //for(uint32_t py = 1; py <= pathWidth; ++py)
+         //{
+         //   for(uint32_t px = 1; px <= pathWidth; ++px)
+         //   {
+         //      createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
+         //         tileSize, tileSize, color);
+         //   }
+         //}
 
          // *000
          // *000
          if(x != 0)
          {
+            QColor tempColor = color;
             if(0 == (tile & Maze::CELL_PATH_W))
             {
-               createTile(x * tileSize * (pathWidth + 1), tileSize + y * tileSize * (pathWidth + 1),
-                  tileSize, tileSize * (pathWidth), this->wallColor);
+               tempColor = this->wallColor;
+               
             }
-            else
-            {
-               createTile(x * tileSize * (pathWidth + 1), tileSize + y * tileSize * (pathWidth + 1),
-                  tileSize, tileSize * (pathWidth), color);
-            }
+            createTile(x * tileSize * (pathWidth + 1), tileSize + y * tileSize * (pathWidth + 1),
+               tileSize, tileSize * (pathWidth), tempColor);
          }
 
          // ***
@@ -163,18 +164,41 @@ void RenderArea::drawShortestPath(const Maze* maze)
    {
       for(uint32_t x = 0; x < mazeWidth; ++x)
       {
-         auto tile = maze->shortestWayArray[y][x];
+         const auto shortestWayTile = maze->shortestWayArray[y][x];
+         const auto tile = maze->mazeArray[y][x];
          QColor color = this->shortestPathColor;
 
-         if(Maze::CELL_SHORTEST == (tile & Maze::CELL_SHORTEST))
+         if(Maze::CELL_SHORTEST == (shortestWayTile & Maze::CELL_SHORTEST))
          {
-            for(uint32_t py = 1; py <= pathWidth; ++py)
+            int eX = pathWidth;
+            int eY = pathWidth;
+            bool curve = false;
+            if(Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
             {
-               for(uint32_t px = 1; px <= pathWidth; ++px)
+               eX++;
+               curve = true;
+            }
+            if(Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
+            {
+               curve = curve && true;
+               eY++;
+            }
+            else
+            {
+               curve = false;
+            }
+
+            for(int pY = 1; pY <= eY; ++pY)
+            {
+               for(int pX = 1; pX <= eX; ++pX)
                {
-                  createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
-                     tileSize, tileSize, color);
+                  this->shortestWayTilesGraphics.push_back(createTile(pX * tileSize + x * (pathWidth + 1) * tileSize, pY * tileSize + y * (pathWidth + 1) * tileSize,
+                     tileSize, tileSize, color));
                }
+            }
+            if(true == curve)
+            {
+               this->scene->removeItem(this->shortestWayTilesGraphics.back());
             }
          }
       }
@@ -249,13 +273,15 @@ void RenderArea::drawAnts(const AntsManager& antsManager)
    }
 }
 
-void RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor)
+QGraphicsRectItem* RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor)
 {
    auto tile = new QGraphicsRectItem;
    tile->setRect(x, y, tileWidth, tileHeight);
    tile->setBrush(tileColor);
    tile->setPen(noPen);
    this->scene->addItem(tile);
+
+   return tile;
 }
 
 void RenderArea::createMarker(const Marker& marker)

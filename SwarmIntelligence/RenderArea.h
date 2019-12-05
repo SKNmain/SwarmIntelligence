@@ -44,7 +44,7 @@ public slots:
 private:
    void drawAnts(const AntsManager& antsManager);
    void drawAntsMarkers(const std::vector<Marker>& antsMarkers);
-   void createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
+   QGraphicsRectItem* createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
    void createMarker(const Marker& marker);
 
 
@@ -61,6 +61,7 @@ private:
    std::vector<QGraphicsItem*> sceneElements;
    std::vector<QGraphicsItem*> antsGraphics;
    std::vector<QGraphicsItem*> markersGraphics;
+   std::vector<QGraphicsItem*> shortestWayTilesGraphics;
    QGraphicsScene* scene;
 
    const AppSettings* sett = nullptr;
