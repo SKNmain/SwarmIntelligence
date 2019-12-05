@@ -32,7 +32,12 @@ public:
 
    void renderAnts(const AntsManager& antsManager);
 
+   void clearAnts();
    void clearAntsMarkersFromScene();
+   void clearShortestWayTiles();
+   void clearSceneElements();
+
+   void setVisibleShortestWay(bool enable);
 public slots:
    void wheelEvent(QWheelEvent* event)
    {
@@ -47,6 +52,7 @@ private:
    QGraphicsRectItem* createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
    void createMarker(const Marker& marker);
 
+   void cleanUpGraphicsItems(std::vector<QGraphicsItem*>& items);
 
    QColor wallColor;
    QColor notVisitedTileColor;
@@ -66,5 +72,6 @@ private:
 
    const AppSettings* sett = nullptr;
 };
+
 
 

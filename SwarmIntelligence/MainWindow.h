@@ -40,6 +40,12 @@ private slots:
 
    void on_actionRun_ants_triggered();
 
+   void on_actionShow_shortest_path_triggered();
+
+   void on_actionSave_maze_to_file_triggered();
+
+   void on_actionLoad_maze_to_file_triggered();
+
 private:
    void setActionEnabled(bool enabled);
    void generateWholeMaze();

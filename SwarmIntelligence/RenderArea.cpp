@@ -22,7 +22,7 @@ RenderArea::RenderArea(QWidget* parent)
 
    this->wallColor = Qt::black;
    this->visitedTileColor = Qt::blue;
-   this->shortestPathColor = Qt::green;
+   this->shortestPathColor = Qt::darkGray;
    this->notVisitedTileColor = Qt::white;
    this->startColor = Qt::blue;
    this->endColor = Qt::red;
@@ -31,6 +31,8 @@ RenderArea::RenderArea(QWidget* parent)
 
 RenderArea::~RenderArea()
 {
+   clearAntsMarkersFromScene();
+   clearShortestWayTiles();
    delete ui;
 }
 
@@ -52,23 +54,23 @@ void RenderArea::addMazeToScene(const Maze& maze)
    const auto& tileSize = this->sett->getTileSize();
 
    //draw border
-   createTile(0, 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
-   createTile(tileSize * mazeWidth * (pathWidth + 1), 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor);
+   this->sceneElements.push_back(createTile(0, 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor));
+   this->sceneElements.push_back(createTile(tileSize * mazeWidth * (pathWidth + 1), 0, tileSize, tileSize * mazeHeight * (pathWidth + 1), this->wallColor));
 
-   createTile(0, 0, tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor);
-   createTile(0, tileSize * mazeHeight * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1) + tileSize, tileSize, this->wallColor);
+   this->sceneElements.push_back(createTile(0, 0, tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor));
+   this->sceneElements.push_back(createTile(0, tileSize * mazeHeight * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1) + tileSize, tileSize, this->wallColor));
 
-   createTile(0, 1, tileSize, tileSize * pathWidth + 1, this->startColor);
-   createTile((mazeWidth - 1) * (pathWidth + 1) * tileSize + tileSize,
+   this->sceneElements.push_back(createTile(0, 1, tileSize, tileSize * pathWidth + 1, this->startColor));
+   this->sceneElements.push_back(createTile((mazeWidth - 1) * (pathWidth + 1) * tileSize + tileSize,
       mazeHeight * (pathWidth + 1) * tileSize,
       tileSize * pathWidth + 1,
-      tileSize, this->endColor);
+      tileSize, this->endColor));
 
 
    for(uint32_t y = 0; y < mazeHeight; ++y)
    {
       //draw horizontal line between layers of tiles
-      createTile(0, y * tileSize * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor);
+      this->sceneElements.push_back(createTile(0, y * tileSize * (pathWidth + 1), tileSize * mazeWidth * (pathWidth + 1), tileSize, this->wallColor));
 
       for(uint32_t x = 0; x < mazeWidth; ++x)
       {
@@ -95,17 +97,16 @@ void RenderArea::addMazeToScene(const Maze& maze)
          }*/
 
          //draw path
-
-         createTile(tileSize + x * (pathWidth + 1) * tileSize, tileSize + y * (pathWidth + 1) * tileSize,
-            tileSize * (pathWidth), tileSize * (pathWidth), color);
-         //for(uint32_t py = 1; py <= pathWidth; ++py)
-         //{
-         //   for(uint32_t px = 1; px <= pathWidth; ++px)
-         //   {
-         //      createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
-         //         tileSize, tileSize, color);
-         //   }
-         //}
+         this->sceneElements.push_back(createTile(tileSize + x * (pathWidth + 1) * tileSize, tileSize + y * (pathWidth + 1) * tileSize,
+            tileSize * (pathWidth), tileSize * (pathWidth), color));
+         //xfor(uint32_t py = 1; py <= pathWidth; ++py)
+         //x{
+         //x   for(uint32_t px = 1; px <= pathWidth; ++px)
+         //x   {
+         //x      createTile(px * tileSize + x * (pathWidth + 1) * tileSize, py * tileSize + y * (pathWidth + 1) * tileSize,
+         //x         tileSize, tileSize, color);
+         //x   }
+         //x}
 
          // *000
          // *000
@@ -115,18 +116,18 @@ void RenderArea::addMazeToScene(const Maze& maze)
             if(0 == (tile & Maze::CELL_PATH_W))
             {
                tempColor = this->wallColor;
-               
+
             }
-            createTile(x * tileSize * (pathWidth + 1), tileSize + y * tileSize * (pathWidth + 1),
-               tileSize, tileSize * (pathWidth), tempColor);
+            this->sceneElements.push_back(createTile(x * tileSize * (pathWidth + 1), tileSize + y * tileSize * (pathWidth + 1),
+               tileSize, tileSize * (pathWidth), tempColor));
          }
 
          // ***
          // 000
          if(y != 0 && 0 != (tile & Maze::CELL_PATH_N))
          {
-            createTile(x * tileSize * (pathWidth + 1) + tileSize, y * tileSize * (pathWidth + 1),
-               tileSize * (pathWidth), tileSize, color);
+            this->sceneElements.push_back(createTile(x * tileSize * (pathWidth + 1) + tileSize, y * tileSize * (pathWidth + 1),
+               tileSize * (pathWidth), tileSize, color));
          }
 
 
@@ -140,8 +141,11 @@ void RenderArea::addMazeToScene(const Maze& maze)
 
 void RenderArea::clear()
 {
+   this->clearAnts();
+   this->clearAntsMarkersFromScene();
+   this->clearShortestWayTiles();
+   this->clearSceneElements();
    this->scene->clear();
-   this->antsGraphics.clear();
 }
 
 bool RenderArea::saveScreenshot(const QString& filePath)
@@ -155,6 +159,9 @@ bool RenderArea::saveScreenshot(const QString& filePath)
 
 void RenderArea::drawShortestPath(const Maze* maze)
 {
+   clearShortestWayTiles();
+
+      
    const auto& tileSize = maze->getTileSize();
    const auto& pathWidth = maze->getPathWidth();
    const auto& mazeWidth = maze->getWidth();
@@ -196,6 +203,7 @@ void RenderArea::drawShortestPath(const Maze* maze)
                      tileSize, tileSize, color));
                }
             }
+
             if(true == curve)
             {
                this->scene->removeItem(this->shortestWayTilesGraphics.back());
@@ -214,18 +222,47 @@ void RenderArea::renderAnts(const AntsManager& antsManager)
 
 void RenderArea::clearAntsMarkersFromScene()
 {
-   for(auto& i : this->markersGraphics)
+   cleanUpGraphicsItems(this->markersGraphics);
+}
+
+void RenderArea::clearAnts()
+{
+   cleanUpGraphicsItems(this->antsGraphics);
+}
+
+void RenderArea::clearShortestWayTiles()
+{
+   cleanUpGraphicsItems(this->shortestWayTilesGraphics);
+}
+
+void RenderArea::clearSceneElements()
+{
+   cleanUpGraphicsItems(this->sceneElements);
+}
+
+void RenderArea::setVisibleShortestWay(bool enable)
+{
+   if(true == enable)
    {
-      this->scene->removeItem(i);
+      for(auto& i : this->shortestWayTilesGraphics)
+      {
+         i->show();
+      }
    }
-   this->markersGraphics.clear();
+   else 
+   {
+      for(auto& i : this->shortestWayTilesGraphics)
+      {
+         i->hide();
+      }
+   }
 }
 
 void RenderArea::drawAntsMarkers(const std::vector<Marker>& antsMarkers)
 {
    clearAntsMarkersFromScene();
 
-   for(const auto& m: antsMarkers)
+   for(const auto& m : antsMarkers)
    {
       createMarker(m);
    }
@@ -234,11 +271,8 @@ void RenderArea::drawAntsMarkers(const std::vector<Marker>& antsMarkers)
 void RenderArea::drawAnts(const AntsManager& antsManager)
 {
    //clear
-   for(auto& i : this->antsGraphics)
-   {
-      this->scene->removeItem(i);
-   }
-   this->antsGraphics.clear();
+   clearAnts();
+   clearAntsMarkersFromScene();
 
    //map ants to their position, (to simplify display on the same position)
    std::map<std::pair<int, int>, std::vector<const Ant*>> visitedPosition;
@@ -296,5 +330,15 @@ void RenderArea::createMarker(const Marker& marker)
    markerTile->setPen(noPen);
    this->scene->addItem(markerTile);
    this->markersGraphics.push_back(markerTile);
+   //markerTile->
+}
+
+void RenderArea::cleanUpGraphicsItems(std::vector<QGraphicsItem*>& items)
+{
+   for(auto& i : items)
+   {
+      delete i;
+   }
+   items.clear();
 }
 

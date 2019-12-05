@@ -80,6 +80,8 @@ void MainWindow::generateMaze()
       this->stepRenderingTimer->setInterval(this->settings.getAnimationTime());
       connect(stepRenderingTimer, &QTimer::timeout, this, [this]()
          {
+            this->ui->graphicsView->clearAntsMarkersFromScene();
+
             if(false == this->maze->isGeneratingFinished())
             {
                this->mazeGenerator->nextMazeGenerationStep(this->maze);
@@ -89,7 +91,6 @@ void MainWindow::generateMaze()
             {
                this->stepRenderingTimer->stop();
                emit Logger::getInstance().log("Finished maze generation.", LogWidget::LogLevel::INFO);
-               this->ui->graphicsView->clearAntsMarkersFromScene();
 
                QApplication::restoreOverrideCursor();
                //enable actions in menu
@@ -161,10 +162,15 @@ void MainWindow::on_actionGenerate_shortest_path_triggered()
    {
       emit Logger::getInstance().log("Searching for shortest path in maze ...", LogWidget::LogLevel::INFO);
 
+      this->ui->graphicsView->clearShortestWayTiles();
+
       DELLPTR(this->mazeSolver);
       this->mazeSolver = new LeeAlgorithm;
       this->mazeSolver->solveMaze(this->maze);
+
+
       this->ui->graphicsView->drawShortestPath(this->maze);
+      this->ui->graphicsView->setVisibleShortestWay(this->ui->actionShow_shortest_path->isChecked());
 
       emit Logger::getInstance().log("Finished", LogWidget::LogLevel::INFO);
    }
@@ -254,4 +260,19 @@ void MainWindow::on_actionRun_ants_triggered()
          this->on_actionAnts_step_triggered();
       });
    timer->start();
+}
+
+void MainWindow::on_actionShow_shortest_path_triggered()
+{
+   this->ui->graphicsView->setVisibleShortestWay(this->ui->actionShow_shortest_path->isChecked());
+}
+
+void MainWindow::on_actionSave_maze_to_file_triggered()
+{
+
+}
+
+void MainWindow::on_actionLoad_maze_to_file_triggered()
+{
+
 }
