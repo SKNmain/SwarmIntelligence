@@ -21,7 +21,10 @@ public:
 
 private:
    static RandGen<std::knuth_b> randGen;
-
+   bool changeNextYellowToRed = false;
+   bool endFoundChangeToBlue = false;
+   bool blueChangedGoToEnd = false;
+   bool first = true;
    bool finishedMaze = false;
    std::pair<int, int> lastPos;
    std::pair<int, int> pos;

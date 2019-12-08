@@ -11,10 +11,11 @@ Ant::Ant(int _id, int _x, int _y)
 std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarkers)
 {
    std::optional<Marker> rVMarker = std::nullopt;
-   if(surrMarkers.size())
-   {
-      int dupa = 2;
-   }
+
+   //if(surrMarkers.size())
+   //{
+   //}
+
    if(false == this->finishedMaze)
    {
 
@@ -37,13 +38,18 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       }
       if(Maze::CELL_END == (tile & Maze::CELL_END))
       {
+         //
          this->finishedMaze = true;
          return rVMarker;
       }
 
       int tempX = this->pos.first;
       int tempY = this->pos.second;
-      bool safety = road.size() == 1;
+      bool deadEnd = false;
+      if (road.size() == 1 && this->first == false) {
+         deadEnd = true;
+      }
+
       
       do
       {
@@ -69,7 +75,12 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          {
             tempX += -1;
          }
-      } while(false == finishedMaze && false == safety && tempX == this->lastPos.first && tempY == this->lastPos.second);
+
+         if (deadEnd)
+         {
+            this->changeNextYellowToRed = true;
+         }
+      } while(false == finishedMaze && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
 
 
       this->lastPos.first = this->pos.first;
@@ -78,10 +89,33 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       this->pos.first = tempX;
       this->pos.second = tempY;
 
+
       if(road.size() >= 3)
       {
-         rVMarker = {Marker::MarkerType::NOT_FULLY_DISCOVER_PATH, {tempX, tempY}, this->lastPos };
+         rVMarker = {Marker::MarkerType::NOT_FULLY_DISCOVER_PATH, this->pos, this->lastPos };
       }
+      if (changeNextYellowToRed == true) {
+         for (const auto& mark : surrMarkers)
+         {
+            if (mark.getX() == this->pos.first && mark.getY() == this->pos.second)
+            {
+               rVMarker = { Marker::MarkerType::CLOSED_PATH, this->pos, this->lastPos };
+               changeNextYellowToRed = false;
+            }
+            else if (mark.getX() == this->lastPos.first && mark.getY() == this->lastPos.second)
+            {
+               rVMarker = { Marker::MarkerType::CLOSED_PATH, this->lastPos, this->pos };
+               changeNextYellowToRed = false;
+            }
+         }
+      }
+      first = false;
+
+      /*if (surrMarkers.size() == 1 && changeNextYellowToRed == true)
+      {
+         rVMarker = { Marker::MarkerType::CLOSED_PATH, surrMarkers[0].getPos(), this->lastPos };
+         changeNextYellowToRed = false;
+      }*/
    }
 
 

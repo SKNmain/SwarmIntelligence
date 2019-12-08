@@ -203,7 +203,27 @@ void RenderArea::drawAntsMarkers(const std::vector<Marker>& antsMarkers)
 
    for(const auto& m: antsMarkers)
    {
-      createMarker(m);
+      if (m.getType() == Marker::NOT_FULLY_DISCOVER_PATH)
+      {
+         createMarker(m);
+      }
+      
+   }
+   for (const auto& m : antsMarkers)
+   {
+      if (m.getType() == Marker::CLOSED_PATH)
+      {
+         createMarker(m);
+      }
+
+   }
+   for (const auto& m : antsMarkers)
+   {
+      if (m.getType() == Marker::PATH_TO_EXIT)
+      {
+         createMarker(m);
+      }
+
    }
 }
 

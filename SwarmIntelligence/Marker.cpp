@@ -27,6 +27,11 @@ int Marker::getY() const
    return this->pos.second;
 }
 
+Marker::MarkerType Marker::getType() const
+{
+   return this->type;
+}
+
 QColor Marker::getColor() const
 {
    QColor rV;
