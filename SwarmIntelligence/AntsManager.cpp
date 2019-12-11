@@ -1,4 +1,5 @@
 #include "AntsManager.h"
+#include <algorithm>
 #include "Maze.h"
 #include "Logger.hpp"
 #include "AppSettings.h"
@@ -47,11 +48,11 @@ void AntsManager::step()
       std::vector<Marker> surrMarkers;
       for(const auto& marker : this->antsMarkers)
       {
-         if((marker.getX() == ant.getX() && marker.getY() == ant.getY()) ||
-            (marker.getX() == ant.getX() + 1 && marker.getY() == ant.getY()) || 
-            (marker.getX() == ant.getX() - 1 && marker.getY() == ant.getY()) || 
-            (marker.getX() == ant.getX() && marker.getY() == ant.getY() + 1) || 
-            (marker.getX() == ant.getX() && marker.getY() == ant.getY() - 1))
+         if((marker.getX() == ant.getX() && marker.getY() == ant.getY()) ||   //present pos
+            (marker.getX() == ant.getX() + 1 && marker.getY() == ant.getY()) || //right
+            (marker.getX() == ant.getX() - 1 && marker.getY() == ant.getY()) || //left
+            (marker.getX() == ant.getX() && marker.getY() == ant.getY() + 1) || //down
+            (marker.getX() == ant.getX() && marker.getY() == ant.getY() - 1)) //up
          {
             surrMarkers.push_back(marker);
          }
@@ -62,15 +63,15 @@ void AntsManager::step()
 
       if(optionalMarker)
       {
-         const auto it = std::find_if(this->antsMarkers.begin(), this->antsMarkers.end(), [optionalMarker](const Marker& marker)
+         /*const auto it = std::find_if(this->antsMarkers.begin(), this->antsMarkers.end(), [optionalMarker](const Marker& marker)
             {
                return optionalMarker->getPos() == marker.getPos();
             });
 
          if(it == this->antsMarkers.end())
          {
+         }*/
             this->antsMarkers.push_back(*optionalMarker);
-         }
       }
 
       //temporary
@@ -80,6 +81,23 @@ void AntsManager::step()
       }
    }
 }
+
+/*void AntsManager::deleteAntsMarker(int x, int y) 
+{
+   auto it = this->antsMarkers.begin();
+   while (it != this->antsMarkers.end())
+   {
+      if (it->getX == x && it->getY == y) 
+      {
+         it = this->antsMarkers.erase(it);
+      }
+      else
+      {
+         ++it;
+      }
+   }
+ //  std::remove(this->antsMarkers.begin(), this->antsMarkers.end(), std::pair<int, int>(x, y));
+}*/
 
 const std::vector<Ant>& AntsManager::getAnts() const
 {

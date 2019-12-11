@@ -19,6 +19,8 @@ public:
    std::pair<int, int> getEnterPos() const;
    int getX() const;
    int getY() const;
+
+   MarkerType getType() const;
    
    QColor getColor() const;
 

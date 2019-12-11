@@ -21,6 +21,7 @@ public:
 
    const std::vector<Ant>& getAnts() const;
    const std::vector<Marker>& getAntsMarkers() const;
+   void deleteAntsMarker(int x, int y);
 
 signals:
    void antsFinishedMaze();

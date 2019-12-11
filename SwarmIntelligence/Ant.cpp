@@ -11,9 +11,11 @@ Ant::Ant(int _id, int _x, int _y)
 std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarkers)
 {
    std::optional<Marker> rVMarker = std::nullopt;
-   if(surrMarkers.size())
-   {
-   }
+
+   //if(surrMarkers.size())
+   //{
+   //}
+
    if(false == this->endFoundChangeToBlue)
    {
 
@@ -36,20 +38,25 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       }
       if(Maze::CELL_END == (tile & Maze::CELL_END))
       {
+         //
          this->endFoundChangeToBlue = true;
          //return rVMarker;
       }
 
       int tempX = this->pos.first;
       int tempY = this->pos.second;
-      bool safety = road.size() == 1;
+      bool deadEnd = false;
+      if (road.size() == 1 && this->first == false) {
+         deadEnd = true;
+      }
+
       
       do
       {
          tempX = this->pos.first;
          tempY = this->pos.second;
 
-         int i = randGen.rand(0, static_cast<int>(road.size()) - 1);
+         int i = randGen.rand(0, road.size() - 1);
          tile = road[i];
 
          if(Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
@@ -68,8 +75,13 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          {
             tempX += -1;
          }
+
+         if (deadEnd)
+         {
+            this->changeNextYellowToRed = true;
+         }
          
-      } while(false == finishedMaze && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
+      } while(false == endFoundChangeToBlue && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
 
 
       this->lastPos.first = this->pos.first;
@@ -78,11 +90,28 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       this->pos.first = tempX;
       this->pos.second = tempY;
 
+
       if(road.size() >= 3)
       {
-         rVMarker = {Marker::MarkerType::NOT_FULLY_DISCOVER_PATH, {tempX, tempY}, this->lastPos };
+         rVMarker = {Marker::MarkerType::NOT_FULLY_DISCOVER_PATH, this->pos, this->lastPos };
+      }
+      if (changeNextYellowToRed == true) {
+         for (const auto& mark : surrMarkers)
+         {
+            if (mark.getX() == this->pos.first && mark.getY() == this->pos.second)
+            {
+               rVMarker = { Marker::MarkerType::CLOSED_PATH, this->pos, this->lastPos };
+               changeNextYellowToRed = false;
+            }
+            else if (mark.getX() == this->lastPos.first && mark.getY() == this->lastPos.second)
+            {
+               rVMarker = { Marker::MarkerType::CLOSED_PATH, this->lastPos, this->pos };
+               changeNextYellowToRed = false;
+            }
+         }
       }
      
+      first = false;
    }
    else
    {
@@ -117,7 +146,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
             }
             if (Maze::CELL_END == (tile & Maze::CELL_END))
             {
-      }*/
+               //
                this->endFoundChangeToBlue = true;
                //return rVMarker;
             }

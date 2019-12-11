@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget* parent)
 {
    this->ui->setupUi(this);
 
+   this->antsTimer = new QTimer;
+
    this->ui->graphicsView->initSettings(&this->settings);
 
    this->ui->actionStop_generating->setEnabled(false);
@@ -282,10 +284,9 @@ void MainWindow::on_actionRun_ants_triggered()
    if(nullptr != this->antsTimer)
    {
       this->antsTimer->stop();
-      DELLPTR(this->antsTimer);
    }
 
-   this->antsTimer = new QTimer;
+   this->antsTimer->disconnect();
    this->antsTimer->setInterval(this->settings.getAnimationTime());
    connect(&this->antsManager, &AntsManager::antsFinishedMaze, this->antsTimer, &QTimer::deleteLater);
    connect(this->antsTimer, &QTimer::timeout, this, [this]()
