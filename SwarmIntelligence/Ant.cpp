@@ -16,7 +16,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
    //{
    //}
 
-   if(false == this->finishedMaze)
+   if(false == this->endFoundChangeToBlue)
    {
 
       std::vector<int> road;
@@ -39,8 +39,8 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       if(Maze::CELL_END == (tile & Maze::CELL_END))
       {
          //
-         this->finishedMaze = true;
-         return rVMarker;
+         this->endFoundChangeToBlue = true;
+         //return rVMarker;
       }
 
       int tempX = this->pos.first;
@@ -80,7 +80,8 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          {
             this->changeNextYellowToRed = true;
          }
-      } while(false == finishedMaze && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
+         
+      } while(false == endFoundChangeToBlue && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
 
 
       this->lastPos.first = this->pos.first;
@@ -109,13 +110,151 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
             }
          }
       }
+     
       first = false;
-
-      /*if (surrMarkers.size() == 1 && changeNextYellowToRed == true)
+   }
+   else
+   {
+      if (false == this->finishedMaze)
       {
-         rVMarker = { Marker::MarkerType::CLOSED_PATH, surrMarkers[0].getPos(), this->lastPos };
-         changeNextYellowToRed = false;
-      }*/
+         if (false == this->blueChangedGoToEnd)
+         {
+            for (const auto& mark : surrMarkers)
+            {
+               if (mark.getX() == this->pos.first && mark.getY() == this->pos.second)
+               {
+                  this->blueChangedGoToEnd = true;
+                  rVMarker = { Marker::MarkerType::PATH_TO_EXIT, this->pos, this->lastPos };
+               }
+            }
+            std::vector<int> road;
+            if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
+            {
+               road.push_back(Maze::CELL_PATH_N);
+            }
+            if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
+            {
+               road.push_back(Maze::CELL_PATH_S);
+            }
+            if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
+            {
+               road.push_back(Maze::CELL_PATH_E);
+            }
+            if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
+            {
+               road.push_back(Maze::CELL_PATH_W);
+            }
+            if (Maze::CELL_END == (tile & Maze::CELL_END))
+            {
+               //
+               this->endFoundChangeToBlue = true;
+               //return rVMarker;
+            }
+            int tempX = this->pos.first;
+            int tempY = this->pos.second;
+            bool deadEnd = false;
+            if (road.size() == 1 && this->first == false) {
+               deadEnd = true;
+            }
+            do
+            {
+               tempX = this->pos.first;
+               tempY = this->pos.second;
+
+               int i = randGen.rand(0, road.size() - 1);
+               tile = road[i];
+
+               if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
+               {
+                  tempY += -1;
+               }
+               if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
+               {
+                  tempY += 1;
+               }
+               if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
+               {
+                  tempX += 1;
+               }
+               if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
+               {
+                  tempX += -1;
+               }
+
+            } while (false == endFoundChangeToBlue && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
+
+            this->lastPos.first = this->pos.first;
+            this->lastPos.second = this->pos.second;
+
+            this->pos.first = tempX;
+            this->pos.second = tempY;
+
+         }
+         else
+         {
+            std::vector<int> road;
+            if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
+            {
+               road.push_back(Maze::CELL_PATH_N);
+            }
+            if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
+            {
+               road.push_back(Maze::CELL_PATH_S);
+            }
+            if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
+            {
+               road.push_back(Maze::CELL_PATH_E);
+            }
+            if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
+            {
+               road.push_back(Maze::CELL_PATH_W);
+            }
+            if (Maze::CELL_END == (tile & Maze::CELL_END))
+            {
+               
+               this->finishedMaze = true;
+               return rVMarker;
+            }
+            int tempX = this->pos.first;
+            int tempY = this->pos.second;
+            bool deadEnd = false;
+            if (road.size() == 1 && this->first == false) {
+               deadEnd = true;
+            }
+            do
+            {
+               tempX = this->pos.first;
+               tempY = this->pos.second;
+
+               int i = randGen.rand(0, road.size() - 1);
+               tile = road[i];
+
+               if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
+               {
+                  tempY += -1;
+               }
+               if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
+               {
+                  tempY += 1;
+               }
+               if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
+               {
+                  tempX += 1;
+               }
+               if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
+               {
+                  tempX += -1;
+               }
+
+            } while (false == endFoundChangeToBlue && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
+
+            this->lastPos.first = this->pos.first;
+            this->lastPos.second = this->pos.second;
+
+            this->pos.first = tempX;
+            this->pos.second = tempY;
+         }
+      }
    }
 
 
