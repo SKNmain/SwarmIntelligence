@@ -33,7 +33,7 @@ public:
    void renderAnts(const AntsManager& antsManager);
 
    void clearAnts();
-   void clearAntsMarkersFromScene();
+   void clearMarkers();
    void clearShortestWayTiles();
    void clearSceneElements();
 

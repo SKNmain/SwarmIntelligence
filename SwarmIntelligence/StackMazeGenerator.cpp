@@ -1,9 +1,9 @@
 #include "StackMazeGenerator.h"
 
 
-Maze* StackMazeGenerator::generateMaze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth)
+Maze* StackMazeGenerator::generateMaze(uint32_t width, uint32_t height)
 {
-   Maze* maze = new Maze(width, height, tileSize, pathWidth, 10);
+   Maze* maze = new Maze(width, height);
 
    this->stack.push(std::make_pair(0, 0));
    maze->mazeArray[0][0] = Maze::CELL_VISITED;
@@ -18,9 +18,9 @@ Maze* StackMazeGenerator::generateMaze(uint32_t width, uint32_t height, uint32_t
    return maze;
 }
 
-Maze* StackMazeGenerator::generateMazeStepByStep(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth)
+Maze* StackMazeGenerator::generateMazeStepByStep(uint32_t width, uint32_t height)
 {
-   Maze* maze = new Maze(width, height, tileSize, pathWidth, 10);
+   Maze* maze = new Maze(width, height);
    if(true == this->stack.empty() || true == maze->isGeneratingFinished())
    {
       this->numberOfVisitedCells = 0;
@@ -86,7 +86,7 @@ void StackMazeGenerator::generateStep(Maze* maze)
 
       if(!neighbours.empty())
       {
-         int next_cell_dir = neighbours[this->rand.rand(0, neighbours.size() - 1)];
+         int next_cell_dir = neighbours[this->rand.rand(0, static_cast<int>(neighbours.size()) - 1)];
          //create path
          switch(next_cell_dir)
          {

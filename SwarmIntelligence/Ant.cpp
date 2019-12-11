@@ -49,7 +49,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          tempX = this->pos.first;
          tempY = this->pos.second;
 
-         int i = randGen.rand(0, road.size() - 1);
+         int i = randGen.rand(0, static_cast<int>(road.size()) - 1);
          tile = road[i];
 
          if(Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))

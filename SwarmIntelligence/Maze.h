@@ -9,7 +9,7 @@
 class Maze
 {
 public:
-   Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth, uint32_t markerSize);
+   Maze(uint32_t width, uint32_t height);
    
 
    enum CellIdentifier
@@ -28,9 +28,6 @@ public:
 
    uint32_t getHeight() const;
    uint32_t getWidth() const;
-   uint32_t getMarkerSize() const;
-   uint32_t getTileSize() const;
-   uint32_t getPathWidth() const;
    std::pair<int, int> getStartingPoint() const;
    std::pair<int, int> getEndPoint() const;
 
@@ -41,14 +38,12 @@ public:
    std::vector<std::vector<int>> shortestWayArray;
    Marker lastPostWhileMazeGen{Marker::GEN_MAP_TAG};
 
+   bool serializeToFile(const std::string& fileName);
+   static Maze* serializeFromFile(const std::string& fileName);
+
 private:
    uint32_t width;
    uint32_t height;
-   uint32_t tileSize;
-   uint32_t pathWidth;
-
-   uint32_t markerSize;
-
 
    std::pair<int, int> startingPoint;
    std::pair<int, int> endPoint;
