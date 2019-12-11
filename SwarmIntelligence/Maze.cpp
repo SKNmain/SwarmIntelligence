@@ -104,8 +104,8 @@ Maze* Maze::serializeFromFile(const std::string& fileName)
          std::string temp;
          int mazeWidth = 0;
          int mazeHeight = 0;
-         std::pair<int, int> startingPoint{0, 0};
-         std::pair<int, int> endPoint{0, 0};
+         std::pair<int, int> startingPoint{ 0, 0 };
+         std::pair<int, int> endPoint{ 0, 0 };
 
          std::vector<std::vector<int>> mazeArray;
          std::vector<std::vector<int>> shortestWayArray;
@@ -123,25 +123,8 @@ Maze* Maze::serializeFromFile(const std::string& fileName)
          inputFile >> mazeHeight;
 
          inputFile >> temp;
-         if(temp != "Maze:")
-         {
-            throw "Invalid file";
-         }
 
-         for(int y = 0; y < mazeHeight; ++y)
-         {
-            std::vector<int> row;
-            for(int x = 0; x < mazeHeight; ++x)
-            {
-               int cell;
-               inputFile >> cell;
-               row.push_back(cell);
-            }
-            mazeArray.push_back(row);
-         }
-
-         inputFile >> temp;
-         if(temp == "ShortestWay:")
+         if(temp == "Maze:")
          {
             for(int y = 0; y < mazeHeight; ++y)
             {
@@ -152,14 +135,30 @@ Maze* Maze::serializeFromFile(const std::string& fileName)
                   inputFile >> cell;
                   row.push_back(cell);
                }
-               shortestWayArray.push_back(row);
+               mazeArray.push_back(row);
             }
-         }
 
-         maze = new Maze(mazeWidth, mazeHeight);
-         maze->mazeArray = mazeArray;
-         maze->shortestWayArray = shortestWayArray;
-         maze->finishedGenerating();
+            inputFile >> temp;
+            if(temp == "ShortestWay:")
+            {
+               for(int y = 0; y < mazeHeight; ++y)
+               {
+                  std::vector<int> row;
+                  for(int x = 0; x < mazeHeight; ++x)
+                  {
+                     int cell;
+                     inputFile >> cell;
+                     row.push_back(cell);
+                  }
+                  shortestWayArray.push_back(row);
+               }
+            }
+
+            maze = new Maze(mazeWidth, mazeHeight);
+            maze->mazeArray = mazeArray;
+            maze->shortestWayArray = shortestWayArray;
+            maze->finishedGenerating();
+         }
       }
    }
 

@@ -43,6 +43,7 @@ private slots:
    void on_actionShow_shortest_path_triggered();
 
    void on_actionSave_maze_to_file_triggered();
+   void loadMazeFromFile(const QString& path);
 
    void on_actionLoad_maze_to_file_triggered();
 

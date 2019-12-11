@@ -41,12 +41,12 @@ void RenderArea::initSettings(const AppSettings* settings)
    this->sett = settings;
 }
 
-void RenderArea::addMazeToScene(const Maze& maze)
+void RenderArea::addMazeToScene(const Maze* maze)
 {
    clear();
 
    //this->fitInView(this->scene->sceneRect(), Qt::AspectRatioMode::KeepAspectRatio);
-   const auto& mazeArray = maze.mazeArray;
+   const auto& mazeArray = maze->mazeArray;
    const auto& pathWidth = this->sett->getPathSize();
    const auto& mazeWidth = this->sett->getMazeWidth();
    const auto& mazeHeight = this->sett->getMazeHeight();
@@ -134,9 +134,15 @@ void RenderArea::addMazeToScene(const Maze& maze)
 
       }
    }
-   createMarker(maze.lastPostWhileMazeGen);
+   createMarker(maze->lastPostWhileMazeGen);
 
    this->update();
+
+   //draw shortest path if exists
+   if(false == maze->shortestWayArray.empty())
+   {
+      drawShortestPath(maze);
+   }
 }
 
 void RenderArea::clear()
@@ -199,8 +205,12 @@ void RenderArea::drawShortestPath(const Maze* maze)
             {
                for(int pX = 1; pX <= eX; ++pX)
                {
-                  this->shortestWayTilesGraphics.push_back(createTile(pX * tileSize + x * (pathWidth + 1) * tileSize, pY * tileSize + y * (pathWidth + 1) * tileSize,
-                     tileSize, tileSize, color));
+                  auto tile = createTile(pX * tileSize + x * (pathWidth + 1) * tileSize, pY * tileSize + y * (pathWidth + 1) * tileSize,
+                     tileSize, tileSize, color);
+
+                  tile->setVisible(false);
+
+                  this->shortestWayTilesGraphics.push_back(tile);
                }
             }
 

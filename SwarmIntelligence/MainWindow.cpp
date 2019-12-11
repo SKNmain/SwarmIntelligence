@@ -29,9 +29,20 @@ MainWindow::MainWindow(QWidget* parent)
 
    connect(&Logger::getInstance(), &Logger::log, this->ui->logWidget, &LogWidget::logQStr);
 
-   if(true == this->settings.isGenerateMazeOnStart())
+   switch(this->settings.startingMazeStatus())
+   {
+   case AppSettings::LOAD_FROM_FILE:
+   {
+      loadMazeFromFile(this->settings.pathToMaze());
+      this->ui->actionShow_shortest_path->setChecked(false);
+      break;
+   }
+   case AppSettings::GENERATE_NEW:
    {
       this->on_actionGenerate_maze_triggered();
+      break;
+   }
+   case AppSettings::NO_STARTING: break;
    }
 }
 
@@ -86,7 +97,7 @@ void MainWindow::generateMaze()
             if(false == this->maze->isGeneratingFinished())
             {
                this->mazeGenerator->nextMazeGenerationStep(this->maze);
-               this->ui->graphicsView->addMazeToScene(*maze);
+               this->ui->graphicsView->addMazeToScene(maze);
             }
             else
             {
@@ -110,7 +121,7 @@ void MainWindow::generateWholeMaze()
    //this->maze->removeMarkers();
    if(true == this->settings.isVisualize())
    {
-      this->ui->graphicsView->addMazeToScene(*maze);
+      this->ui->graphicsView->addMazeToScene(maze);
    }
    this->ui->graphicsView->clearMarkers();
 }
@@ -278,6 +289,11 @@ void MainWindow::on_actionSave_maze_to_file_triggered()
       {
          if(true == this->maze->serializeToFile(path.toStdString()))
          {
+            //save last path
+            this->settings.setLastMazePath(path);
+
+            this->ui->graphicsView->setVisibleShortestWay(this->ui->actionShow_shortest_path->isChecked());
+
             emit Logger::getInstance().log("Successfully saved serialized maze to file " + path, LogWidget::LogLevel::INFO);
          }
          else
@@ -288,9 +304,8 @@ void MainWindow::on_actionSave_maze_to_file_triggered()
    }
 }
 
-void MainWindow::on_actionLoad_maze_to_file_triggered()
+void MainWindow::loadMazeFromFile(const QString& path)
 {
-   const QString& path = QFileDialog::getOpenFileName(this, "Select file with serialized maze", "", "Maze file(*.m);;All files (*.*)");
    if(false == path.isEmpty())
    {
       Maze* tempMaze = Maze::serializeFromFile(path.toStdString());
@@ -303,8 +318,11 @@ void MainWindow::on_actionLoad_maze_to_file_triggered()
 
          //clear view and display loaded maze 
          this->ui->graphicsView->clear();
-         this->ui->graphicsView->addMazeToScene(*this->maze);
+         this->ui->graphicsView->addMazeToScene(this->maze);
          this->ui->graphicsView->clearMarkers();
+
+         //save last path
+         this->settings.setLastMazePath(path);
 
          emit Logger::getInstance().log("Successfully load serialized maze from file " + path, LogWidget::LogLevel::INFO);
       }
@@ -313,4 +331,14 @@ void MainWindow::on_actionLoad_maze_to_file_triggered()
          emit Logger::getInstance().log("Cannot open file to deserialize maze", LogWidget::LogLevel::ERR);
       }
    }
+   else
+   {
+      emit Logger::getInstance().log("Path with maze is empty!", LogWidget::LogLevel::ERR);
+   }
+}
+
+void MainWindow::on_actionLoad_maze_to_file_triggered()
+{
+   const QString& path = QFileDialog::getOpenFileName(this, "Select file with serialized maze", "", "Maze file(*.m);;All files (*.*)");
+   loadMazeFromFile(path);
 }
