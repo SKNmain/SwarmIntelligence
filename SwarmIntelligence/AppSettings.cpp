@@ -144,7 +144,12 @@ void AppSettings::setLastMazePath(const QString& path)
 
 void AppSettings::setStartingMazeStatus(StartingMaze startingMaze)
 {
-   this->settings.setValue(STARTING_MAZE_TAG, static_cast<int>(startingMaze));
+   switch(startingMazeStatus())
+   {
+   case LOAD_FROM_FILE: on_radioButton_loadMazeFromFileOnStart_clicked(); break;
+   case GENERATE_NEW: on_radioButton_generateMazeOnStart_clicked(); break;
+   case NO_STARTING: on_radioButton_noStartingMaze_clicked(); break;
+   }
 }
 
 bool AppSettings::isConstNumberOfAntsEnabled() const
@@ -154,22 +159,22 @@ bool AppSettings::isConstNumberOfAntsEnabled() const
 
 void AppSettings::setAntsAnimationTime(int val)
 {
-   this->settings.setValue(ANT_ANIMATION_TIME_TAG, val);
+   on_spinBox_antsAnimationTime_valueChanged(val);
 }
 
-void AppSettings::setConstNumberOfAnts(int val)
+void AppSettings::setNumberOfAnts(int val)
 {
-   this->settings.setValue(ANT_CONST_NUMBER_TAG, val);
+   on_spinBox_constNumberOfAnts_valueChanged(val);
 }
 
 void AppSettings::setConstNumberOfAnts(bool val)
 {
-   this->settings.setValue(ANT_CONST_NUMBER_ENABLED_TAG, val);
+   on_checkBox_isConstNumberOfAnts_stateChanged(val);
 }
 
 void AppSettings::setAntSize(int val)
 {
-   this->settings.setValue(ANT_SIZE_TAG, val);
+   on_spinBox_antSize_valueChanged(val);
 }
 
 bool AppSettings::isAnimationEnabled() const
@@ -194,45 +199,42 @@ void AppSettings::setAntColor(const QColor& color)
 
 void AppSettings::setVisualizeEnabled(bool val)
 {
-   this->settings.setValue(VISUALIZE_TAG, val);
-   this->ui->spinBox_animationTime->setEnabled(val);
-   this->ui->checkBox_animationEnabled->setEnabled(val);
+   on_checkBox_visualize_stateChanged(val);
 }
 
 void AppSettings::setAnimationTime(int val)
 {
-   this->settings.setValue(ANIMATION_TIME_TAG, val);
+   on_spinBox_animationTime_valueChanged(val);
 }
 
 void AppSettings::setAnimationEnabled(bool val)
 {
-   this->settings.setValue(ANIMATION_ENABLED_TAG, val);
-   this->ui->spinBox_animationTime->setEnabled(val);
+   on_checkBox_animationEnabled_stateChanged(val);
 }
 
 void AppSettings::setMazeWidth(int val)
 {
-   this->settings.setValue(MAZE_WIDTH_TAG, val);
+   on_spinBox_mazeWidth_valueChanged(val);
 }
 
 void AppSettings::setMazeHeight(int val)
 {
-   this->settings.setValue(MAZE_HEIGHT_TAG, val);
+   on_spinBox_mazeHeight_valueChanged(val);
 }
 
 void AppSettings::setMarkerSize(int val)
 {
-   this->settings.setValue(MARKER_SIZE_TAG, val);
+   on_spinBox_markerSize_valueChanged(val);
 }
 
 void AppSettings::setPathSize(int val)
 {
-   this->settings.setValue(PATH_SIZE_TAG, val);
+   on_spinBox_pathSize_valueChanged(val);
 }
 
 void AppSettings::setTileSize(int val)
 {
-   this->settings.setValue(TILE_SIZE_TAG, val);
+   on_spinBox_tileSize_valueChanged(val);
 }
 
 void AppSettings::on_spinBox_markerSize_valueChanged(int val)

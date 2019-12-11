@@ -53,6 +53,13 @@ MainWindow::~MainWindow()
    DELLPTR(this->maze);
 
    DELLPTR(this->stepRenderingTimer);
+
+   if(nullptr != this->antsTimer)
+   {
+      this->antsTimer->stop();
+      DELLPTR(this->antsTimer);
+   }
+
    DELLPTR(this->ui);
 }
 
@@ -60,6 +67,12 @@ void MainWindow::generateMaze()
 {
    emit Logger::getInstance().log("Maze generation...", LogWidget::LogLevel::INFO);
    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+   if(nullptr != this->antsTimer)
+   {
+      this->antsTimer->stop();
+      DELLPTR(this->antsTimer);
+   }
 
    //generate whole maze
    if(false == this->settings.isAnimationEnabled())
@@ -220,6 +233,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionExit_triggered()
 {
+
    QApplication::exit();
 }
 
@@ -265,14 +279,20 @@ void MainWindow::on_actionSwarm_intelligence_triggered()
 
 void MainWindow::on_actionRun_ants_triggered()
 {
-   QTimer* timer = new QTimer;
-   timer->setInterval(this->settings.getAnimationTime());
-   connect(&this->antsManager, &AntsManager::antsFinishedMaze, timer, &QTimer::deleteLater);
-   connect(timer, &QTimer::timeout, this, [this]()
+   if(nullptr != this->antsTimer)
+   {
+      this->antsTimer->stop();
+      DELLPTR(this->antsTimer);
+   }
+
+   this->antsTimer = new QTimer;
+   this->antsTimer->setInterval(this->settings.getAnimationTime());
+   connect(&this->antsManager, &AntsManager::antsFinishedMaze, this->antsTimer, &QTimer::deleteLater);
+   connect(this->antsTimer, &QTimer::timeout, this, [this]()
       {
          this->on_actionAnts_step_triggered();
       });
-   timer->start();
+   this->antsTimer->start();
 }
 
 void MainWindow::on_actionShow_shortest_path_triggered()
@@ -316,10 +336,16 @@ void MainWindow::loadMazeFromFile(const QString& path)
 
          this->maze = tempMaze;
 
-         //clear view and display loaded maze 
+         this->settings.setMazeHeight(this->maze->getHeight());
+         this->settings.setMazeWidth(this->maze->getWidth());
+
+         //clear view and display loaded maze
          this->ui->graphicsView->clear();
-         this->ui->graphicsView->addMazeToScene(this->maze);
-         this->ui->graphicsView->clearMarkers();
+         if(true == this->settings.isVisualize())
+         {
+            this->ui->graphicsView->addMazeToScene(this->maze);
+            this->ui->graphicsView->clearMarkers();
+         }
 
          //save last path
          this->settings.setLastMazePath(path);

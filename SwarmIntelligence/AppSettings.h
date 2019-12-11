@@ -54,7 +54,7 @@ public:
    void setTileSize(int val);
    void setAnimationTime(int val);
    void setAntsAnimationTime(int val);
-   void setConstNumberOfAnts(int val);
+   void setNumberOfAnts(int val);
    void setAntSize(int val);
 
    void setAnimationEnabled(bool val);

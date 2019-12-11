@@ -20,7 +20,6 @@ Maze::Maze(uint32_t width, uint32_t height)
    }
 
 
-
    this->startingPoint.first = 0;
    this->startingPoint.second = 0;
 

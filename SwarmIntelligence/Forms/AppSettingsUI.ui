@@ -125,7 +125,7 @@
       <item row="0" column="0">
        <widget class="QRadioButton" name="radioButton_noStartingMaze">
         <property name="text">
-         <string>Brak początkowego labiryntu</string>
+         <string>Without starting maze</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -135,7 +135,7 @@
       <item row="1" column="0">
        <widget class="QRadioButton" name="radioButton_loadMazeFromFileOnStart">
         <property name="text">
-         <string>Wczytaj ostatni labirynt z pliku</string>
+         <string>Load maze from file on start</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -145,7 +145,7 @@
       <item row="2" column="0">
        <widget class="QRadioButton" name="radioButton_generateMazeOnStart">
         <property name="text">
-         <string>Wygeneruj nowy na start</string>
+         <string>Generate new maze on start</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -307,7 +307,7 @@
       <item row="6" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Ants animation</string>
+         <string>Ants animation time</string>
         </property>
        </widget>
       </item>
