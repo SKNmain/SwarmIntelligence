@@ -22,6 +22,7 @@ void AntsManager::initialize(Maze* maze)
    //
    //
    this->ants.clear();
+   this->antsMarkers.clear();
    this->maze = maze;
 
    int numberOfAnts = 0;

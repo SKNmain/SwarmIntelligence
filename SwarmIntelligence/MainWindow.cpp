@@ -17,7 +17,8 @@ MainWindow::MainWindow(QWidget* parent)
 {
    this->ui->setupUi(this);
 
-   this->antsTimer = new QTimer;
+
+
 
    this->ui->graphicsView->initSettings(&this->settings);
 
@@ -69,6 +70,8 @@ void MainWindow::generateMaze()
 {
    emit Logger::getInstance().log("Maze generation...", LogWidget::LogLevel::INFO);
    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+   this->ui->actionSwarm_intelligence->setEnabled(true);
 
    if(nullptr != this->antsTimer)
    {
@@ -260,15 +263,10 @@ void MainWindow::on_actionSwarm_intelligence_triggered()
 {
    if(nullptr != this->maze && true == this->maze->isGeneratingFinished())
    {
+      this->ui->graphicsView->clearAnts();
       this->ui->graphicsView->clearMarkers();
       this->antsManager.initialize(this->maze);
       this->antSolverStepsCounter = 0;
-
-      connect(&this->antsManager, &AntsManager::antsFinishedMaze, this, [this]()
-         {
-            emit Logger::getInstance().log(tr("Ant finished maze\nSteps: %1").arg(QString::number(this->antSolverStepsCounter)),
-               LogWidget::LogLevel::INFO);
-         });
 
       this->ui->actionAnts_step->setEnabled(true);
       this->ui->actionRun_ants->setEnabled(true);
@@ -281,19 +279,28 @@ void MainWindow::on_actionSwarm_intelligence_triggered()
 
 void MainWindow::on_actionRun_ants_triggered()
 {
-   if(nullptr != this->antsTimer)
-   {
-      this->antsTimer->stop();
-   }
-
-   this->antsTimer->disconnect();
-   this->antsTimer->setInterval(this->settings.getAnimationTime());
+   this->antsTimer = new QTimer;
    connect(&this->antsManager, &AntsManager::antsFinishedMaze, this->antsTimer, &QTimer::deleteLater);
    connect(this->antsTimer, &QTimer::timeout, this, [this]()
       {
          this->on_actionAnts_step_triggered();
       });
+
+   connect(&this->antsManager, &AntsManager::antsFinishedMaze, this, [this]()
+      {
+         emit Logger::getInstance().log(tr("Ant finished maze\nSteps: %1").arg(QString::number(this->antSolverStepsCounter)),
+            LogWidget::LogLevel::INFO);
+         this->ui->actionAnts_step->setEnabled(false);
+         this->ui->actionSwarm_intelligence->setEnabled(true);
+         DELL_QT_PTR(this->antsTimer);
+      });
+   this->antsTimer->setInterval(this->settings.getAnimationTime());
    this->antsTimer->start();
+
+   //block actions until ants solve maze
+   this->ui->actionSwarm_intelligence->setEnabled(false);
+   this->ui->actionAnts_step->setEnabled(false);
+   this->ui->actionRun_ants->setEnabled(false);
 }
 
 void MainWindow::on_actionShow_shortest_path_triggered()

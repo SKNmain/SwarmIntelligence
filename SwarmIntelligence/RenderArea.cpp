@@ -302,7 +302,6 @@ void RenderArea::drawAnts(const AntsManager& antsManager)
 {
    //clear
    clearAnts();
-   clearMarkers();
 
    //map ants to their position, (to simplify display on the same position)
    std::map<std::pair<int, int>, std::vector<const Ant*>> visitedPosition;
@@ -335,6 +334,7 @@ void RenderArea::drawAnts(const AntsManager& antsManager)
       this->scene->addItem(item);
       this->antsGraphics.push_back(item);
    }
+
 }
 
 QGraphicsRectItem* RenderArea::createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor)
