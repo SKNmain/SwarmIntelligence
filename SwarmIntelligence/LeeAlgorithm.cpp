@@ -161,7 +161,6 @@ void LeeAlgorithm::solveMaze(Maze* maze)
    std::pair<int, int> lastPoint;
    std::pair<int, int> minPoint;
    std::pair<int, int> temp;
-   bool first = true;
    bool notFinished = true;
    int curDist = leeArray[endPoint.second][endPoint.first];
 

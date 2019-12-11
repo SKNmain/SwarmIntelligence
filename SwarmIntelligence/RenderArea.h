@@ -23,7 +23,7 @@ public:
 
    void initSettings(const AppSettings* settings);
 
-   void addMazeToScene(const Maze& maze);
+   void addMazeToScene(const Maze* maze);
    void clear();
 
    bool saveScreenshot(const QString& filePath);
@@ -33,7 +33,7 @@ public:
    void renderAnts(const AntsManager& antsManager);
 
    void clearAnts();
-   void clearAntsMarkersFromScene();
+   void clearMarkers();
    void clearShortestWayTiles();
    void clearSceneElements();
 

@@ -6,8 +6,8 @@ class StackMazeGenerator : public MazeGenerator_I
 {
 public:
 
-   Maze* generateMaze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth) override;
-   Maze* generateMazeStepByStep(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth) override;
+   Maze* generateMaze(uint32_t width, uint32_t height) override;
+   Maze* generateMazeStepByStep(uint32_t width, uint32_t height) override;
    void nextMazeGenerationStep(Maze* maze) override;
 
 private:

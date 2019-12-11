@@ -1,19 +1,18 @@
 #include "Maze.h"
-#include "RandGen.h"
+#include <filesystem>
+#include <fstream>
+#include "Logger.hpp"
 
-Maze::Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidth, uint32_t markerSize)
+Maze::Maze(uint32_t width, uint32_t height)
 {
    this->width = width;
    this->height = height;
 
-   this->markerSize = markerSize;
-   this->tileSize = tileSize;
-   this->pathWidth = pathWidth;
 
-   for (uint32_t y = 0; y < this->height; ++y)
+   for(uint32_t y = 0; y < this->height; ++y)
    {
       std::vector<int> temp;
-      for (uint32_t x = 0; x < this->width; ++x)
+      for(uint32_t x = 0; x < this->width; ++x)
       {
          temp.push_back(0);
       }
@@ -30,12 +29,12 @@ Maze::Maze(uint32_t width, uint32_t height, uint32_t tileSize, uint32_t pathWidt
 }
 
 
-std::pair<int, int> Maze::getStartingPoint() const 
+std::pair<int, int> Maze::getStartingPoint() const
 {
    return this->startingPoint;
 }
 
-std::pair<int, int> Maze::getEndPoint() const 
+std::pair<int, int> Maze::getEndPoint() const
 {
    return this->endPoint;
 }
@@ -50,6 +49,122 @@ bool Maze::isGeneratingFinished() const
    return this->generatingFinished;
 }
 
+bool Maze::serializeToFile(const std::string& fileName)
+{
+   bool rV = false;
+
+   std::ofstream output(fileName, std::ios::out | std::ios::trunc);
+   if(true == output.is_open())
+   {
+      output << this->startingPoint.first << " " << this->startingPoint.second << std::endl;
+      output << this->endPoint.first << " " << this->endPoint.second << std::endl;
+      output << this->width << " " << this->height << std::endl;
+
+      output << "Maze:" << std::endl;
+
+      for(const auto& row : this->mazeArray)
+      {
+         for(const auto& tile : row)
+         {
+            output << tile << " ";
+         }
+         output << std::endl;
+      }
+      output << std::endl;
+      output << "ShortestWay: " << std::endl;
+
+      if(false == this->shortestWayArray.empty())
+      {
+         for(const auto& row : this->shortestWayArray)
+         {
+            for(const auto& tile : row)
+            {
+               output << std::setw(2) << tile << " ";
+            }
+            output << std::endl;
+         }
+      }
+
+      output.close();
+
+      rV = true;
+   }
+
+   return rV;
+}
+
+Maze* Maze::serializeFromFile(const std::string& fileName)
+{
+   Maze* maze = nullptr;
+   if(true == std::filesystem::exists(fileName))
+   {
+      std::ifstream inputFile(fileName);
+      if(true == inputFile.is_open())
+      {
+         std::string temp;
+         int mazeWidth = 0;
+         int mazeHeight = 0;
+         std::pair<int, int> startingPoint{ 0, 0 };
+         std::pair<int, int> endPoint{ 0, 0 };
+
+         std::vector<std::vector<int>> mazeArray;
+         std::vector<std::vector<int>> shortestWayArray;
+
+         //get starting point
+         inputFile >> startingPoint.first;
+         inputFile >> startingPoint.second;
+
+         //get end point
+         inputFile >> endPoint.first;
+         inputFile >> endPoint.second;
+
+         //get size of maze
+         inputFile >> mazeWidth;
+         inputFile >> mazeHeight;
+
+         inputFile >> temp;
+
+         if(temp == "Maze:")
+         {
+            for(int y = 0; y < mazeHeight; ++y)
+            {
+               std::vector<int> row;
+               for(int x = 0; x < mazeHeight; ++x)
+               {
+                  int cell;
+                  inputFile >> cell;
+                  row.push_back(cell);
+               }
+               mazeArray.push_back(row);
+            }
+
+            inputFile >> temp;
+            if(temp == "ShortestWay:")
+            {
+               for(int y = 0; y < mazeHeight; ++y)
+               {
+                  std::vector<int> row;
+                  for(int x = 0; x < mazeHeight; ++x)
+                  {
+                     int cell;
+                     inputFile >> cell;
+                     row.push_back(cell);
+                  }
+                  shortestWayArray.push_back(row);
+               }
+            }
+
+            maze = new Maze(mazeWidth, mazeHeight);
+            maze->mazeArray = mazeArray;
+            maze->shortestWayArray = shortestWayArray;
+            maze->finishedGenerating();
+         }
+      }
+   }
+
+   return maze;
+}
+
 uint32_t Maze::getHeight() const
 {
    return this->height;
@@ -59,20 +174,4 @@ uint32_t Maze::getWidth() const
 {
    return this->width;
 }
-
-uint32_t Maze::getMarkerSize() const
-{
-   return this->markerSize;
-}
-
-uint32_t Maze::getTileSize() const
-{
-   return this->tileSize;
-}
-
-uint32_t Maze::getPathWidth() const
-{
-   return this->pathWidth;
-}
-
 
