@@ -46,7 +46,9 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       int tempX = this->pos.first;
       int tempY = this->pos.second;
       bool deadEnd = false;
-      if (road.size() == 1 && this->first == false) {
+
+      if (road.size() == 1 && this->first == false) 
+      {
          deadEnd = true;
       }
 
@@ -95,7 +97,9 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       {
          rVMarker = {Marker::MarkerType::NOT_FULLY_DISCOVER_PATH, this->pos, this->lastPos };
       }
-      if (changeNextYellowToRed == true) {
+
+      if (changeNextYellowToRed == true)
+      {
          for (const auto& mark : surrMarkers)
          {
             if (mark.getX() == this->pos.first && mark.getY() == this->pos.second)

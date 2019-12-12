@@ -199,42 +199,42 @@ void AppSettings::setAntColor(const QColor& color)
 
 void AppSettings::setVisualizeEnabled(bool val)
 {
-   on_checkBox_visualize_stateChanged(val);
+   this->ui->checkBox_visualize->setChecked(val);
 }
 
 void AppSettings::setAnimationTime(int val)
 {
-   on_spinBox_animationTime_valueChanged(val);
+   this->ui->spinBox_animationTime->setValue(val);
 }
 
 void AppSettings::setAnimationEnabled(bool val)
 {
-   on_checkBox_animationEnabled_stateChanged(val);
+   this->ui->checkBox_animationEnabled->setChecked(val);
 }
 
 void AppSettings::setMazeWidth(int val)
 {
-   on_spinBox_mazeWidth_valueChanged(val);
+   this->ui->spinBox_mazeWidth->setValue(val);
 }
 
 void AppSettings::setMazeHeight(int val)
 {
-   on_spinBox_mazeHeight_valueChanged(val);
+   this->ui->spinBox_mazeHeight->setValue(val);
 }
 
 void AppSettings::setMarkerSize(int val)
 {
-   on_spinBox_markerSize_valueChanged(val);
+   this->ui->spinBox_markerSize->setValue(val);
 }
 
 void AppSettings::setPathSize(int val)
 {
-   on_spinBox_pathSize_valueChanged(val);
+   this->ui->spinBox_pathSize->setValue(val);
 }
 
 void AppSettings::setTileSize(int val)
 {
-   on_spinBox_tileSize_valueChanged(val);
+   this->ui->spinBox_tileSize->setValue(val);
 }
 
 void AppSettings::on_spinBox_markerSize_valueChanged(int val)

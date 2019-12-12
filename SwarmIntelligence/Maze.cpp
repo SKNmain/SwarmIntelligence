@@ -128,7 +128,7 @@ Maze* Maze::serializeFromFile(const std::string& fileName)
             for(int y = 0; y < mazeHeight; ++y)
             {
                std::vector<int> row;
-               for(int x = 0; x < mazeHeight; ++x)
+               for(int x = 0; x < mazeWidth; ++x)
                {
                   int cell;
                   inputFile >> cell;
@@ -143,7 +143,7 @@ Maze* Maze::serializeFromFile(const std::string& fileName)
                for(int y = 0; y < mazeHeight; ++y)
                {
                   std::vector<int> row;
-                  for(int x = 0; x < mazeHeight; ++x)
+                  for(int x = 0; x < mazeWidth; ++x)
                   {
                      int cell;
                      inputFile >> cell;

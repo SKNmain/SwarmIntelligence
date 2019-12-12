@@ -57,11 +57,11 @@ MainWindow::~MainWindow()
 
    DELLPTR(this->stepRenderingTimer);
 
-   if(nullptr != this->antsTimer)
+   if(nullptr != this->antsTimer && true == this->antsTimer->isActive())
    {
       this->antsTimer->stop();
-      DELLPTR(this->antsTimer);
    }
+   DELLPTR(this->antsTimer);
 
    DELLPTR(this->ui);
 }
@@ -354,6 +354,8 @@ void MainWindow::loadMazeFromFile(const QString& path)
             this->ui->graphicsView->addMazeToScene(this->maze);
             this->ui->graphicsView->clearMarkers();
          }
+
+         this->ui->actionGenerate_shortest_path->setEnabled(true);
 
          //save last path
          this->settings.setLastMazePath(path);

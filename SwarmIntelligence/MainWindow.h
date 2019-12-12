@@ -59,7 +59,7 @@ private:
    //temporary var
    int antSolverStepsCounter = 0;
 
-   QTimer* antsTimer ;
+   QTimer* antsTimer = nullptr;
    QTimer* stepRenderingTimer = nullptr;
    AppSettings settings;
    AntsManager antsManager{ &settings };
