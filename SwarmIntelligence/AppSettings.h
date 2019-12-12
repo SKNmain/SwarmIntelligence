@@ -18,6 +18,13 @@ public:
    explicit AppSettings(QWidget* parent = nullptr);
    ~AppSettings();
 
+   enum StartingMaze
+   {
+      LOAD_FROM_FILE,
+      GENERATE_NEW,
+      NO_STARTING
+   };
+
    int getMazeWidth() const;
    int getMazeHeight() const;
    int getMarkerSize() const;
@@ -28,13 +35,17 @@ public:
    int getConstNumberOfAntsSize() const;
    int getAntsAnimationTime() const;
 
+   StartingMaze startingMazeStatus() const;
+   QString pathToMaze() const;
+
    bool isAnimationEnabled() const;
    bool isVisualize() const;
-   bool isGenerateMazeOnStart() const;
    bool isConstNumberOfAntsEnabled() const;
 
    QColor getAntsColor() const;
    void setAntColor(const QColor& color);
+
+   void setStartingMazeStatus(StartingMaze startingMaze);
 
    void setMazeWidth(int val);
    void setMazeHeight(int val);
@@ -43,13 +54,14 @@ public:
    void setTileSize(int val);
    void setAnimationTime(int val);
    void setAntsAnimationTime(int val);
-   void setConstNumberOfAnts(int val);
+   void setNumberOfAnts(int val);
    void setAntSize(int val);
 
    void setAnimationEnabled(bool val);
    void setConstNumberOfAnts(bool val);
-   void setGenerateMazeOnStart(bool val);
    void setVisualizeEnabled(bool val);
+
+   void setLastMazePath(const QString& path);
 
 private slots:
    void on_spinBox_markerSize_valueChanged(int val);
@@ -64,13 +76,14 @@ private slots:
 
    void on_checkBox_animationEnabled_stateChanged(int state);
    void on_checkBox_visualize_stateChanged(int state);
-   void on_checkBox_generateMazeOnStart_stateChanged(int state);
    void on_checkBox_isConstNumberOfAnts_stateChanged(int state);
 
    void on_pushButton_selectAntColor_clicked();
 
 
-
+   void on_radioButton_noStartingMaze_clicked();
+   void on_radioButton_loadMazeFromFileOnStart_clicked();
+   void on_radioButton_generateMazeOnStart_clicked();
 
 private:
    void setStartingValue(const QString& optName, int val, QSpinBox* widget);
@@ -83,19 +96,23 @@ private:
 
 
 
-   const char* MAZE_WIDTH_TAG = "MazeWidth";
-   const char* MAZE_HEIGHT_TAG = "MazeHeight";
-   const char* TILE_SIZE_TAG = "TileSize";
-   const char* MARKER_SIZE_TAG = "MarkerSize";
-   const char* PATH_SIZE_TAG = "PathSize";
-   const char* ANIMATION_ENABLED_TAG = "AnimEnabled";
-   const char* ANIMATION_TIME_TAG = "AnimTime";
-   const char* VISUALIZE_TAG = "Visualize";
-   const char* GENERATE_MAZE_ON_START_TAG = "GenMazeOnStart";
-   const char* ANT_SIZE_TAG = "AntSize";
-   const char* ANT_COLOR_TAG = "AntsColor";
-   const char* ANT_ANIMATION_TIME_TAG = "AntsAnimationTime";
-   const char* ANT_CONST_NUMBER_ENABLED_TAG = "ConstNumberAntsEnabled";
-   const char* ANT_CONST_NUMBER_TAG = "ConstNumberAnts";
+   static inline const char* MAZE_WIDTH_TAG = "MazeWidth";
+   static inline const char* MAZE_HEIGHT_TAG = "MazeHeight";
+   static inline const char* TILE_SIZE_TAG = "TileSize";
+   static inline const char* MARKER_SIZE_TAG = "MarkerSize";
+   static inline const char* PATH_SIZE_TAG = "PathSize";
+   static inline const char* ANIMATION_ENABLED_TAG = "AnimEnabled";
+   static inline const char* ANIMATION_TIME_TAG = "AnimTime";
+   static inline const char* VISUALIZE_TAG = "Visualize";
+   static inline const char* STARTING_MAZE_TAG = "MazeOnStart";
+   static inline const char* ANT_SIZE_TAG = "AntSize";
+   static inline const char* ANT_COLOR_TAG = "AntsColor";
+   static inline const char* ANT_ANIMATION_TIME_TAG = "AntsAnimationTime";
+   static inline const char* ANT_CONST_NUMBER_ENABLED_TAG = "ConstNumberAntsEnabled";
+   static inline const char* ANT_CONST_NUMBER_TAG = "ConstNumberAnts";
+
+public:
+   static inline const char* PATH_TO_LAST_MAZE_FILE_TAG = "LastMaze";
 };
 
+Q_DECLARE_METATYPE(AppSettings::StartingMaze);

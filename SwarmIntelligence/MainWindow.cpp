@@ -17,20 +17,35 @@ MainWindow::MainWindow(QWidget* parent)
 {
    this->ui->setupUi(this);
 
+
+
+
    this->ui->graphicsView->initSettings(&this->settings);
 
    this->ui->actionStop_generating->setEnabled(false);
    this->ui->actionGenerate_shortest_path->setEnabled(false);
    this->ui->actionAnts_step->setEnabled(false);
    this->ui->actionRun_ants->setEnabled(false);
+   //   this->ui->actionSave_maze_to_file->setEnabled(false);
 
    this->ui->splitter->setSizes({ 1000, 50 });
 
    connect(&Logger::getInstance(), &Logger::log, this->ui->logWidget, &LogWidget::logQStr);
 
-   if(true == this->settings.isGenerateMazeOnStart())
+   switch(this->settings.startingMazeStatus())
+   {
+   case AppSettings::LOAD_FROM_FILE:
+   {
+      loadMazeFromFile(this->settings.pathToMaze());
+      this->ui->actionShow_shortest_path->setChecked(false);
+      break;
+   }
+   case AppSettings::GENERATE_NEW:
    {
       this->on_actionGenerate_maze_triggered();
+      break;
+   }
+   case AppSettings::NO_STARTING: break;
    }
 }
 
@@ -41,6 +56,13 @@ MainWindow::~MainWindow()
    DELLPTR(this->maze);
 
    DELLPTR(this->stepRenderingTimer);
+
+   if(nullptr != this->antsTimer && true == this->antsTimer->isActive())
+   {
+      this->antsTimer->stop();
+   }
+   DELLPTR(this->antsTimer);
+
    DELLPTR(this->ui);
 }
 
@@ -48,6 +70,14 @@ void MainWindow::generateMaze()
 {
    emit Logger::getInstance().log("Maze generation...", LogWidget::LogLevel::INFO);
    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+   this->ui->actionSwarm_intelligence->setEnabled(true);
+
+   if(nullptr != this->antsTimer)
+   {
+      this->antsTimer->stop();
+      DELLPTR(this->antsTimer);
+   }
 
    //generate whole maze
    if(false == this->settings.isAnimationEnabled())
@@ -64,7 +94,7 @@ void MainWindow::generateMaze()
       setActionEnabled(false);
 
       //get pointer to new maze
-      this->maze = this->mazeGenerator->generateMazeStepByStep(this->settings.getMazeWidth(), this->settings.getMazeHeight(), this->settings.getTileSize(), this->settings.getPathSize());
+      this->maze = this->mazeGenerator->generateMazeStepByStep(this->settings.getMazeWidth(), this->settings.getMazeHeight());
 
       //stop timer for sure
       if(nullptr != this->stepRenderingTimer)
@@ -80,16 +110,17 @@ void MainWindow::generateMaze()
       this->stepRenderingTimer->setInterval(this->settings.getAnimationTime());
       connect(stepRenderingTimer, &QTimer::timeout, this, [this]()
          {
+            this->ui->graphicsView->clearMarkers();
+
             if(false == this->maze->isGeneratingFinished())
             {
                this->mazeGenerator->nextMazeGenerationStep(this->maze);
-               this->ui->graphicsView->addMazeToScene(*maze);
+               this->ui->graphicsView->addMazeToScene(maze);
             }
             else
             {
                this->stepRenderingTimer->stop();
                emit Logger::getInstance().log("Finished maze generation.", LogWidget::LogLevel::INFO);
-               this->ui->graphicsView->clearAntsMarkersFromScene();
 
                QApplication::restoreOverrideCursor();
                //enable actions in menu
@@ -103,14 +134,14 @@ void MainWindow::generateMaze()
 
 void MainWindow::generateWholeMaze()
 {
-   this->maze = this->mazeGenerator->generateMaze(this->settings.getMazeWidth(), this->settings.getMazeHeight(), this->settings.getTileSize(), this->settings.getPathSize());
+   this->maze = this->mazeGenerator->generateMaze(this->settings.getMazeWidth(), this->settings.getMazeHeight());
    //remove last visited cell markers
    //this->maze->removeMarkers();
    if(true == this->settings.isVisualize())
    {
-      this->ui->graphicsView->addMazeToScene(*maze);
+      this->ui->graphicsView->addMazeToScene(maze);
    }
-   this->ui->graphicsView->clearAntsMarkersFromScene();
+   this->ui->graphicsView->clearMarkers();
 }
 
 void MainWindow::on_actionGenerate_maze_triggered()
@@ -151,6 +182,7 @@ void MainWindow::setActionEnabled(bool enabled)
 {
    this->ui->actionGenerate_maze->setEnabled(enabled);
    this->ui->actionGenerate_shortest_path->setEnabled(enabled);
+   this->ui->actionShow_shortest_path->setEnabled(enabled);
 
    this->ui->actionStop_generating->setEnabled(!enabled);
 }
@@ -161,10 +193,15 @@ void MainWindow::on_actionGenerate_shortest_path_triggered()
    {
       emit Logger::getInstance().log("Searching for shortest path in maze ...", LogWidget::LogLevel::INFO);
 
+      this->ui->graphicsView->clearShortestWayTiles();
+
       DELLPTR(this->mazeSolver);
       this->mazeSolver = new LeeAlgorithm;
       this->mazeSolver->solveMaze(this->maze);
+
+
       this->ui->graphicsView->drawShortestPath(this->maze);
+      this->ui->graphicsView->setVisibleShortestWay(this->ui->actionShow_shortest_path->isChecked());
 
       emit Logger::getInstance().log("Finished", LogWidget::LogLevel::INFO);
    }
@@ -201,6 +238,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionExit_triggered()
 {
+
    QApplication::exit();
 }
 
@@ -225,15 +263,10 @@ void MainWindow::on_actionSwarm_intelligence_triggered()
 {
    if(nullptr != this->maze && true == this->maze->isGeneratingFinished())
    {
-      this->ui->graphicsView->clearAntsMarkersFromScene();
+      this->ui->graphicsView->clearAnts();
+      this->ui->graphicsView->clearMarkers();
       this->antsManager.initialize(this->maze);
       this->antSolverStepsCounter = 0;
-
-      connect(&this->antsManager, &AntsManager::antsFinishedMaze, this, [this]()
-      {
-            emit Logger::getInstance().log(tr("Ant finished maze\nSteps: %1").arg(QString::number(this->antSolverStepsCounter)), 
-               LogWidget::LogLevel::INFO);
-      });
 
       this->ui->actionAnts_step->setEnabled(true);
       this->ui->actionRun_ants->setEnabled(true);
@@ -246,12 +279,102 @@ void MainWindow::on_actionSwarm_intelligence_triggered()
 
 void MainWindow::on_actionRun_ants_triggered()
 {
-   QTimer* timer = new QTimer;
-   timer->setInterval(this->settings.getAnimationTime());
-   connect(&this->antsManager, &AntsManager::antsFinishedMaze, timer, &QTimer::deleteLater);
-   connect(timer, &QTimer::timeout, this, [this]()
+   this->antsTimer = new QTimer;
+   connect(&this->antsManager, &AntsManager::antsFinishedMaze, this->antsTimer, &QTimer::deleteLater);
+   connect(this->antsTimer, &QTimer::timeout, this, [this]()
       {
          this->on_actionAnts_step_triggered();
       });
-   timer->start();
+
+   connect(&this->antsManager, &AntsManager::antsFinishedMaze, this, [this]()
+      {
+         emit Logger::getInstance().log(tr("Ant finished maze\nSteps: %1").arg(QString::number(this->antSolverStepsCounter)),
+            LogWidget::LogLevel::INFO);
+         this->ui->actionAnts_step->setEnabled(false);
+         this->ui->actionSwarm_intelligence->setEnabled(true);
+         DELL_QT_PTR(this->antsTimer);
+      });
+   this->antsTimer->setInterval(this->settings.getAnimationTime());
+   this->antsTimer->start();
+
+   //block actions until ants solve maze
+   this->ui->actionSwarm_intelligence->setEnabled(false);
+   this->ui->actionAnts_step->setEnabled(false);
+   this->ui->actionRun_ants->setEnabled(false);
+}
+
+void MainWindow::on_actionShow_shortest_path_triggered()
+{
+   this->ui->graphicsView->setVisibleShortestWay(this->ui->actionShow_shortest_path->isChecked());
+}
+
+void MainWindow::on_actionSave_maze_to_file_triggered()
+{
+   if(nullptr != this->maze)
+   {
+      const QString& path = QFileDialog::getSaveFileName(this, "Select file with serialized maze", "", "Maze file(*.m);;All files (*.*)");
+      if(false == path.isEmpty())
+      {
+         if(true == this->maze->serializeToFile(path.toStdString()))
+         {
+            //save last path
+            this->settings.setLastMazePath(path);
+
+            this->ui->graphicsView->setVisibleShortestWay(this->ui->actionShow_shortest_path->isChecked());
+
+            emit Logger::getInstance().log("Successfully saved serialized maze to file " + path, LogWidget::LogLevel::INFO);
+         }
+         else
+         {
+            emit Logger::getInstance().log("Cannot open file to serialize maze", LogWidget::LogLevel::ERR);
+         }
+      }
+   }
+}
+
+void MainWindow::loadMazeFromFile(const QString& path)
+{
+   if(false == path.isEmpty())
+   {
+      Maze* tempMaze = Maze::serializeFromFile(path.toStdString());
+      if(nullptr != tempMaze)
+      {
+         //delete old one
+         delete this->maze;
+
+         this->maze = tempMaze;
+
+         this->settings.setMazeHeight(this->maze->getHeight());
+         this->settings.setMazeWidth(this->maze->getWidth());
+
+         //clear view and display loaded maze
+         this->ui->graphicsView->clear();
+         if(true == this->settings.isVisualize())
+         {
+            this->ui->graphicsView->addMazeToScene(this->maze);
+            this->ui->graphicsView->clearMarkers();
+         }
+
+         this->ui->actionGenerate_shortest_path->setEnabled(true);
+
+         //save last path
+         this->settings.setLastMazePath(path);
+
+         emit Logger::getInstance().log("Successfully load serialized maze from file " + path, LogWidget::LogLevel::INFO);
+      }
+      else
+      {
+         emit Logger::getInstance().log("Cannot open file to deserialize maze", LogWidget::LogLevel::ERR);
+      }
+   }
+   else
+   {
+      emit Logger::getInstance().log("Path with maze is empty!", LogWidget::LogLevel::ERR);
+   }
+}
+
+void MainWindow::on_actionLoad_maze_to_file_triggered()
+{
+   const QString& path = QFileDialog::getOpenFileName(this, "Select file with serialized maze", "", "Maze file(*.m);;All files (*.*)");
+   loadMazeFromFile(path);
 }

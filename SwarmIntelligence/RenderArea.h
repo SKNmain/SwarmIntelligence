@@ -23,7 +23,7 @@ public:
 
    void initSettings(const AppSettings* settings);
 
-   void addMazeToScene(const Maze& maze);
+   void addMazeToScene(const Maze* maze);
    void clear();
 
    bool saveScreenshot(const QString& filePath);
@@ -32,7 +32,12 @@ public:
 
    void renderAnts(const AntsManager& antsManager);
 
-   void clearAntsMarkersFromScene();
+   void clearAnts();
+   void clearMarkers();
+   void clearShortestWayTiles();
+   void clearSceneElements();
+
+   void setVisibleShortestWay(bool enable);
 public slots:
    void wheelEvent(QWheelEvent* event)
    {
@@ -44,9 +49,10 @@ public slots:
 private:
    void drawAnts(const AntsManager& antsManager);
    void drawAntsMarkers(const std::vector<Marker>& antsMarkers);
-   void createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
+   QGraphicsRectItem* createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
    void createMarker(const Marker& marker);
 
+   void cleanUpGraphicsItems(std::vector<QGraphicsItem*>& items);
 
    QColor wallColor;
    QColor notVisitedTileColor;
@@ -61,9 +67,11 @@ private:
    std::vector<QGraphicsItem*> sceneElements;
    std::vector<QGraphicsItem*> antsGraphics;
    std::vector<QGraphicsItem*> markersGraphics;
+   std::vector<QGraphicsItem*> shortestWayTilesGraphics;
    QGraphicsScene* scene;
 
    const AppSettings* sett = nullptr;
 };
+
 
 

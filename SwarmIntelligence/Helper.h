@@ -12,4 +12,4 @@ if(nullptr != ptr)                      \
 {                                       \
    ptr->deleteLater();                  \
    ptr = nullptr;                       \
-}                                       \
+}                                       

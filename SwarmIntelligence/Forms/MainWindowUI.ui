@@ -124,6 +124,9 @@
     <addaction name="actionStop_generating"/>
     <addaction name="actionGenerate_shortest_path"/>
     <addaction name="separator"/>
+    <addaction name="actionLoad_maze_to_file"/>
+    <addaction name="actionSave_maze_to_file"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_maze_img_to_file"/>
     <addaction name="actionSettings"/>
     <addaction name="separator"/>
@@ -139,6 +142,7 @@
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionShow_shortest_path"/>
    </widget>
    <addaction name="menuMenu"/>
    <addaction name="menuView"/>
@@ -207,6 +211,27 @@
   <action name="actionRun_ants">
    <property name="text">
     <string>Run ants</string>
+   </property>
+  </action>
+  <action name="actionShow_shortest_path">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show shortest path</string>
+   </property>
+  </action>
+  <action name="actionLoad_maze_to_file">
+   <property name="text">
+    <string>Load maze to file</string>
+   </property>
+  </action>
+  <action name="actionSave_maze_to_file">
+   <property name="text">
+    <string>Save maze to file</string>
    </property>
   </action>
  </widget>

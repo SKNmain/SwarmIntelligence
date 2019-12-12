@@ -22,6 +22,7 @@ void AntsManager::initialize(Maze* maze)
    //
    //
    this->ants.clear();
+   this->antsMarkers.clear();
    this->maze = maze;
 
    int numberOfAnts = 0;
@@ -63,15 +64,16 @@ void AntsManager::step()
 
       if(optionalMarker)
       {
-         /*const auto it = std::find_if(this->antsMarkers.begin(), this->antsMarkers.end(), [optionalMarker](const Marker& marker)
-            {
-               return optionalMarker->getPos() == marker.getPos();
-            });
+         //const auto it = std::find_if(this->antsMarkers.begin(), this->antsMarkers.end(), [optionalMarker](const Marker& marker)
+         //   {
+         //      return optionalMarker->getPos() == marker.getPos();
+         //   });
 
-         if(it == this->antsMarkers.end())
-         {
-         }*/
-            this->antsMarkers.push_back(*optionalMarker);
+         //if(it != this->antsMarkers.end())
+         //{
+         //   this->antsMarkers.erase(it);
+         //}
+         this->antsMarkers.push_back(*optionalMarker);
       }
 
       //temporary

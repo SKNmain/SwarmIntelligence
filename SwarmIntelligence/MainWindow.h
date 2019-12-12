@@ -40,6 +40,13 @@ private slots:
 
    void on_actionRun_ants_triggered();
 
+   void on_actionShow_shortest_path_triggered();
+
+   void on_actionSave_maze_to_file_triggered();
+   void loadMazeFromFile(const QString& path);
+
+   void on_actionLoad_maze_to_file_triggered();
+
 private:
    void setActionEnabled(bool enabled);
    void generateWholeMaze();
@@ -52,6 +59,7 @@ private:
    //temporary var
    int antSolverStepsCounter = 0;
 
+   QTimer* antsTimer = nullptr;
    QTimer* stepRenderingTimer = nullptr;
    AppSettings settings;
    AntsManager antsManager{ &settings };

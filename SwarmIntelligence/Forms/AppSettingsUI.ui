@@ -123,6 +123,67 @@
      </property>
      <layout class="QFormLayout" name="formLayout_4">
       <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButton_noStartingMaze">
+        <property name="text">
+         <string>Without starting maze</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="radioButton_loadMazeFromFileOnStart">
+        <property name="text">
+         <string>Load maze from file on start</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QRadioButton" name="radioButton_generateMazeOnStart">
+        <property name="text">
+         <string>Generate new maze on start</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="checkBox_visualize">
+        <property name="text">
+         <string>Visualize</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_animationEnabled">
+        <property name="text">
+         <string>Generation maze animation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_animationTime">
+        <property name="text">
+         <string>Animation time [ms]</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QSpinBox" name="spinBox_animationTime">
+        <property name="minimum">
+         <number>100</number>
+        </property>
+        <property name="maximum">
+         <number>100000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
        <widget class="QCheckBox" name="checkBox_generateMazeOnStart">
         <property name="minimumSize">
          <size>
@@ -132,37 +193,6 @@
         </property>
         <property name="text">
          <string>Generate maze on start</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBox_visualize">
-        <property name="text">
-         <string>Visualize</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_animationEnabled">
-        <property name="text">
-         <string>Generation maze animation</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_animationTime">
-        <property name="text">
-         <string>Animation time [ms]</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QSpinBox" name="spinBox_animationTime">
-        <property name="minimum">
-         <number>100</number>
-        </property>
-        <property name="maximum">
-         <number>100000</number>
         </property>
        </widget>
       </item>
@@ -277,7 +307,7 @@
       <item row="6" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Ants animation</string>
+         <string>Ants animation time</string>
         </property>
        </widget>
       </item>
@@ -339,4 +369,7 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>
