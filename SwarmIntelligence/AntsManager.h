@@ -1,7 +1,7 @@
 #pragma once
 #include "Ant.h"
 #include <vector>
-#include <qobject.h>
+#include <QObject>
 #include "Marker.h"
 
 class Maze;

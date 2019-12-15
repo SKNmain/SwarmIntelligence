@@ -14,16 +14,38 @@
    <string>Swarm intelligence</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <property name="childrenCollapsible">
-       <bool>false</bool>
-      </property>
-      <widget class="RenderArea" name="graphicsView"/>
+      <widget class="QWidget" name="">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="RenderArea" name="graphicsView"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_uuid">
+          <property name="text">
+           <string>UUID: </string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
       <widget class="QDockWidget" name="dockWidget_logger">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -144,7 +166,17 @@
     </property>
     <addaction name="actionShow_shortest_path"/>
    </widget>
+   <widget class="QMenu" name="menuDB">
+    <property name="title">
+     <string>DB</string>
+    </property>
+    <addaction name="actionSave_maze_to_DB"/>
+    <addaction name="separator"/>
+    <addaction name="actionBrowse_mazes"/>
+    <addaction name="actionBrowse_reports"/>
+   </widget>
    <addaction name="menuMenu"/>
+   <addaction name="menuDB"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -162,6 +194,7 @@
    <addaction name="actionSwarm_intelligence"/>
    <addaction name="actionAnts_step"/>
    <addaction name="actionRun_ants"/>
+   <addaction name="actionDebug_action"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -232,6 +265,29 @@
   <action name="actionSave_maze_to_file">
    <property name="text">
     <string>Save maze to file</string>
+   </property>
+  </action>
+  <action name="actionDebug_action">
+   <property name="text">
+    <string>Debug action</string>
+   </property>
+  </action>
+  <action name="actionBrowse_mazes">
+   <property name="text">
+    <string>Browse mazes</string>
+   </property>
+   <property name="toolTip">
+    <string>Browse mazes</string>
+   </property>
+  </action>
+  <action name="actionBrowse_reports">
+   <property name="text">
+    <string>Browse reports</string>
+   </property>
+  </action>
+  <action name="actionSave_maze_to_DB">
+   <property name="text">
+    <string>Save maze to DB</string>
    </property>
   </action>
  </widget>

@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     AboutDialog.cpp \
     AppSettings.cpp \
+    MazesDbBrowser.cpp \
     RenderArea.cpp \
     main.cpp \
     MainWindow.cpp
@@ -26,12 +27,14 @@ HEADERS += \
     AboutDialog.h \
     AppSettings.h \
     MainWindow.h \
+    MazesDbBrowser.h \
     RenderArea.h
 
 FORMS += \
     Forms/AboutDialog.ui \
     Forms/AppSettingsUI.ui \
     Forms/MainWindowUI.ui \
+    Forms/MazesDbBrowser.ui \
     Forms/RenderAreaUI.ui \
     Forms/SettingsUI.ui \
     MainWindow.ui \
