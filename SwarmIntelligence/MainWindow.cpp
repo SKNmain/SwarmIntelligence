@@ -150,6 +150,9 @@ void MainWindow::getMazeFromDBAndLoad(Maze* maze)
    this->ui->label_uuid->setText("UUID: " + this->maze->getUuid());
    this->ui->graphicsView->clearMarkers();
 
+   this->settings.setMazeHeight(this->maze->getHeight());
+   this->settings.setMazeWidth(this->maze->getWidth());
+
    emit Logger::getInstance().log("Finished loading maze from DB.", LogWidget::LogLevel::INFO);
 }
 
