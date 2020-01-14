@@ -20,22 +20,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
    {
 
       std::vector<int> road;
-      if(Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
-      {
-         road.push_back(Maze::CELL_PATH_N);
-      }
-      if(Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
-      {
-         road.push_back(Maze::CELL_PATH_S);
-      }
-      if(Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
-      {
-         road.push_back(Maze::CELL_PATH_E);
-      }
-      if(Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
-      {
-         road.push_back(Maze::CELL_PATH_W);
-      }
+      roadCheck(road, tile);
       if(Maze::CELL_END == (tile & Maze::CELL_END))
       {
          //
@@ -50,47 +35,37 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       if (road.size() == 1 && this->first == false) 
       {
          deadEnd = true;
+         this->changeNextYellowToRed = true;
       }
-
       
-      do
+      //zamiast calej tej petli musi byc funkcja wyboru
+      std::pair<int, int> temp(this->pos.first, this->pos.second);
+      temp = chooseNextPos(road, surrMarkers);
+      /*do
       {
          tempX = this->pos.first;
          tempY = this->pos.second;
 
          int i = randGen.rand(0, road.size() - 1);
+         //tu musi isc
+
          tile = road[i];
 
-         if(Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
-         {
-            tempY += -1;
-         }
-         if(Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
-         {
-            tempY += 1;
-         }
-         if(Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
-         {
-            tempX += 1;
-         }
-         if(Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
-         {
-            tempX += -1;
-         }
+         tileCheck(tile, tempX, tempY);
 
          if (deadEnd)
          {
             this->changeNextYellowToRed = true;
          }
          
-      } while(false == endFoundChangeToBlue && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
-
+      } while(false == endFoundChangeToBlue && false == deadEnd && (tempX == this->lastPos.first && tempY == this->lastPos.second));
+      */
 
       this->lastPos.first = this->pos.first;
       this->lastPos.second = this->pos.second;
 
-      this->pos.first = tempX;
-      this->pos.second = tempY;
+      this->pos.first = temp.first;
+      this->pos.second = temp.second;
 
 
       if(road.size() >= 3)
@@ -132,26 +107,11 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
                }
             }
             std::vector<int> road;
-            if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
-            {
-               road.push_back(Maze::CELL_PATH_N);
-            }
-            if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
-            {
-               road.push_back(Maze::CELL_PATH_S);
-            }
-            if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
-            {
-               road.push_back(Maze::CELL_PATH_E);
-            }
-            if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
-            {
-               road.push_back(Maze::CELL_PATH_W);
-            }
+            roadCheck(road, tile);
             if (Maze::CELL_END == (tile & Maze::CELL_END))
             {
                //
-               this->endFoundChangeToBlue = true;
+               this->blueChangedGoToEnd = true;
                //return rVMarker;
             }
             int tempX = this->pos.first;
@@ -168,24 +128,9 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
                int i = randGen.rand(0, road.size() - 1);
                tile = road[i];
 
-               if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
-               {
-                  tempY += -1;
-               }
-               if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
-               {
-                  tempY += 1;
-               }
-               if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
-               {
-                  tempX += 1;
-               }
-               if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
-               {
-                  tempX += -1;
-               }
+               tileCheck(tile, tempX, tempY);
 
-            } while (false == endFoundChangeToBlue && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
+            } while (false == blueChangedGoToEnd && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
 
             this->lastPos.first = this->pos.first;
             this->lastPos.second = this->pos.second;
@@ -197,22 +142,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          else
          {
             std::vector<int> road;
-            if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
-            {
-               road.push_back(Maze::CELL_PATH_N);
-            }
-            if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
-            {
-               road.push_back(Maze::CELL_PATH_S);
-            }
-            if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
-            {
-               road.push_back(Maze::CELL_PATH_E);
-            }
-            if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
-            {
-               road.push_back(Maze::CELL_PATH_W);
-            }
+            roadCheck(road, tile);
             if (Maze::CELL_END == (tile & Maze::CELL_END))
             {
                
@@ -233,22 +163,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
                int i = randGen.rand(0, road.size() - 1);
                tile = road[i];
 
-               if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
-               {
-                  tempY += -1;
-               }
-               if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
-               {
-                  tempY += 1;
-               }
-               if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
-               {
-                  tempX += 1;
-               }
-               if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
-               {
-                  tempX += -1;
-               }
+               tileCheck(tile, tempX, tempY);
 
             } while (false == endFoundChangeToBlue && false == deadEnd && tempX == this->lastPos.first && tempY == this->lastPos.second);
 
@@ -263,6 +178,179 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
 
 
    return rVMarker;
+}
+
+void Ant::roadCheck(std::vector<int>& r, int tile)
+{
+   if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
+   {
+      r.push_back(Maze::CELL_PATH_N);
+   }
+   if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
+   {
+      r.push_back(Maze::CELL_PATH_S);
+   }
+   if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
+   {
+      r.push_back(Maze::CELL_PATH_E);
+   }
+   if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
+   {
+      r.push_back(Maze::CELL_PATH_W);
+   }
+
+}
+
+std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector<Marker>& surrMarkers)
+{
+   std::pair<int, int> choosenPos(this->pos.first, this->pos.second);
+   std::pair<int, int> temp(this->pos.first, this->pos.second);
+   std::pair<int, int> temp1(this->pos.first, this->pos.second);
+   if (this->endFoundChangeToBlue)
+   {
+      choosenPos = this->lastPos;
+      return choosenPos;
+   }
+   if (road.size() == 1 && this->first == false)
+   {
+      int tile = road[0];
+      tileCheck(tile, choosenPos.first, choosenPos.second);
+      return choosenPos;
+   }
+   int redCount = 0;
+   int yellowCount = 0;
+   int emptyCount = 0;
+
+   for (auto& r : road)
+   {
+      tileCheck(r, temp.first, temp.second);
+      for (const auto& mark : surrMarkers)
+      {
+         if (mark.getX() == temp.first && mark.getY() == temp.second)
+         {
+            if (mark.PATH_TO_EXIT)
+            {
+               choosenPos = temp;
+               return choosenPos;
+            }
+            else if (mark.CLOSED_PATH)
+            {
+               redCount++;
+            }
+            else if (mark.NOT_FULLY_DISCOVER_PATH) 
+            {
+               yellowCount++;
+            }
+            else
+            {
+               emptyCount++;
+            }
+         }
+
+      }
+   }
+
+   if (emptyCount > 0)
+   {
+      int i = randGen.rand(0, emptyCount - 1);
+      int count = 0;
+
+      for (auto& r : road)
+      {
+         tileCheck(r, temp.first, temp.second);
+         for (const auto& mark : surrMarkers)
+         {
+            if (mark.getX() == temp.first && mark.getY() == temp.second && !mark.PATH_TO_EXIT 
+               && !mark.NOT_FULLY_DISCOVER_PATH && !mark.CLOSED_PATH)
+            {
+               if (count == i)
+               {
+                  choosenPos.first = mark.getX();
+                  choosenPos.second = mark.getY();
+               }
+               else {
+                  count++;
+               }
+            }
+         }
+      }
+
+   }
+   else if (redCount == 1)
+   {
+      //inna opcja wykrycia utkniecia w zaulku, zobacz, czy dziala
+      //sprawdzam czy jedyna opcja zamiast cofniecia jest przejazd przez czerwona kropke
+      if (road.size() == 2)
+      {
+         tileCheck(road[0], temp.first, temp.second);
+         tileCheck(road[1], temp.first, temp.second);
+         for (const auto& mark : surrMarkers)
+         {
+            if (mark.getX() == temp.first && mark.getY() == temp.second
+               && mark.CLOSED_PATH && temp1 == this->lastPos)
+            {
+               choosenPos = temp;
+            }
+            else if (mark.getX() == temp1.first && mark.getY() == temp1.second
+               && mark.CLOSED_PATH && temp == this->lastPos)
+            {
+               choosenPos = temp1;
+            }
+         }
+      }
+
+
+      
+   }
+   else
+   {
+      int i = randGen.rand(0, yellowCount - 1);
+      int count = 0;
+
+      for (auto& r : road)
+      {
+         tileCheck(r, temp.first, temp.second);
+         for (const auto& mark : surrMarkers)
+         {
+            if (mark.getX() == temp.first && mark.getY() == temp.second 
+               && mark.NOT_FULLY_DISCOVER_PATH)
+            {
+               if (count == i)
+               {
+                  choosenPos.first = mark.getX();
+                  choosenPos.second = mark.getY();
+               }
+               else {
+                  count++;
+               }
+            }
+         }
+      }
+   }
+
+   return choosenPos;
+   
+}
+
+
+void Ant::tileCheck(int tile, int& tempX, int& tempY)
+{
+   if (Maze::CELL_PATH_N == (tile & Maze::CELL_PATH_N))
+   {
+      tempY += -1;
+   }
+   if (Maze::CELL_PATH_S == (tile & Maze::CELL_PATH_S))
+   {
+      tempY += 1;
+   }
+   if (Maze::CELL_PATH_E == (tile & Maze::CELL_PATH_E))
+   {
+      tempX += 1;
+   }
+   if (Maze::CELL_PATH_W == (tile & Maze::CELL_PATH_W))
+   {
+      tempX += -1;
+   }
 }
 
 

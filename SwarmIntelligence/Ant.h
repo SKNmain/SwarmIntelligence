@@ -15,12 +15,16 @@ public:
    int getID() const;
    int getX() const;
    int getY() const;
+
    std::pair<int, int> getPosition() const;
 
    bool isFinishedMaze() const;
 
 private:
    static RandGen<std::knuth_b> randGen;
+   std::pair<int, int> chooseNextPos(std::vector<int>& road, const std::vector<Marker>& surrMarkers);
+   void roadCheck(std::vector<int>& r, int tile);
+   void tileCheck(int tile, int& tempX, int& tempY);
    bool changeNextYellowToRed = false;
    bool endFoundChangeToBlue = false;
    bool blueChangedGoToEnd = false;
