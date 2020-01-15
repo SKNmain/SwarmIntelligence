@@ -223,54 +223,70 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
 
    for (auto& r : road)
    {
+      temp = { this->pos.first, this->pos.second };
       tileCheck(r, temp.first, temp.second);
+      bool isRoadMarked = false;
       for (const auto& mark : surrMarkers)
       {
          if (mark.getX() == temp.first && mark.getY() == temp.second)
          {
-            if (mark.PATH_TO_EXIT)
+            isRoadMarked = true;
+            if (mark.PATH_TO_EXIT == Marker::PATH_TO_EXIT)
             {
                choosenPos = temp;
                return choosenPos;
             }
-            else if (mark.CLOSED_PATH)
+            else if (mark.CLOSED_PATH == Marker::CLOSED_PATH)
             {
                redCount++;
             }
-            else if (mark.NOT_FULLY_DISCOVER_PATH) 
+            else if (mark.NOT_FULLY_DISCOVER_PATH == Marker::NOT_FULLY_DISCOVER_PATH)
             {
                yellowCount++;
             }
-            else
-            {
-               emptyCount++;
-            }
+            //else
+            //{
+              // emptyCount++;
+            //}
          }
-
       }
+      if(isRoadMarked == false)
+      {
+         emptyCount++;
+      }
+      
    }
 
    if (emptyCount > 0)
    {
       int i = randGen.rand(0, emptyCount - 1);
       int count = 0;
+      bool found = false;
 
       for (auto& r : road)
       {
+         temp = { this->pos.first, this->pos.second };
          tileCheck(r, temp.first, temp.second);
+         bool isMarked = false;
          for (const auto& mark : surrMarkers)
          {
-            if (mark.getX() == temp.first && mark.getY() == temp.second && !mark.PATH_TO_EXIT 
-               && !mark.NOT_FULLY_DISCOVER_PATH && !mark.CLOSED_PATH)
+            if (mark.getX() == temp.first && mark.getY() == temp.second)
             {
-               if (count == i)
-               {
-                  choosenPos.first = mark.getX();
-                  choosenPos.second = mark.getY();
-               }
-               else {
-                  count++;
-               }
+               isMarked = true;
+               
+            }
+         }
+         if(isMarked == false && found == false)
+         {
+            if (count == i)
+            {
+               choosenPos.first = temp.first;
+               choosenPos.second = temp.second;
+               found = true;
+            }
+            else 
+            {
+               count++;
             }
          }
       }
@@ -282,8 +298,10 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
       //sprawdzam czy jedyna opcja zamiast cofniecia jest przejazd przez czerwona kropke
       if (road.size() == 2)
       {
+         temp  = { this->pos.first, this->pos.second };
+         temp1 = { this->pos.first, this->pos.second };
          tileCheck(road[0], temp.first, temp.second);
-         tileCheck(road[1], temp.first, temp.second);
+         tileCheck(road[1], temp1.first, temp1.second);
          for (const auto& mark : surrMarkers)
          {
             if (mark.getX() == temp.first && mark.getY() == temp.second
@@ -309,6 +327,7 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
 
       for (auto& r : road)
       {
+         temp = { this->pos.first, this->pos.second };
          tileCheck(r, temp.first, temp.second);
          for (const auto& mark : surrMarkers)
          {
