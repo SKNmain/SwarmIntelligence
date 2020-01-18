@@ -175,30 +175,44 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
    auto temp = this->pos;
    auto temp1 = this->pos;
 
+   //ten warunek jest po to, ze kiedy znajdziemy wyjscie, musimy zawrocic
+   //(musimy oznaczyc sciezke z ktorej przyszlismy)
    if(this->endFoundChangeToBlue)
    {
       choosenPos = this->lastPos;
       return choosenPos;
    }
 
+   //przyjecie jedynej drogi przy trafieniu na slepy zaulek
    if(road.size() == 1 && this->first == false)
    {
       int tile = road[0];
       tileCheck(tile, choosenPos.first, choosenPos.second);
       return choosenPos;
    }
-
+   //zmienne do zliczania poszczegolnych rodzajow pol
    int redCount = 0;
    int yellowCount = 0;
    int emptyCount = 0;
-
+   //dla kazdego kierunku w road
    for(auto& r : road)
    {
       temp = this->pos;
+      //w road sa tylko i wylacznie KIERUNKI, a my potrzebujemy
+      //PUNKTOW, tileCheck to pozamienia
       tileCheck(r, temp.first, temp.second);
+      //w tej chwili wydaje mi sie ze ify przed ta petla
+      //zawieraja jedyne sytuacje w ktorych musimy "zawrocic"
+      //skoro sa przed ta petla, to kierunek skad przyszlismy mozna wywalic zupelnie 
+      //z nastepnych dzialan
+      if (temp == this->lastPos) 
+      {
+         continue;
+      }
       bool isRoadMarked = false;
       for(const auto& mark : surrMarkers)
       {
+         //jesli na polu jest marker, sprawdzamy jakiego rodzaju
          if(mark.getPos() == temp)
          {
             isRoadMarked = true;
@@ -221,6 +235,7 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
             //}
          }
       }
+      //jesli flaga sie nie odpalila, na polu nie ma zadnego markera
       if(isRoadMarked == false)
       {
          emptyCount++;
@@ -228,9 +243,30 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
 
    }
 
+   //GDZIES W TYM IFIE MUSI BYC BLAD
+   //wychodzil sobie ze sciezki i mial cos takiego
+   //  __|
+   //  __ x
+   //    |
+   // i stal sobie w tym miejscu i nie mogl isc dalej z jakiegos powodu
+   //raczej musi byc tu, bo tu jest wybierany ruch dla empty
+
+   //pierwszenstwo wedlug algorytmu maja pola puste
    if(emptyCount > 0)
    {
-      int i = randGen.rand(0, emptyCount - 1);
+      //jesli jest wiecej mozliwych kierunkow, trzeba wulosowac iterator
+      //nie wiem czy dziala dla randGen.rand(0,0), wiec trzasne na to ifa
+
+      int i;
+      if (emptyCount == 1)
+      {
+         i = 0;
+      }
+      else
+      {
+         randGen.rand(0, emptyCount - 1);
+      }
+      
       int count = 0;
       bool found = false;
 
@@ -238,7 +274,19 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
       {
          temp = this->pos;
          tileCheck(r, temp.first, temp.second);
+         //jak bylo wyzej, jesli natniemy sie w road na cofajacy kierunek
+         //musimy to zignorowac, bo i tak nie jest ujete w liczniku
+         if (temp == this->lastPos)
+         {
+            continue;
+         }
          bool isMarked = false;
+         //z powyzszych dzialan dostajemy tylko liczebnosc poszczegolnych
+         //rodzajow pol, a musimy wybrac pozycje, wiec przebiegamy przez wszystko
+         //jeszcze raz
+
+         //tutaj patrze czy obecnie sprawdzane pole kawlifikuje sie do
+         //dalszych dzialan, patrz --> nie ma na sobie markerow
          for(const auto& mark : surrMarkers)
          {
             if(mark.getPos() == temp)
@@ -247,6 +295,8 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
 
             }
          }
+         //isMarked sprawdza czy na danym polu jest marker
+         //found jest troche chore --> blokuje mi ifa jesli juz znajde wylosowane pole
          if(isMarked == false && found == false)
          {
             if(count == i)
@@ -264,14 +314,19 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
    }
    else if(redCount == 1)
    {
-      //inna opcja wykrycia utkniecia w zaulku, zobacz, czy dziala
+      //inna opcja wykrycia utkniecia w zaulku, 
       //sprawdzam czy jedyna opcja zamiast cofniecia jest przejazd przez czerwona kropke
+
+      //jako ze to sytuacja wyjatkowa, moze byc (CHYBA) przed sprawdzeniem zoltych
+      //normalnie zolte maja pierwszenstwo z zasady, bo na czerwone nie mozna wchodzic -_-
       if(road.size() == 2)
       {
          temp = this->pos;
          temp1 = this->pos;
          tileCheck(road[0], temp.first, temp.second);
          tileCheck(road[1], temp1.first, temp1.second);
+         //no wiec skoro mamy dwa pola, to sytuacja sie zgadza jesli na jednym
+         //jest czerwony marker, a na drugim miejsce skad przyszlismy
          for(const auto& mark : surrMarkers)
          {
             if(mark.CLOSED_PATH == Marker::CLOSED_PATH && mark.getPos() == temp)
@@ -280,33 +335,51 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
                {
                   choosenPos = temp;
                }
-               else if(temp == this->lastPos)
+            }
+            else if (mark.CLOSED_PATH == Marker::CLOSED_PATH && mark.getPos() == temp1)
+            {
+               if (temp == this->lastPos)
                {
                   choosenPos = temp1;
                }
             }
          }
       }
-
-
-
    }
    else
    {
-      int i = randGen.rand(0, yellowCount - 1);
-      int count = 0;
+      //zasadniczo to samo co w empty
+      int i;
+      if (emptyCount == 1)
+      {
+         i = 0;
+      }
+      else
+      {
+         randGen.rand(0, emptyCount - 1);
+      }
 
-      for(auto& r : road)
+      int count = 0;
+      bool found = false;
+
+      for (auto& r : road)
       {
          temp = this->pos;
          tileCheck(r, temp.first, temp.second);
-         for(const auto& mark : surrMarkers)
+         if (temp == this->lastPos)
          {
-            if(mark.getPos() == temp && mark.NOT_FULLY_DISCOVER_PATH == Marker::NOT_FULLY_DISCOVER_PATH)
+            continue;
+         }
+
+         for (const auto& mark : surrMarkers)
+         {
+            //tutaj tylko patrzymy czy jest odpowiedni marker, zamiast, czy nie ma w ogole
+            if (mark.getPos() == temp && mark.NOT_FULLY_DISCOVER_PATH == Marker::NOT_FULLY_DISCOVER_PATH)
             {
-               if(count == i)
+               if (count == i && found == false)
                {
-                  choosenPos = mark.getPos();
+                  choosenPos = temp;
+                  found = true;
                }
                else {
                   count++;
