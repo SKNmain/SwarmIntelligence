@@ -49,7 +49,7 @@ void AntsManager::step()
       std::vector<Marker> surrMarkers;
       for(const auto& marker : this->antsMarkers)
       {
-         if((marker.getX() == ant.getX() && marker.getY() == ant.getY()) ||   //present pos
+         if(/*(marker.getX() == ant.getX() && marker.getY() == ant.getY()) ||   *///present pos
             (marker.getX() == ant.getX() + 1 && marker.getY() == ant.getY()) || //right
             (marker.getX() == ant.getX() - 1 && marker.getY() == ant.getY()) || //left
             (marker.getX() == ant.getX() && marker.getY() == ant.getY() + 1) || //down
