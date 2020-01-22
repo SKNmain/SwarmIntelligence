@@ -23,23 +23,17 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       if (Maze::CELL_END == (tile & Maze::CELL_END))
       {
          this->endFoundChangeToBlue = true;
-         //return rVMarker;
       }
-
 
       if (road.size() == 1 && this->first == false)
       {
          this->changeNextYellowToRed = true;
       }
-
-      //zamiast calej tej petli musi byc funkcja wyboru
-      auto tempPos = chooseNextPos(road, surrMarkers);
       
+      auto tempPos = chooseNextPos(road, surrMarkers);
 
       this->lastPos = this->pos;
-
       this->pos = tempPos;
-
 
       if (road.size() >= 3)
       {
@@ -50,15 +44,12 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       {
          for (const auto& mark : surrMarkers)
          {
-            
-
             //jesli pozycja na ktora weszlismy ma zolty marker, zamieniamy na czerwony
             if (mark.getPos() == this->pos && mark.getType() == Marker::NOT_FULLY_DISCOVER_PATH)
             {
                rVMarker = { Marker::MarkerType::CLOSED_PATH, this->pos, this->lastPos };
                changeNextYellowToRed = false;
             }
-            
          }
          //warunek na jedokafelkowy slepy zaulek?
          if (presentPosMarker.getPos() == this->lastPos && presentPosMarker.getType() == Marker::NOT_FULLY_DISCOVER_PATH)
@@ -68,52 +59,64 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          }
       }
 
-      first = false;
+      this->first = false;
    }
    else
    {
       if (false == this->finishedMaze)
       {
+         //dopoki nie zmienimy ostatniego markera na niebieski
          if (false == this->blueChangedGoToEnd)
          {
-            for (const auto& mark : surrMarkers)
+            //warunek sprawdzajacy czy jest tu marker
+            //jesli tak to zamien go na niebieski
+            if (presentPosMarker.getPos() == this->pos)
             {
-               if (mark.getPos() != this->pos)
-               {
-                  this->blueChangedGoToEnd = true;
-                  rVMarker = { Marker::MarkerType::PATH_TO_EXIT, this->pos, this->lastPos };
-               }
+               this->blueChangedGoToEnd = true;
+               rVMarker = { Marker::MarkerType::PATH_TO_EXIT, this->pos, this->lastPos };
             }
 
+            //wektor mozliwych kierunkow
             std::vector<int> road;
             roadCheck(road, tile);
-            if (Maze::CELL_END == (tile & Maze::CELL_END))
-            {
-               //
-               this->blueChangedGoToEnd = true;
-               //return rVMarker;
-            }
-            auto tempPos = this->pos;
-            bool deadEnd = false;
-            if (road.size() == 1 && this->first == false) {
-               deadEnd = true;
-            }
-            do
-            {
-               auto temp = this->pos;
 
+            //TODO
+            //Na tym etapie mamy tylko dwie mozliwosci tak naprawde:
+            //1. Cofnac sie -> robimy to kiedy nie znalezlismy jeszcze markera
+            //2. Isc dalej, czyli inaczej, po prostu sie nie cofac
+            //Ponizszy fragment kodu mozna wiec pewnie baaardzo uproscic, ale technicznie
+            //rzecz biorac dziala, wiec na razie zostawiam
+            
+            //potrzebujemy boola przetrzymujacego informacje, czy musimy losowac
+            //pozycje jeszcze raz
+            bool oneMoreTime = false;
+            auto tempPos = this->pos;
+            do
+            {   
+               //losujemy kierunek
                int i = randGen.rand(0, road.size() - 1);
                tile = road[i];
-
-               tileCheck(tile, temp.first, temp.second);
-
-            } while (false == blueChangedGoToEnd &&
-               false == deadEnd &&
-               tempPos == this->lastPos);
-
+               tileCheck(tile, tempPos.first, tempPos.second);
+               //jesli nie zmienilismy jeszcze kropki, ale wylosowalo nam 
+               //cofniecie to jest zle
+               if (this->blueChangedGoToEnd == false && tempPos == this->lastPos)
+               {
+                  oneMoreTime = true;
+               }
+               else
+               {
+                  oneMoreTime = false;
+               }
+               //za to jesli w tej kolejce zmienilismy kropke, musimy sie cofnac
+               if (this->blueChangedGoToEnd == true)
+               {
+                  tempPos = this->lastPos;
+                  oneMoreTime = false;
+               }
+            } while (oneMoreTime);
+            
             this->lastPos = this->pos;
             this->pos = tempPos;
-
          }
          else
          {
