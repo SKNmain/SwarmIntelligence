@@ -23,13 +23,16 @@ public:
    const std::vector<Marker>& getAntsMarkers() const;
    //void deleteAntsMarker(int x, int y);
 
+   bool isFinished() const;
 signals:
    void antsFinishedMaze();
+
 private:
    std::vector<Marker> antsMarkers;
 
    std::vector<Ant> ants;
    Maze* maze = nullptr;
    const AppSettings* appSettings = nullptr;
+   bool finished = false;
 };
 

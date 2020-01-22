@@ -47,6 +47,8 @@ private slots:
 
    void on_actionLoad_maze_to_file_triggered();
 
+   void on_actionRun_quick_ants_triggered();
+
 private:
    void setActionEnabled(bool enabled);
    void generateWholeMaze();

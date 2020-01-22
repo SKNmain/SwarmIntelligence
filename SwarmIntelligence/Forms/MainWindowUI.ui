@@ -113,7 +113,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu">
@@ -162,6 +162,7 @@
    <addaction name="actionSwarm_intelligence"/>
    <addaction name="actionAnts_step"/>
    <addaction name="actionRun_ants"/>
+   <addaction name="actionRun_quick_ants"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -232,6 +233,11 @@
   <action name="actionSave_maze_to_file">
    <property name="text">
     <string>Save maze to file</string>
+   </property>
+  </action>
+  <action name="actionRun_quick_ants">
+   <property name="text">
+    <string>Run quick ants </string>
    </property>
   </action>
  </widget>

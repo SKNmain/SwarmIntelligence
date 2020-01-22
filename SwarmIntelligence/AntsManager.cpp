@@ -24,6 +24,8 @@ void AntsManager::initialize(Maze* maze)
    this->ants.clear();
    this->antsMarkers.clear();
    this->maze = maze;
+   this->finished = false;
+
 
    int numberOfAnts = 0;
 
@@ -85,6 +87,7 @@ void AntsManager::step()
       //temporary
       if(true == ant.isFinishedMaze())
       {
+         this->finished = true;
          emit antsFinishedMaze();
       }
    }
@@ -115,4 +118,9 @@ const std::vector<Ant>& AntsManager::getAnts() const
 const std::vector<Marker>& AntsManager::getAntsMarkers() const
 {
    return this->antsMarkers;
+}
+
+bool AntsManager::isFinished() const
+{
+   return this->finished;
 }

@@ -34,18 +34,18 @@ MainWindow::MainWindow(QWidget* parent)
 
    switch(this->settings.startingMazeStatus())
    {
-   case AppSettings::LOAD_FROM_FILE:
-   {
-      loadMazeFromFile(this->settings.pathToMaze());
-      this->ui->actionShow_shortest_path->setChecked(false);
-      break;
-   }
-   case AppSettings::GENERATE_NEW:
-   {
-      this->on_actionGenerate_maze_triggered();
-      break;
-   }
-   case AppSettings::NO_STARTING: break;
+      case AppSettings::LOAD_FROM_FILE:
+      {
+         loadMazeFromFile(this->settings.pathToMaze());
+         this->ui->actionShow_shortest_path->setChecked(false);
+         break;
+      }
+      case AppSettings::GENERATE_NEW:
+      {
+         this->on_actionGenerate_maze_triggered();
+         break;
+      }
+      case AppSettings::NO_STARTING: break;
    }
 }
 
@@ -377,4 +377,36 @@ void MainWindow::on_actionLoad_maze_to_file_triggered()
 {
    const QString& path = QFileDialog::getOpenFileName(this, "Select file with serialized maze", "", "Maze file(*.m);;All files (*.*)");
    loadMazeFromFile(path);
+}
+
+void MainWindow::on_actionRun_quick_ants_triggered()
+{
+   if(nullptr != this->maze)
+   {
+
+      this->ui->graphicsView->clearAnts();
+      this->ui->graphicsView->clearMarkers();
+      this->antsManager.initialize(this->maze);
+      this->antSolverStepsCounter = 0;
+
+
+      QTimer::singleShot(0, [this]()
+         {
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+            while(false == this->antsManager.isFinished())
+            {
+               this->antsManager.step();
+               this->antSolverStepsCounter++;
+            }
+            if(true == this->settings.isVisualize())
+            {
+               this->ui->graphicsView->renderAnts(this->antsManager);
+            }
+            emit Logger::getInstance().log(tr("Ant finished maze\nSteps: %1").arg(QString::number(this->antSolverStepsCounter)),
+               LogWidget::LogLevel::INFO);
+
+            QApplication::restoreOverrideCursor();
+         });
+
+   }
 }
