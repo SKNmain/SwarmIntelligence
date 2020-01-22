@@ -90,9 +90,10 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
             //potrzebujemy boola przetrzymujacego informacje, czy musimy losowac
             //pozycje jeszcze raz
             bool oneMoreTime = false;
-            auto tempPos = this->pos;
+            auto tempPos = this->pos; 
             do
-            {   
+            {
+               tempPos = this->pos;
                //losujemy kierunek
                int i = randGen.rand(0, road.size() - 1);
                tile = road[i];
