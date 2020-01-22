@@ -47,10 +47,15 @@ void AntsManager::step()
    for(auto& ant : this->ants)
    {
       std::vector<Marker> surrMarkers;
+      Marker presentPosMarker{ Marker::CLOSED_PATH, {0,0,} };
       for(const auto& marker : this->antsMarkers)
       {
-         if(/*(marker.getX() == ant.getX() && marker.getY() == ant.getY()) ||   *///present pos
-            (marker.getX() == ant.getX() + 1 && marker.getY() == ant.getY()) || //right
+         if ((marker.getPos() == ant.getPosition()))
+         {
+            presentPosMarker = marker;
+         }
+
+         if((marker.getX() == ant.getX() + 1 && marker.getY() == ant.getY()) || //right
             (marker.getX() == ant.getX() - 1 && marker.getY() == ant.getY()) || //left
             (marker.getX() == ant.getX() && marker.getY() == ant.getY() + 1) || //down
             (marker.getX() == ant.getX() && marker.getY() == ant.getY() - 1)) //up
@@ -60,19 +65,20 @@ void AntsManager::step()
       }
 
       //update them
-      auto optionalMarker = ant.update(this->maze->mazeArray[ant.getY()][ant.getX()], surrMarkers);
+      auto optionalMarker = ant.update(this->maze->mazeArray[ant.getY()][ant.getX()], surrMarkers, presentPosMarker);
 
       if(optionalMarker)
       {
-         //const auto it = std::find_if(this->antsMarkers.begin(), this->antsMarkers.end(), [optionalMarker](const Marker& marker)
-         //   {
-         //      return optionalMarker->getPos() == marker.getPos();
-         //   });
+         const auto it = std::find_if(this->antsMarkers.begin(), this->antsMarkers.end(), [optionalMarker](const Marker& marker)
+            {
+               return optionalMarker->getPos() == marker.getPos();
+            });
 
-         //if(it != this->antsMarkers.end())
-         //{
-         //   this->antsMarkers.erase(it);
-         //}
+         if(it != this->antsMarkers.end())
+         {
+            this->antsMarkers.erase(it);
+         }
+
          this->antsMarkers.push_back(*optionalMarker);
       }
 

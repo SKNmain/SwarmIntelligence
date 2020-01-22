@@ -10,7 +10,7 @@ class Ant
 public:
    Ant(int id, int x, int y);
 
-   std::optional<Marker> update(int tile, const std::vector<Marker>& surrMarkers);
+   std::optional<Marker> update(int tile, const std::vector<Marker>& surrMarkers, const Marker& presentPosMarker);
 
    int getID() const;
    int getX() const;
