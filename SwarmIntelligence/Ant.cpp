@@ -122,33 +122,35 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          }
          else
          {
+            //dopoki nie dojdziemy z powrotem do wyjscia
             std::vector<int> road;
             roadCheck(road, tile);
+            //jesli doszlismy do wyjscia to dalej sie juz nie bawimy
             if (Maze::CELL_END == (tile & Maze::CELL_END))
             {
-
                this->finishedMaze = true;
                return rVMarker;
             }
+            //TODO
+            //tu podobnie jak wyzej, tylko jeszcze prociej
+            //idziemy przed siebi (CZYLI NIE LASTPOS) dopoki nie dojdziemy do wyjscia
             auto tempPos = this->pos;
-            bool deadEnd = false;
-
-            if (road.size() == 1 && this->first == false)
-            {
-               deadEnd = true;
-            }
+            bool oneMoreTime = false;
             do
             {
                tempPos = this->pos;
-
                int i = randGen.rand(0, road.size() - 1);
                tile = road[i];
-
                tileCheck(tile, tempPos.first, tempPos.second);
-
-            } while (false == endFoundChangeToBlue &&
-               false == deadEnd &&
-               tempPos == this->lastPos);
+               if (tempPos == this->lastPos)
+               {
+                  oneMoreTime = true;
+               }
+               else 
+               {
+                  oneMoreTime = false;
+               }
+            } while (oneMoreTime == true);
 
             this->lastPos = this->pos;
             this->pos = tempPos;
