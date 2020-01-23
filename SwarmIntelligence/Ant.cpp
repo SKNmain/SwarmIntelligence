@@ -1,5 +1,6 @@
 #include "Ant.h"
 #include "Maze.h"
+#include <QDebug>
 
 RandGen<std::knuth_b>Ant::randGen = RandGen<std::knuth_b>(time(NULL));
 
@@ -236,7 +237,7 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
       }
 
    }
-
+   qDebug() << "EC: " << emptyCount << "YC: " << yellowCount << "  RC: " << redCount;
    //pierwszenstwo wedlug algorytmu maja pola puste
    if (emptyCount > 0)
    {

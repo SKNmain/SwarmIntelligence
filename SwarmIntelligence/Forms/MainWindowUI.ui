@@ -203,10 +203,16 @@
    <property name="text">
     <string>Ants step</string>
    </property>
+   <property name="shortcut">
+    <string>F10</string>
+   </property>
   </action>
   <action name="actionSwarm_intelligence">
    <property name="text">
     <string>Swarm intelligence</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
    </property>
   </action>
   <action name="actionRun_ants">

@@ -47,6 +47,8 @@ MainWindow::MainWindow(QWidget* parent)
       }
       case AppSettings::NO_STARTING: break;
    }
+
+
 }
 
 MainWindow::~MainWindow()
