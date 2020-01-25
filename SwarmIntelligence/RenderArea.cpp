@@ -167,7 +167,7 @@ void RenderArea::drawShortestPath(const Maze* maze)
 {
    clearShortestWayTiles();
 
-      
+
    const auto& tileSize = this->sett->getTileSize();
    const auto& pathWidth = this->sett->getPathSize();
    const auto& mazeWidth = maze->getWidth();
@@ -259,7 +259,7 @@ void RenderArea::setVisibleShortestWay(bool enable)
          i->show();
       }
    }
-   else 
+   else
    {
       for(auto& i : this->shortestWayTilesGraphics)
       {
@@ -274,23 +274,23 @@ void RenderArea::drawAntsMarkers(const std::vector<Marker>& antsMarkers)
 
    for(const auto& m : antsMarkers)
    {
-      if (m.getType() == Marker::NOT_FULLY_DISCOVER_PATH)
-      {
-         createMarker(m);
-      }
-      
-   }
-   for (const auto& m : antsMarkers)
-   {
-      if (m.getType() == Marker::CLOSED_PATH)
+      if(m.getType() == Marker::NOT_FULLY_DISCOVER_PATH)
       {
          createMarker(m);
       }
 
    }
-   for (const auto& m : antsMarkers)
+   for(const auto& m : antsMarkers)
    {
-      if (m.getType() == Marker::PATH_TO_EXIT)
+      if(m.getType() == Marker::CLOSED_PATH)
+      {
+         createMarker(m);
+      }
+
+   }
+   for(const auto& m : antsMarkers)
+   {
+      if(m.getType() == Marker::PATH_TO_EXIT)
       {
          createMarker(m);
       }
@@ -348,6 +348,57 @@ QGraphicsRectItem* RenderArea::createTile(const uint32_t& x, const uint32_t& y, 
    return tile;
 }
 
+QGraphicsItem* RenderArea::createPathBlockedMarker(const Marker& marker, double offset, const double x, const double y)
+{
+   QPolygonF mark;
+   auto mS = this->sett->getMarkerSize();
+   mark.append(QPointF(-mS, mS));
+   mark.append(QPointF(mS, mS));
+   mark.append(QPointF(mS, -mS ));
+   mark.append(QPointF(-mS, -mS));
+   mark.append(QPointF(0, 0));
+
+   // Add the triangle polygon to the scene
+   auto tempTile = new QGraphicsPolygonItem(mark);
+   tempTile->setBrush(marker.getColor());
+   tempTile->setPen(noPen);
+
+   auto eP = marker.getEnterPos();
+   auto mP = marker.getPos();
+
+   if(eP.first + 1 == mP.first){}      // -->
+   else if(eP.second + 1 == mP.second) // |
+   {                                   // v
+      tempTile->setRotation(90);
+   }
+   else if(eP.first - 1 == mP.first)   // <--
+   {
+      tempTile->setRotation(180);
+   }
+   else if(eP.second - 1 == mP.second)   // /
+   {                                    //  |    
+      tempTile->setRotation(270);
+   }
+   else
+   {
+      delete tempTile;
+
+      QPolygonF mark;
+      auto mS = this->sett->getMarkerSize();
+      mark.append(QPointF(-mS, mS));
+      mark.append(QPointF(mS, mS));
+      mark.append(QPointF(mS, -mS));
+      mark.append(QPointF(-mS, -mS));
+      tempTile = new QGraphicsPolygonItem(mark);
+      tempTile->setBrush(marker.getColor());
+      tempTile->setPen(noPen);
+   }
+      
+
+   tempTile->setPos(x + offset / 2, y + offset / 2);
+   return tempTile;
+}
+
 void RenderArea::createMarker(const Marker& marker)
 {
    double offset = (this->sett->getTileSize() * this->sett->getPathSize() - this->sett->getMarkerSize());
@@ -355,9 +406,61 @@ void RenderArea::createMarker(const Marker& marker)
    const double x = marker.getX() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + marker.getX()) + offset;
    const double y = marker.getY() * (this->sett->getPathSize()) * this->sett->getTileSize() + this->sett->getTileSize() * (1 + marker.getY()) + offset;
 
-   auto markerTile = new QGraphicsEllipseItem(x, y, this->sett->getMarkerSize(), this->sett->getMarkerSize());
-   markerTile->setBrush(marker.getColor());
-   markerTile->setPen(noPen);
+   QGraphicsItem* markerTile;
+   if(marker.getType() == Marker::CLOSED_PATH)
+   {
+      markerTile = createPathBlockedMarker(marker, offset, x, y);
+   }
+   else if(marker.getType() == Marker::PATH_TO_EXIT)
+   {
+      QPolygonF mark;
+      auto mS = this->sett->getMarkerSize();
+      mark.append(QPointF(-mS, -mS));
+      mark.append(QPointF(0, mS));
+      mark.append(QPointF(mS, -mS ));
+      mark.append(QPointF(0, -mS + mS / 2.f));
+
+
+
+      // Add the triangle polygon to the scene
+      auto tempTile = new QGraphicsPolygonItem(mark);
+      tempTile->setBrush(marker.getColor());
+      tempTile->setPen(noPen);
+
+      auto eP = marker.getEnterPos();
+      auto mP = marker.getPos();
+
+      int rot = 0;
+      if(eP.first + 1 == mP.first)        // -->
+      {
+         rot = 90;
+      }  
+      else if(eP.second + 1 == mP.second) // |
+      {                                   // v
+         rot = 180;
+      }
+      else if(eP.first - 1 == mP.first)   // <--
+      {
+         rot = 270;
+      }
+      else if(eP.second - 1 == mP.second)   // /
+      {                                    //  |
+         rot = 0;
+      }
+      tempTile->setRotation(rot);
+      tempTile->setPos(x + offset / 2, y + offset / 2);
+
+      markerTile = tempTile;
+
+   }
+   else
+   {
+      auto tempTile = new QGraphicsEllipseItem(x, y, this->sett->getMarkerSize(), this->sett->getMarkerSize());
+      tempTile->setBrush(marker.getColor());
+      tempTile->setPen(noPen);
+
+      markerTile = tempTile;
+   }
    this->scene->addItem(markerTile);
    this->markersGraphics.push_back(markerTile);
    //markerTile->

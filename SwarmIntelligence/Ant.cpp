@@ -55,7 +55,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          //warunek na jedokafelkowy slepy zaulek?
          if (presentPosMarker.getPos() == this->lastPos && presentPosMarker.getType() == Marker::NOT_FULLY_DISCOVER_PATH)
          {
-            rVMarker = { Marker::MarkerType::CLOSED_PATH, this->lastPos, this->pos };
+            rVMarker = { Marker::MarkerType::CLOSED_PATH, this->lastPos, this->lastPos };
             changeNextYellowToRed = false;
          }
       }

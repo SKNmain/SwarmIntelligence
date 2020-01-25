@@ -39,7 +39,7 @@ QColor Marker::getColor() const
    {
    case CLOSED_PATH: rV = Qt::red; break;
    case PATH_TO_EXIT: rV = Qt::blue;  break;
-   case NOT_FULLY_DISCOVER_PATH: rV = Qt::yellow; break;
+   case NOT_FULLY_DISCOVER_PATH: rV = Qt::darkYellow; break;
    default: ;
    }
 

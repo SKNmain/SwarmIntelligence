@@ -50,6 +50,7 @@ private:
    void drawAnts(const AntsManager& antsManager);
    void drawAntsMarkers(const std::vector<Marker>& antsMarkers);
    QGraphicsRectItem* createTile(const uint32_t& x, const uint32_t& y, const uint32_t& tileWidth, const uint32_t& tileHeight, const QColor& tileColor);
+   QGraphicsItem* createPathBlockedMarker(const Marker& marker, double offset, double x, double y);
    void createMarker(const Marker& marker);
 
    void cleanUpGraphicsItems(std::vector<QGraphicsItem*>& items);
