@@ -5,11 +5,14 @@
 #include <QTimer>
 #include <QFileDialog>
 #include <QThread>
+#include <QInputDialog>
 #include "AboutDialog.h"
 #include "Logger.hpp"
 #include "StackMazeGenerator.h"
 #include "Helper.h"
 #include "LeeAlgorithm.h"
+#include "DbManager.h"
+#include "MazesDbBrowser.h"
 
 
 MainWindow::MainWindow(QWidget* parent)
@@ -21,6 +24,12 @@ MainWindow::MainWindow(QWidget* parent)
 
 
    this->ui->graphicsView->initSettings(&this->settings);
+
+
+   DbManager::initialize();
+   this->mazesBrowser = new MazesDbBrowser(&this->settings, this);
+
+   connect(this->mazesBrowser, &MazesDbBrowser::loadMazeFromDB, this, &MainWindow::getMazeFromDBAndLoad);
 
    this->ui->actionStop_generating->setEnabled(false);
    this->ui->actionGenerate_shortest_path->setEnabled(false);
@@ -134,8 +143,25 @@ void MainWindow::generateMaze()
    }
 }
 
+void MainWindow::getMazeFromDBAndLoad(Maze* maze)
+{
+   if(true == this->settings.isVisualize())
+   {
+      this->ui->graphicsView->addMazeToScene(maze);
+   }
+   this->ui->label_uuid->setText("UUID: " + this->maze->getUuid());
+   this->ui->graphicsView->clearMarkers();
+
+   this->settings.setMazeHeight(this->maze->getHeight());
+   this->settings.setMazeWidth(this->maze->getWidth());
+
+   emit Logger::getInstance().log("Finished loading maze from DB.", LogWidget::LogLevel::INFO);
+}
+
 void MainWindow::generateWholeMaze()
 {
+   DELLPTR(this->maze);
+
    this->maze = this->mazeGenerator->generateMaze(this->settings.getMazeWidth(), this->settings.getMazeHeight());
    //remove last visited cell markers
    //this->maze->removeMarkers();
@@ -143,6 +169,7 @@ void MainWindow::generateWholeMaze()
    {
       this->ui->graphicsView->addMazeToScene(maze);
    }
+   this->ui->label_uuid->setText("UUID: " + this->maze->getUuid());
    this->ui->graphicsView->clearMarkers();
 }
 
@@ -357,6 +384,8 @@ void MainWindow::loadMazeFromFile(const QString& path)
             this->ui->graphicsView->clearMarkers();
          }
 
+         this->ui->label_uuid->setText("UUID: " + this->maze->getUuid());
+
          this->ui->actionGenerate_shortest_path->setEnabled(true);
 
          //save last path
@@ -410,5 +439,38 @@ void MainWindow::on_actionRun_quick_ants_triggered()
             QApplication::restoreOverrideCursor();
          });
 
+   }
+}
+
+
+void MainWindow::on_actionDebug_action_triggered()
+{
+}
+
+void MainWindow::on_actionBrowse_reports_triggered()
+{
+
+}
+
+void MainWindow::on_actionBrowse_mazes_triggered()
+{
+   this->mazesBrowser->refresh();
+   this->mazesBrowser->exec();
+}
+
+void MainWindow::on_actionSave_maze_to_DB_triggered()
+{
+   if(nullptr != this->maze)
+   {
+      bool ok;
+      QString text = QInputDialog::getText(this, tr("Add description to maze"), tr("Description"), QLineEdit::Normal, "", &ok);
+      if(true == ok)
+      {
+         DbManager::saveMaze(this->maze, text);
+      }
+   }
+   else
+   {
+      emit Logger::getInstance().log("Generate maze before trying to save !", LogWidget::LogLevel::ERR);
    }
 }

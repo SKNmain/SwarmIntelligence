@@ -1,4 +1,4 @@
-#include "AntsManager.h"
+ #include "AntsManager.h"
 #include <algorithm>
 #include "Maze.h"
 #include "Logger.hpp"

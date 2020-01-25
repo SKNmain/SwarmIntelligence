@@ -11,6 +11,7 @@ namespace Ui { class MainWindow; }
 #define NO_ANIMATION 0
 
 class Maze;
+class MazesDbBrowser;
 
 class MainWindow : public QMainWindow
 {
@@ -21,6 +22,9 @@ public:
    ~MainWindow();
 
    void generateMaze();
+
+public slots:
+   void getMazeFromDBAndLoad(Maze* maze);
 
 private slots:
    void on_actionGenerate_maze_triggered();
@@ -49,6 +53,14 @@ private slots:
 
    void on_actionRun_quick_ants_triggered();
 
+   void on_actionDebug_action_triggered();
+
+   void on_actionBrowse_reports_triggered();
+
+   void on_actionBrowse_mazes_triggered();
+
+   void on_actionSave_maze_to_DB_triggered();
+
 private:
    void setActionEnabled(bool enabled);
    void generateWholeMaze();
@@ -57,6 +69,8 @@ private:
    Maze* maze = nullptr;
    MazeGenerator_I* mazeGenerator = nullptr;
    MazeSolver_I* mazeSolver = nullptr;
+
+   MazesDbBrowser* mazesBrowser = nullptr;
 
    //temporary var
    int antSolverStepsCounter = 0;

@@ -1,6 +1,7 @@
 #include "Maze.h"
 #include <filesystem>
 #include <fstream>
+#include <QUuid>
 #include "Logger.hpp"
 
 Maze::Maze(uint32_t width, uint32_t height)
@@ -8,6 +9,7 @@ Maze::Maze(uint32_t width, uint32_t height)
    this->width = width;
    this->height = height;
 
+   this->uuid = QUuid::createUuid().toString();
 
    for(uint32_t y = 0; y < this->height; ++y)
    {
@@ -48,6 +50,16 @@ bool Maze::isGeneratingFinished() const
    return this->generatingFinished;
 }
 
+void Maze::setUuid(const QString& uuid)
+{
+   this->uuid = uuid;
+}
+
+QString Maze::getUuid() const
+{
+   return this->uuid;
+}
+
 bool Maze::serializeToFile(const std::string& fileName)
 {
    bool rV = false;
@@ -55,6 +67,7 @@ bool Maze::serializeToFile(const std::string& fileName)
    std::ofstream output(fileName, std::ios::out | std::ios::trunc);
    if(true == output.is_open())
    {
+      output << this->getUuid().toStdString() << std::endl;
       output << this->startingPoint.first << " " << this->startingPoint.second << std::endl;
       output << this->endPoint.first << " " << this->endPoint.second << std::endl;
       output << this->width << " " << this->height << std::endl;
@@ -70,10 +83,10 @@ bool Maze::serializeToFile(const std::string& fileName)
          output << std::endl;
       }
       output << std::endl;
-      output << "ShortestWay: " << std::endl;
 
       if(false == this->shortestWayArray.empty())
       {
+         output << "ShortestWay: " << std::endl;
          for(const auto& row : this->shortestWayArray)
          {
             for(const auto& tile : row)
@@ -101,6 +114,7 @@ Maze* Maze::serializeFromFile(const std::string& fileName)
       if(true == inputFile.is_open())
       {
          std::string temp;
+         std::string uuid;
          int mazeWidth = 0;
          int mazeHeight = 0;
          std::pair<int, int> startingPoint{ 0, 0 };
@@ -108,6 +122,8 @@ Maze* Maze::serializeFromFile(const std::string& fileName)
 
          std::vector<std::vector<int>> mazeArray;
          std::vector<std::vector<int>> shortestWayArray;
+
+         inputFile >> uuid;
 
          //get starting point
          inputFile >> startingPoint.first;
@@ -154,6 +170,7 @@ Maze* Maze::serializeFromFile(const std::string& fileName)
             }
 
             maze = new Maze(mazeWidth, mazeHeight);
+            maze->setUuid(uuid.c_str());
             maze->mazeArray = mazeArray;
             maze->shortestWayArray = shortestWayArray;
             maze->finishedGenerating();

@@ -47,6 +47,12 @@
     <Filter Include="Ants">
       <UniqueIdentifier>{58d42ef5-c804-413f-9aab-f7ca95848f3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Raports">
+      <UniqueIdentifier>{30d9c4b3-c634-4da8-bec2-c99a2f1f50cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{c0f626e1-05ef-4f62-bdd7-1f557932c82e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -127,6 +133,24 @@
     <ClCompile Include="GeneratedFiles\Release\moc_RenderArea.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DbManager.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DbManager.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DbManager.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="MazesDbBrowser.cpp">
+      <Filter>Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MazesDbBrowser.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MazesDbBrowser.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Forms\RenderAreaUI.ui">
@@ -165,6 +189,15 @@
     <CustomBuild Include="AntsManager.h">
       <Filter>Ants</Filter>
     </CustomBuild>
+    <CustomBuild Include="Forms\MazesDbBrowser.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DbManager.h">
+      <Filter>DB</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MazesDbBrowser.h">
+      <Filter>Widgets</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Marker.h">
@@ -201,6 +234,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_AboutDialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_MazesDbBrowser.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

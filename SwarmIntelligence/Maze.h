@@ -38,12 +38,17 @@ public:
    std::vector<std::vector<int>> shortestWayArray;
    Marker lastPostWhileMazeGen{Marker::GEN_MAP_TAG};
 
+   void setUuid(const QString& uuid);
+   QString getUuid() const;
+
    bool serializeToFile(const std::string& fileName);
    static Maze* serializeFromFile(const std::string& fileName);
 
 private:
    uint32_t width;
    uint32_t height;
+
+   QString uuid;
 
    std::pair<int, int> startingPoint;
    std::pair<int, int> endPoint;
