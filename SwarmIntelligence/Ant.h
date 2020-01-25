@@ -22,7 +22,7 @@ public:
 
 private:
    static RandGen<std::knuth_b> randGen;
-   std::pair<int, int> chooseNextPos(std::vector<int>& road, const std::vector<Marker>& surrMarkers);
+   std::pair<int, int> chooseNextPos(std::vector<int>& road, const std::vector<Marker>& surrMarkers, const Marker& presentPosMarker);
    void roadCheck(std::vector<int>& r, int tile);
    void tileCheck(int tile, int& tempX, int& tempY);
    bool changeNextYellowToRed = false;

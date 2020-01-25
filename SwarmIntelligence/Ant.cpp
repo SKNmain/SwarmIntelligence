@@ -30,8 +30,13 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       {
          this->changeNextYellowToRed = true;
       }
+
+      if (this->endFoundChangeToBlue && presentPosMarker.getX() != 0 && presentPosMarker.getY() != 0)
+      {
+         rVMarker = { Marker::MarkerType::PATH_TO_EXIT, this->pos, this->lastPos };
+      }
       
-      auto tempPos = chooseNextPos(road, surrMarkers);
+      auto tempPos = chooseNextPos(road, surrMarkers, presentPosMarker);
 
       this->lastPos = this->pos;
       this->pos = tempPos;
@@ -41,7 +46,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          rVMarker = { Marker::MarkerType::NOT_FULLY_DISCOVER_PATH, this->pos, this->lastPos };
       }
 
-      if (this->changeNextYellowToRed == true)
+      if (this->changeNextYellowToRed == true && this->endFoundChangeToBlue == false)
       {
          for (const auto& mark : surrMarkers)
          {
@@ -69,6 +74,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
          //dopoki nie zmienimy ostatniego markera na niebieski
          if (false == this->blueChangedGoToEnd)
          {
+            
             //warunek sprawdzajacy czy jest tu marker
             //jesli tak to zamien go na niebieski
             if (presentPosMarker.getPos() == this->pos)
@@ -162,7 +168,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
    return rVMarker;
 }
 
-std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector<Marker>& surrMarkers)
+std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector<Marker>& surrMarkers, const Marker& presentPosMarker)
 {
    auto choosenPos = this->pos;
    auto tempPos = this->pos;
@@ -170,9 +176,16 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
 
    //ten warunek jest po to, ze kiedy znajdziemy wyjscie, musimy zawrocic
    //(musimy oznaczyc sciezke z ktorej przyszlismy)
-   if (this->endFoundChangeToBlue)
+   if (this->endFoundChangeToBlue == true)
    {
-      choosenPos = this->lastPos;
+      if (this->changeNextYellowToRed == true || (presentPosMarker.getX() != 0 && presentPosMarker.getY() != 0))
+      {
+         
+      }
+      else
+      {
+         choosenPos = this->lastPos;
+      }
       return choosenPos;
    }
 
