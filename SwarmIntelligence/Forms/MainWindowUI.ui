@@ -193,6 +193,7 @@
    </attribute>
    <addaction name="actionSwarm_intelligence"/>
    <addaction name="actionAnts_step"/>
+   <addaction name="on_actionRun_quick_ants_triggered"/>
    <addaction name="actionRun_ants"/>
   </widget>
   <action name="actionExit">
