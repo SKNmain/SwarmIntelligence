@@ -1,5 +1,12 @@
 #include "Marker.h"
 
+Marker::Marker()
+{
+   this->pos = {0, 0};
+   this->enterPos = { 0, 0 };
+   this->type = NONE;
+}
+
 Marker::Marker(MarkerType type, const std::pair<int, int>& pos, const std::pair<int, int>& enterPos)
 {
    this->pos = pos;

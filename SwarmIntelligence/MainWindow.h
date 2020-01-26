@@ -50,7 +50,7 @@ private slots:
    void loadMazeFromFile(const QString& path);
 
    void on_actionLoad_maze_to_file_triggered();
-
+        
    void on_actionRun_quick_ants_triggered();
 
    void on_actionDebug_action_triggered();

@@ -46,24 +46,51 @@ void AntsManager::initialize(Maze* maze)
 
 void AntsManager::step()
 {
-   for(auto& ant : this->ants)
+   //get all surrounding markers for all ants
+   std::map<std::pair<int, int>, std::vector<Marker>> allSurrMarkers;
+   std::map<std::pair<int, int>, Marker> markersOnAntsPos;
+   for(const auto& ant : this->ants)
    {
-      std::vector<Marker> surrMarkers;
-      Marker presentPosMarker{ Marker::CLOSED_PATH, {0,0,} };
       for(const auto& marker : this->antsMarkers)
       {
-         if ((marker.getPos() == ant.getPosition()))
+         if(marker.getPos() == ant.getPosition())
          {
-            presentPosMarker = marker;
+            markersOnAntsPos[marker.getPos()] = marker;
          }
+      }
+   }
+   for(const auto& ant : this->ants)
+   {
+      if(allSurrMarkers.count(ant.getPosition()) != 0)
+      {
+         continue;
+      }
 
+      for(const auto& marker : this->antsMarkers)
+      {
          if((marker.getX() == ant.getX() + 1 && marker.getY() == ant.getY()) || //right
             (marker.getX() == ant.getX() - 1 && marker.getY() == ant.getY()) || //left
             (marker.getX() == ant.getX() && marker.getY() == ant.getY() + 1) || //down
             (marker.getX() == ant.getX() && marker.getY() == ant.getY() - 1)) //up
          {
-            surrMarkers.push_back(marker);
+            allSurrMarkers[ant.getPosition()].push_back(marker);
          }
+      }
+   }
+
+   for(auto& ant : this->ants)
+   {
+      std::vector<Marker> surrMarkers;
+      const auto& aPos = ant.getPosition();
+      if(allSurrMarkers.count(aPos))
+      {
+         surrMarkers = allSurrMarkers.at(aPos);
+      }
+
+      Marker presentPosMarker;
+      if(markersOnAntsPos.count(aPos))
+      {
+         presentPosMarker = markersOnAntsPos.at(aPos);
       }
 
       //update them

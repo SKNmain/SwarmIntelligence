@@ -11,7 +11,9 @@ public:
       PATH_TO_EXIT,
       NOT_FULLY_DISCOVER_PATH,
       GEN_MAP_TAG,
+      NONE
    };
+   Marker();
    Marker(MarkerType type, const std::pair<int, int>& pos = { 0, 0 }, const std::pair<int, int>& enterPos = { 0, 0 });
 
 

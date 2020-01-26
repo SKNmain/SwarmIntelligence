@@ -48,8 +48,8 @@ void RenderArea::addMazeToScene(const Maze* maze)
    //this->fitInView(this->scene->sceneRect(), Qt::AspectRatioMode::KeepAspectRatio);
    const auto& mazeArray = maze->mazeArray;
    const auto& pathWidth = this->sett->getPathSize();
-   const auto& mazeWidth = this->sett->getMazeWidth();
-   const auto& mazeHeight = this->sett->getMazeHeight();
+   const auto& mazeWidth = maze->getWidth();
+   const auto& mazeHeight = maze->getHeight();
 
    const auto& tileSize = this->sett->getTileSize();
 

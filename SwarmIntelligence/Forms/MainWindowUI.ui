@@ -193,7 +193,7 @@
    </attribute>
    <addaction name="actionSwarm_intelligence"/>
    <addaction name="actionAnts_step"/>
-   <addaction name="on_actionRun_quick_ants_triggered"/>
+   <addaction name="actionRun_quick_ants"/>
    <addaction name="actionRun_ants"/>
   </widget>
   <action name="actionExit">
@@ -299,7 +299,7 @@
     <string>Save maze to DB</string>
    </property>
   </action>
-  <action name="on_actionRun_quick_ants_triggered">
+  <action name="actionRun_quick_ants">
    <property name="text">
     <string>Run quick ants</string>
    </property>
