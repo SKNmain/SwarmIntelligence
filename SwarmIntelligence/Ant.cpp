@@ -325,20 +325,39 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
       {
          if (mark.getType() == Marker::CLOSED_PATH && mark.getPos() == tempPos)
          {
-            if (temp1 == this->lastPos)
+            /*if (temp1 == this->lastPos)
+            {
+               
+            }*/
+            if (this->pos == mark.getEnterPos())
             {
                choosenPos = tempPos;
+            }
+            else
+            {
+               choosenPos = temp1;
+               this->changeNextYellowToRed = true;
             }
          }
          else if (mark.getType() == Marker::CLOSED_PATH && mark.getPos() == temp1)
          {
-            if (tempPos == this->lastPos)
+            if (this->pos == mark.getEnterPos())
             {
                choosenPos = temp1;
+            }
+            else
+            {
+               choosenPos = tempPos;
+               this->changeNextYellowToRed = true;
             }
          }
       }
 
+   }
+   else if (redCount == road.size() - 1)
+   {
+      choosenPos = this->lastPos;
+      this->changeNextYellowToRed = true;
    }
    else if (yellowCount > 0)
    {
