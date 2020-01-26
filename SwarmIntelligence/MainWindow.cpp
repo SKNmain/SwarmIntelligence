@@ -57,6 +57,14 @@ MainWindow::MainWindow(QWidget* parent)
       case AppSettings::NO_STARTING: break;
    }
 
+   connect(&this->antsManager, &AntsManager::antsFinishedMaze, this, [this]()
+      {
+         emit Logger::getInstance().log(tr("Ant finished maze\nSteps: %1").arg(QString::number(this->antSolverStepsCounter)),
+            LogWidget::LogLevel::INFO);
+         this->ui->actionAnts_step->setEnabled(false);
+         this->ui->actionSwarm_intelligence->setEnabled(true);
+         DELL_QT_PTR(this->antsTimer);
+      });
 
 }
 
@@ -315,14 +323,6 @@ void MainWindow::on_actionRun_ants_triggered()
          this->on_actionAnts_step_triggered();
       });
 
-   connect(&this->antsManager, &AntsManager::antsFinishedMaze, this, [this]()
-      {
-         emit Logger::getInstance().log(tr("Ant finished maze\nSteps: %1").arg(QString::number(this->antSolverStepsCounter)),
-            LogWidget::LogLevel::INFO);
-         this->ui->actionAnts_step->setEnabled(false);
-         this->ui->actionSwarm_intelligence->setEnabled(true);
-         DELL_QT_PTR(this->antsTimer);
-      });
    this->antsTimer->setInterval(this->settings.getAnimationTime());
    this->antsTimer->start();
 

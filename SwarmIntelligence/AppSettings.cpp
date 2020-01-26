@@ -27,6 +27,7 @@ AppSettings::AppSettings(QWidget* parent) :
    setStartingValue(ANIMATION_ENABLED_TAG, true, this->ui->checkBox_animationEnabled);
    setStartingValue(VISUALIZE_TAG, true, this->ui->checkBox_visualize);
    setStartingValue(ANT_CONST_NUMBER_ENABLED_TAG, true, this->ui->checkBox_isConstNumberOfAnts);
+   setStartingValue(ALL_ANTS_FINISH_TAG, false, this->ui->checkBox_allAntsHaveToFinish);
 
    //colors
    setStartingValue(ANT_COLOR_TAG, Qt::green);
@@ -157,6 +158,11 @@ bool AppSettings::isConstNumberOfAntsEnabled() const
    return this->settings.value(ANT_CONST_NUMBER_ENABLED_TAG).toBool();
 }
 
+bool AppSettings::isAllAntsHaveToFinish() const
+{
+   return this->settings.value(ALL_ANTS_FINISH_TAG).toBool();
+}
+
 void AppSettings::setAntsAnimationTime(int val)
 {
    on_spinBox_antsAnimationTime_valueChanged(val);
@@ -200,6 +206,11 @@ void AppSettings::setAntColor(const QColor& color)
 void AppSettings::setVisualizeEnabled(bool val)
 {
    this->ui->checkBox_visualize->setChecked(val);
+}
+
+void AppSettings::setAllAntsHaveToFinish(bool val)
+{
+   this->ui->checkBox_allAntsHaveToFinish->setChecked(val);
 }
 
 void AppSettings::setAnimationTime(int val)
@@ -325,4 +336,10 @@ void AppSettings::on_radioButton_loadMazeFromFileOnStart_clicked()
 void AppSettings::on_radioButton_generateMazeOnStart_clicked()
 {
    this->settings.setValue(STARTING_MAZE_TAG, static_cast<int>(StartingMaze::GENERATE_NEW));
+}
+
+void AppSettings::on_checkBox_allAntsHaveToFinish_stateChanged(int state)
+{
+   bool boolState = state == Qt::Checked ? true : false;
+   this->settings.setValue(ALL_ANTS_FINISH_TAG, boolState);
 }

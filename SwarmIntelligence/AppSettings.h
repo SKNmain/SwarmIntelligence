@@ -41,6 +41,7 @@ public:
    bool isAnimationEnabled() const;
    bool isVisualize() const;
    bool isConstNumberOfAntsEnabled() const;
+   bool isAllAntsHaveToFinish() const;
 
    QColor getAntsColor() const;
    void setAntColor(const QColor& color);
@@ -60,6 +61,7 @@ public:
    void setAnimationEnabled(bool val);
    void setConstNumberOfAnts(bool val);
    void setVisualizeEnabled(bool val);
+   void setAllAntsHaveToFinish(bool val);
 
    void setLastMazePath(const QString& path);
 
@@ -85,6 +87,8 @@ private slots:
    void on_radioButton_loadMazeFromFileOnStart_clicked();
    void on_radioButton_generateMazeOnStart_clicked();
 
+   void on_checkBox_allAntsHaveToFinish_stateChanged(int arg1);
+
 private:
    void setStartingValue(const QString& optName, int val, QSpinBox* widget);
    void setStartingValue(const QString& optName, bool val, QCheckBox* widget);
@@ -107,6 +111,7 @@ private:
    static inline const char* STARTING_MAZE_TAG = "MazeOnStart";
    static inline const char* ANT_SIZE_TAG = "AntSize";
    static inline const char* ANT_COLOR_TAG = "AntsColor";
+   static inline const char* ALL_ANTS_FINISH_TAG = "AllAntsHaveToFinish";
    static inline const char* ANT_ANIMATION_TIME_TAG = "AntsAnimationTime";
    static inline const char* ANT_CONST_NUMBER_ENABLED_TAG = "ConstNumberAntsEnabled";
    static inline const char* ANT_CONST_NUMBER_TAG = "ConstNumberAnts";

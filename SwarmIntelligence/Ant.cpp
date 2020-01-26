@@ -37,7 +37,7 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
       }
 
       auto tempPos = chooseNextPos(road, surrMarkers, presentPosMarker);
-
+      auto previousPos = this->lastPos;
       this->lastPos = this->pos;
       this->pos = tempPos;
 
@@ -57,8 +57,24 @@ std::optional<Marker> Ant::update(int tile, const std::vector<Marker>& surrMarke
                changeNextYellowToRed = false;
             }
          }
+
          //warunek na jedokafelkowy slepy zaulek?
-         if(presentPosMarker.getPos() == this->lastPos && presentPosMarker.getType() == Marker::NOT_FULLY_DISCOVER_PATH)
+         //to check
+         /*if(presentPosMarker.getType() == Marker::NOT_FULLY_DISCOVER_PATH)
+         {
+            
+            if((presentPosMarker.getEnterPos() == previousPos && presentPosMarker.getPos() == this->lastPos))
+            {
+               rVMarker = { Marker::MarkerType::CLOSED_PATH, this->lastPos, previousPos };
+               changeNextYellowToRed = false;
+            }
+            else if(presentPosMarker.getPos() == this->lastPos)
+            {
+               rVMarker = { Marker::MarkerType::CLOSED_PATH, this->lastPos, this->lastPos };
+               changeNextYellowToRed = false;
+            }
+         }*/
+         if(presentPosMarker.getPos() == this->lastPos)
          {
             rVMarker = { Marker::MarkerType::CLOSED_PATH, this->lastPos, this->lastPos };
             changeNextYellowToRed = false;
@@ -359,7 +375,7 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
    else if(redCount == road.size() - 1)
    {
       bool threeRed = false;
-
+      bool change = true;
       for(const auto& m : surrMarkers)
       {
          if(this->pos == m.getEnterPos())
@@ -367,13 +383,18 @@ std::pair<int, int> Ant::chooseNextPos(std::vector<int>& road, const std::vector
             threeRed = true;
             choosenPos = m.getPos();
          }
+         if(m.getEnterPos() != m.getPos()) change = false;
       }
-
       if(false == threeRed)
       {
          choosenPos = this->lastPos;
       }
-      this->changeNextYellowToRed = true;
+      //to check
+      if(true == change)
+      {
+         this->changeNextYellowToRed = true;
+      }
+
    }
    else if(yellowCount > 0)
    {

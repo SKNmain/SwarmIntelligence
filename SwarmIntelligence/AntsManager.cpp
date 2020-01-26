@@ -1,5 +1,7 @@
- #include "AntsManager.h"
+#include "AntsManager.h"
 #include <algorithm>
+#include <execution>
+#include <mutex>
 #include "Maze.h"
 #include "Logger.hpp"
 #include "AppSettings.h"
@@ -35,7 +37,7 @@ void AntsManager::initialize(Maze* maze)
    }
    else
    {
-      
+
    }
 
    for(int i = 0; i < numberOfAnts; ++i)
@@ -77,9 +79,9 @@ void AntsManager::step()
          }
       }
    }
+   std::mutex mt;
+   std::for_each(std::execution::par, this->ants.begin(), this->ants.end(), [&allSurrMarkers, &markersOnAntsPos, this, &mt](Ant& ant) {
 
-   for(auto& ant : this->ants)
-   {
       std::vector<Marker> surrMarkers;
       const auto& aPos = ant.getPosition();
       if(allSurrMarkers.count(aPos))
@@ -96,6 +98,7 @@ void AntsManager::step()
       //update them
       auto optionalMarker = ant.update(this->maze->mazeArray[ant.getY()][ant.getX()], surrMarkers, presentPosMarker);
 
+      mt.lock();
       if(optionalMarker)
       {
          const auto it = std::find_if(this->antsMarkers.begin(), this->antsMarkers.end(), [optionalMarker](const Marker& marker)
@@ -110,22 +113,30 @@ void AntsManager::step()
 
          this->antsMarkers.push_back(*optionalMarker);
       }
+      mt.unlock();
 
       //temporary
-      if(true == ant.isFinishedMaze())
+      if(false == this->appSettings->isAllAntsHaveToFinish() && true == ant.isFinishedMaze())
       {
          this->finished = true;
          emit antsFinishedMaze();
       }
+
+      });
+   if(true == this->appSettings->isAllAntsHaveToFinish()
+      && std::all_of(this->ants.begin(), this->ants.end(), [](const auto& ant) { return ant.isFinishedMaze(); }))
+   {
+      this->finished = true;
+      emit antsFinishedMaze();
    }
 }
 
-/*void AntsManager::deleteAntsMarker(int x, int y) 
+/*void AntsManager::deleteAntsMarker(int x, int y)
 {
    auto it = this->antsMarkers.begin();
    while (it != this->antsMarkers.end())
    {
-      if (it->getX == x && it->getY == y) 
+      if (it->getX == x && it->getY == y)
       {
          it = this->antsMarkers.erase(it);
       }
